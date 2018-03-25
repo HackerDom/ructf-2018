@@ -1,0 +1,7 @@
+port = 7483
+ws-port = 7484
+secret = dump/secret
+credentials = dump/credentials
+points = dump/points
+sleep = 30000
+ttl = 1800000
