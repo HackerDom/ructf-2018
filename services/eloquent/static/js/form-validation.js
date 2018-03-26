@@ -110,11 +110,17 @@ function removeError() {
     $('#' + label + '-field-icon').removeClass('glyphicon-remove');
 }
 
-window.onload = function() {
+window.onload = function(){
     var regForm = $('#reg-form');
     var loginForm = $('#login-form');
+    var draftBtn = $("#draft-btn");
     regForm.on('submit', submitRegForm);
     regForm.on('keydown', 'input', removeError);
     loginForm.on('submit', submitLoginForm);
     loginForm.on('keydown', 'input', removeError);
+    var postArticleForm = $("#post-form");
+    draftBtn.on('click', function (){
+        var actionVal = postArticleForm.attr('action');
+        postArticleForm.attr('action', actionVal + '?draft=true');
+    })
 };

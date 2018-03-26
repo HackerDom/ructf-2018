@@ -2,13 +2,11 @@ import json
 from base64 import b64decode
 from urllib.parse import unquote
 
-import bottle
-import redis
 from bottle import route, run, view, request, post, get, static_file, redirect, abort, response
-from db import is_username_busy, create_user, is_valid_pair
-from sessions import SessionManager
-from utils import is_username_valid, is_password_valid
 
+from db.api import is_valid_pair, is_username_busy, create_user
+from utils import is_username_valid, is_password_valid
+from webserver.sessions import SessionManager
 
 sm = SessionManager(request, response)
 
@@ -48,7 +46,6 @@ def signin():
     if not is_valid_pair(username, password):
         abort(400)
     sm.create_session(username)
-    # print(session)
     # session['login'] = username
     # response.set_cookie("login", username)
     redirect('/')
@@ -102,6 +99,17 @@ def ivp(username, password):
 @get('/create')
 @view('create-title')
 def create_title():
-    pass
+    if not sm.validate_session():
+        redirect('/')
 
-run(host='0.0.0.0', port=8080, server='gunicorn')
+
+@post('/post-article')
+def post_article():
+    title = request.forms.getunicode('title')
+    content = request.forms.getunicode('content')
+
+    # redirect('/articles')
+
+
+def start_web_server(host='0.0.0.0', port=8080):
+    run(host=host, port=port, server='gunicorn')

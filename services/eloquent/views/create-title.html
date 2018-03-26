@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
     <script src="../static/js/jquery.min.js"></script>
     <script src="../static/js/bootstrap.min.js"></script>
+    <script src="../static/js/form-validation.js"></script>
 </head>
 <body>
 
@@ -35,28 +36,25 @@
           <!--<li><a href="#">Page 3</a></li>-->
       </ul>
           <ul class="nav navbar-nav navbar-right">
-              %if defined('login'):
               <li><a href="/signout"><span class="glyphicon glyphicon-log-out"></span> Log Out</a></li>
-              %else:
-              <li><a href="/registration"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-              <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-              %end
           </ul>
       </div>
     </div>
 </nav>
 
 <div class="container">
-    <h3>Title</h3>
-    <input type="text" class="form-control no-border" placeholder="Article title">
-    <h3>Content</h3>
-    <div class="form-horizontal">
-    <!--<div class="form-group">-->
-        <!--<div class="col-md-6">-->
-            <textarea class="form-control" rows="20" placeholder="Article content"></textarea>
-        <!--</div>-->
-    <!--</div>-->
-</div>
+    <form action="/post-article" id="post-form" method="post">
+        <div class="form-group">
+            <h3>Title</h3>
+            <input type="text" class="form-control no-border" placeholder="Article title" name="title">
+        </div>
+        <div class="form-group">
+            <h3>Content</h3>
+            <textarea class="form-control" rows="20" placeholder="Article content" name="content"></textarea>
+        </div>
+        <button type="submit" class="btn btn-default" id="post-btn" >Post</button>
+        <button type="submit" class="btn btn-default" id="draft-btn" >Save as a draft</button>
+    </form>
 </div>
 
 </body>
