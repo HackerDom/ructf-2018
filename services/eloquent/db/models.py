@@ -1,6 +1,4 @@
-import os
-
-from peewee import Model, CharField, BigBitField, SqliteDatabase
+from peewee import Model, CharField, BigBitField, SqliteDatabase, TextField, IntegerField
 
 from config import DB_FILE_ABSPATH
 
@@ -14,6 +12,17 @@ class User(Model):
     class Meta:
         database = db
 
-User.create_table()
+if not User.table_exists():
+    User.create_table()
 
-print(list(User.select()))
+
+class Article(Model):
+    title = CharField(256)
+    content = TextField()
+    owner_id = IntegerField()
+
+    class Meta:
+        database = db
+
+if not Article.table_exists():
+    Article.create_table()

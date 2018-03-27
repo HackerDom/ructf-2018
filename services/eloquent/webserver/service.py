@@ -2,9 +2,9 @@ import json
 from base64 import b64decode
 from urllib.parse import unquote
 
-from bottle import route, run, view, request, post, get, static_file, redirect, abort, response
+from bottle import route, run, request, post, get, static_file, redirect, abort, response, jinja2_view as view
 
-from db.api import is_valid_pair, is_username_busy, create_user
+from db.api import is_valid_pair, is_username_busy, create_user, create_article, get_articles_by_login
 from utils import is_username_valid, is_password_valid
 from webserver.sessions import SessionManager
 
@@ -16,11 +16,15 @@ def get_static_files(filepath):
     return static_file(filepath, root="static")
 
 
-@get('/')
+@route('/')
 @view('index')
 def index():
     if sm.validate_session():
+        username = request.get_cookie('login')
+        get_articles_by_login(username)
         return {"login": request.get_cookie('login')}
+    else:
+        return {}
 
 
 @get('/sb')
@@ -40,11 +44,11 @@ def signin():
     username = request.forms.get('username')
     password = request.forms.getunicode('password')
     if username is None or password is None:
-        abort(400)
+        abort(400, "Request form doesn't contain username or password")
     if not is_username_valid(username) or not is_password_valid(password):
-        abort(400)
+        abort(400, "Incorrect login or password")
     if not is_valid_pair(username, password):
-        abort(400)
+        abort(400, "Incorrect login or password")
     sm.create_session(username)
     # session['login'] = username
     # response.set_cookie("login", username)
@@ -74,15 +78,14 @@ def register():
     username = request.forms.get('username')
     password = request.forms.getunicode('password')
     if username is None or password is None:
-        abort(400)
+        abort(400, "Request form doesn't contain username or password")
     if not is_username_valid(username) or not is_password_valid(password):
-        abort(400)
-    if not is_username_busy(username):
-        create_user(username, password)
-        sm.create_session(username)
-        redirect('/')
-    else:
-        abort(400)
+        abort(400, "Incorrect login or password")
+    if is_username_busy(username):
+        abort(400, "Username is busy")
+    create_user(username, password)
+    sm.create_session(username)
+    redirect('/')
 
 
 @get('/exist/<username>')
@@ -97,7 +100,7 @@ def ivp(username, password):
 
 
 @get('/create')
-@view('create-title')
+@view('create-article')
 def create_title():
     if not sm.validate_session():
         redirect('/')
@@ -105,10 +108,13 @@ def create_title():
 
 @post('/post-article')
 def post_article():
+    if not sm.validate_session():
+        abort(400, "Invalid session")
     title = request.forms.getunicode('title')
     content = request.forms.getunicode('content')
-
-    # redirect('/articles')
+    username = request.get_cookie('login')
+    create_article(title, content, username)
+    redirect('/')
 
 
 def start_web_server(host='0.0.0.0', port=8080):

@@ -13,37 +13,23 @@
 
 <nav class="navbar navbar-default">
     <div class="container-fluid">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-      </button>
-        <a class="navbar-brand" href="#">Eloquent</a>
-    </div>
-      <div class="collapse navbar-collapse" id="myNavbar">
-        <ul class="nav navbar-nav">
-          <li class="active"><a href="/">Home</a></li>
-          <li class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Articles<span class="caret"></span></a>
-            <ul class="dropdown-menu">
-              <li><a href="#">My contribution</a></li>
-              <li><a href="#">Drafts</a></li>
-              <li><a href="#">Suggestions</a></li>
-          </ul>
-        </li>
-          <li><a href="/create">Create new article</a></li>
-          <!--<li><a href="#">Page 3</a></li>-->
-      </ul>
-          <ul class="nav navbar-nav navbar-right">
-              %if defined('login'):
-              <li><a href="/signout"><span class="glyphicon glyphicon-log-out"></span> Log Out</a></li>
-              %else:
-              <li><a href="/registration"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-              <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-              %end
-          </ul>
-      </div>
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Eloquent</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+                <li><a href="/">Home</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="active"><a href="/registration"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+            </ul>
+        </div>
     </div>
 </nav>
 
@@ -63,7 +49,7 @@
                 <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="password" data-toggle="tooltip">
                 <span class="glyphicon form-control-feedback" id="password-field-icon"></span>
             </div>
-            <button type="submit" class="btn btn-default" >Submit</button>
+            <button type="submit" class="btn btn-default" >Create an account</button>
         </form>
     </div>
 </div>

@@ -10,7 +10,8 @@ function submitLoginForm() {
     var loginIsValid = validateLogin();
     var passwordIsValid = validatePassword();
     if (loginIsValid && passwordIsValid)
-    return validatePair();
+        return validatePair();
+    return false;
 }
 
 function isUsernameFree() {
@@ -24,9 +25,9 @@ function isUsernameFree() {
 
 function isValidPair(login, password) {
     var result = false;
-    var passwordBase = window.btoa(encodeURI($('#pwd').val())).replace('/', '-');
+    var passwordBase = window.btoa(encodeURI(password)).replace('/', '-');
     $.ajaxSetup({async: false});
-    $.get("/isvalidpair/" + $('#username-field').val() + "/" + passwordBase, function(data, status) {
+    $.get("/isvalidpair/" + login + "/" + passwordBase, function(data, status) {
         result = (data == "true" && status == "success");
     });
     return result;
@@ -39,14 +40,8 @@ function validateField(inputField, errorMessage, validationFunc) {
         formGroup = input.parents('.form-group'),
         label = formGroup.find('label').text().toLowerCase(),
         fieldIcon = $('#' + label + '-field-icon');
-    // console.log(regexp);
-    // console.log(val);
-    // console.log('test result:');
-    // console.log(regexp.test(val));
     var res = !validationFunc(val);
-    console.log(res);
    if (res) {
-       console.log("Validation fail with " + val);
        formGroup.addClass('has-error').removeClass('has-success');
        fieldIcon.addClass('glyphicon-remove').removeClass('glyphicon-ok');
        input.tooltip({
@@ -55,11 +50,9 @@ function validateField(inputField, errorMessage, validationFunc) {
            title: errorMessage
        }).tooltip('show');
        valid = false;
-       console.log('field ' + ': FAIL');
    } else {
        formGroup.addClass('has-success').removeClass('has-error');
        fieldIcon.addClass('glyphicon-ok').removeClass('glyphicon-remove');
-       console.log('field ' + ': OK');
        $('#username-icon').removeClass('glyphicon-remove');
    }
    return valid;
@@ -113,14 +106,8 @@ function removeError() {
 window.onload = function(){
     var regForm = $('#reg-form');
     var loginForm = $('#login-form');
-    var draftBtn = $("#draft-btn");
     regForm.on('submit', submitRegForm);
     regForm.on('keydown', 'input', removeError);
     loginForm.on('submit', submitLoginForm);
     loginForm.on('keydown', 'input', removeError);
-    var postArticleForm = $("#post-form");
-    draftBtn.on('click', function (){
-        var actionVal = postArticleForm.attr('action');
-        postArticleForm.attr('action', actionVal + '?draft=true');
-    })
 };
