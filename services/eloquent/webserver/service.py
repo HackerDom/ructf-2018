@@ -1,10 +1,14 @@
+import html
 import json
 from base64 import b64decode
 from urllib.parse import unquote
 
+import markdown
 from bottle import route, run, request, post, get, static_file, redirect, abort, response, jinja2_view as view
+from markdown.extensions.toc import TocExtension
 
-from db.api import is_valid_pair, is_username_busy, create_user, create_article, get_articles_by_login
+from db.api import is_valid_pair, is_username_busy, create_user, create_article, get_article_titles_by_login, \
+    get_article_by_id
 from utils import is_username_valid, is_password_valid
 from webserver.sessions import SessionManager
 
@@ -16,21 +20,23 @@ def get_static_files(filepath):
     return static_file(filepath, root="static")
 
 
+@route('/<username>')
+@view('user-page')
+def user_page(username):
+    return {'username': username}
+
+
 @route('/')
 @view('index')
 def index():
     if sm.validate_session():
         username = request.get_cookie('login')
-        get_articles_by_login(username)
-        return {"login": request.get_cookie('login')}
+        return {
+            'login': request.get_cookie('login'),
+            'articles': get_article_titles_by_login(username)
+        }
     else:
         return {}
-
-
-@get('/sb')
-@view('sandbox')
-def sandbox():
-    pass
 
 
 @route('/signout')
@@ -50,14 +56,12 @@ def signin():
     if not is_valid_pair(username, password):
         abort(400, "Incorrect login or password")
     sm.create_session(username)
-    # session['login'] = username
-    # response.set_cookie("login", username)
     redirect('/')
 
 
 @get('/login')
 @view('login')
-def login():
+def login_func():
     pass
 
 
@@ -101,7 +105,7 @@ def ivp(username, password):
 
 @get('/create')
 @view('create-article')
-def create_title():
+def create_article_func():
     if not sm.validate_session():
         redirect('/')
 
@@ -115,6 +119,20 @@ def post_article():
     username = request.get_cookie('login')
     create_article(title, content, username)
     redirect('/')
+
+
+@route('/article/<art_id>')
+@view('view-article')
+def view_article(art_id):
+    if not sm.validate_session():
+        redirect('/')
+    username = request.get_cookie('login')
+    article = get_article_by_id(art_id)
+    return {
+        'login': username,
+        'title': article.title,
+        'content': article.content,
+    }
 
 
 def start_web_server(host='0.0.0.0', port=8080):

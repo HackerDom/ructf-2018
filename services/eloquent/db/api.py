@@ -1,3 +1,7 @@
+import markdown
+import html
+from markdown.extensions.toc import TocExtension
+
 from db.models import User, Article
 from utils import get_sha512
 
@@ -16,9 +20,17 @@ def is_valid_pair(username, password):
 
 def create_article(title, content, owner_login):
     owner_id = User.get(User.name == owner_login).id
-    Article.create(title=title, content=content, owner_id=owner_id).save()
+    Article.create(
+        title=html.escape(title),
+        content=markdown.markdown(content, safe_mode='escape', extensions=[TocExtension(baselevel=3)]),
+        owner_id=owner_id
+    ).save()
 
 
-def get_articles_by_login(owner_login):
+def get_article_titles_by_login(owner_login):
     owner_id = User.get(User.name == owner_login).id
-    return Article.select(Article.title, Article.content).where(Article.owner_id == owner_id)
+    return Article.select(Article.id, Article.title).where(Article.owner_id == owner_id)
+
+
+def get_article_by_id(art_id):
+    return Article.get_by_id(int(art_id))

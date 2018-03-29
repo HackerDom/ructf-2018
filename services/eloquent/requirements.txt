@@ -1,3 +1,4 @@
+markdown
 bottle==0.12.13
 redis==2.10.6
 peewee==3.1.2
