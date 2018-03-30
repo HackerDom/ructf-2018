@@ -15,3 +15,7 @@ def is_password_valid(password):
 
 def get_sha512(data):
     return sha512(data).digest()
+
+
+def strip_html_tags(html_text):
+    return ' '.join(re.sub(r'<[^>]*?>', '', html_text).split())

@@ -1,8 +1,11 @@
-from peewee import Model, CharField, BigBitField, SqliteDatabase, TextField, IntegerField
+from peewee import Model, CharField, BigBitField, SqliteDatabase, TextField, IntegerField, ForeignKeyField
 
 from config import DB_FILE_ABSPATH
 
 db = SqliteDatabase(DB_FILE_ABSPATH)
+MAX_ARTICLE_CONTENT_LENGTH = 10000
+MAX_ARTICLE_PREVIEW_TEXT_LENGTH = 300
+MAX_TITLE_LENGTH = 50
 
 
 class User(Model):
@@ -17,9 +20,10 @@ if not User.table_exists():
 
 
 class Article(Model):
-    title = CharField(256)
+    title = CharField(MAX_TITLE_LENGTH)
     content = TextField()
-    owner_id = IntegerField()
+    preview_text = CharField(MAX_ARTICLE_PREVIEW_TEXT_LENGTH)
+    owner_id = ForeignKeyField(User)
 
     class Meta:
         database = db

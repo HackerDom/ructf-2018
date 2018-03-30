@@ -53,7 +53,7 @@
         <div class="card">
             <div class="card-header">{{ articles[i * 3].title }}</div>
             <div class="card-body">
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                <p class="card-text">{{ articles[i * 3].preview_text }}</p>
                 <a href="/article/{{ articles[i * 3].id }}" class="btn btn-primary">View article</a>
             </div>
         </div>
@@ -62,7 +62,7 @@
         <div class="card">
             <div class="card-header">{{ articles[i * 3 + 1].title }}</div>
             <div class="card-body">
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                <p class="card-text">{{ articles[i * 3 + 1].preview_text }}</p>
                 <a href="/article/{{ articles[i * 3 + 1].id }}" class="btn btn-primary">View article</a>
             </div>
         </div>
@@ -71,7 +71,7 @@
         <div class="card">
             <div class="card-header">{{ articles[i * 3 + 2].title }}</div>
             <div class="card-body">
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                <p class="card-text">{{ articles[i * 3 + 2].preview_text }}</p>
                 <a href="/article/{{ articles[i * 3 + 2].id }}" class="btn btn-primary">View article</a>
             </div>
         </div>
@@ -80,10 +80,10 @@
     {% for i in range(articles|length % 3) %}
     <div class="col-md-4">
         <div class="card">
-            <div class="card-header">{{ articles[i * 3].title }}</div>
+            <div class="card-header">{{ articles[(articles|length - (articles|length % 3)) + i].title }}</div>
             <div class="card-body">
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                <a href="/article/{{ articles[articles|length - 1 + i].id }}" class="btn btn-primary">View article</a>
+                <p class="card-text">{{ articles[(articles|length - (articles|length % 3)) + i].preview_text }}</p>
+                <a href="/article/{{ articles[(articles|length - (articles|length % 3)) + i].id }}" class="btn btn-primary">View article</a>
             </div>
         </div>
     </div>

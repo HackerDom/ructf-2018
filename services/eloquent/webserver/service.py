@@ -117,7 +117,8 @@ def post_article():
     title = request.forms.getunicode('title')
     content = request.forms.getunicode('content')
     username = request.get_cookie('login')
-    create_article(title, content, username)
+    if not create_article(title, content, username):
+        abort(400, "Incorrect article content or title")
     redirect('/')
 
 
