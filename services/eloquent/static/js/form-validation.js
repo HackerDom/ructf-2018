@@ -103,6 +103,22 @@ function removeError() {
     $('#' + label + '-field-icon').removeClass('glyphicon-remove');
 }
 
+function getValidObject(objectId) {
+    try {
+        return $("#" + objectId);
+    } catch (e) {
+        return undefined;
+    }
+}
+
+function onHashChange() {
+    scrollBy(0, -80);
+    var hash = window.location.hash.substr(1);
+    if (getValidObject(hash) !== "undefined") {
+        $('#mid-text').html(hash);
+    }
+}
+
 window.onload = function(){
     var regForm = $('#reg-form');
     var loginForm = $('#login-form');
@@ -110,4 +126,5 @@ window.onload = function(){
     regForm.on('keydown', 'input', removeError);
     loginForm.on('submit', submitLoginForm);
     loginForm.on('keydown', 'input', removeError);
-};
+    window.addEventListener('hashchange', onHashChange);
+}

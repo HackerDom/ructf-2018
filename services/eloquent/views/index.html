@@ -11,7 +11,7 @@
 </head>
 <body>
 
-<nav class="navbar navbar-default">
+<nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
@@ -37,6 +37,7 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if login is defined %}
+                <li><span class="navbar-text"><strong>{{ login }}</strong></span></li>
                 <li><a href="/signout"><span class="glyphicon glyphicon-log-out"></span> Log Out</a></li>
                 {% else %}
                 <li><a href="/registration"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
@@ -54,7 +55,7 @@
             <div class="card-header">{{ articles[i * 3].title }}</div>
             <div class="card-body">
                 <p class="card-text">{{ articles[i * 3].preview_text }}</p>
-                <a href="/article/{{ articles[i * 3].id }}" class="btn btn-primary">View article</a>
+                <a href="/article/{{ articles[i * 3].id }}" class="btn btn-primary bottom-btn">View article</a>
             </div>
         </div>
     </div>
@@ -63,7 +64,7 @@
             <div class="card-header">{{ articles[i * 3 + 1].title }}</div>
             <div class="card-body">
                 <p class="card-text">{{ articles[i * 3 + 1].preview_text }}</p>
-                <a href="/article/{{ articles[i * 3 + 1].id }}" class="btn btn-primary">View article</a>
+                <a href="/article/{{ articles[i * 3 + 1].id }}" class="btn btn-primary bottom-btn">View article</a>
             </div>
         </div>
     </div>
@@ -72,7 +73,7 @@
             <div class="card-header">{{ articles[i * 3 + 2].title }}</div>
             <div class="card-body">
                 <p class="card-text">{{ articles[i * 3 + 2].preview_text }}</p>
-                <a href="/article/{{ articles[i * 3 + 2].id }}" class="btn btn-primary">View article</a>
+                <a href="/article/{{ articles[i * 3 + 2].id }}" class="btn btn-primary bottom-btn">View article</a>
             </div>
         </div>
     </div>
@@ -83,7 +84,7 @@
             <div class="card-header">{{ articles[(articles|length - (articles|length % 3)) + i].title }}</div>
             <div class="card-body">
                 <p class="card-text">{{ articles[(articles|length - (articles|length % 3)) + i].preview_text }}</p>
-                <a href="/article/{{ articles[(articles|length - (articles|length % 3)) + i].id }}" class="btn btn-primary">View article</a>
+                <a href="/article/{{ articles[(articles|length - (articles|length % 3)) + i].id }}" class="btn btn-primary bottom-btn" style="">View article</a>
             </div>
         </div>
     </div>
