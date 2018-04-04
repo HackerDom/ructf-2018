@@ -1,0 +1,10 @@
+#ifndef NEWS_CONSTANTS_H
+#define NEWS_CONSTANTS_H
+
+#define NAME_SIZE 20
+#define PASSWORD_SIZE 16
+#define KEY_SIZE 64
+#define CHANNELS_CACHE_SIZE 1000
+#define FOLDER "data"
+
+#endif //NEWS_CONSTANTS_H
