@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using log4net;
 
-namespace BulletinBoard.Utils
+namespace Hologram.Utils
 {
 	public class SimpleSettings
 	{

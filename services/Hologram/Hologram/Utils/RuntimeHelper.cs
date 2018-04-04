@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BulletinBoard.Utils
+namespace Hologram.Utils
 {
 	internal static class RuntimeHelper
 	{

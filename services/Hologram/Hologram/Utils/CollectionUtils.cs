@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace BulletinBoard.Utils
+namespace Hologram.Utils
 {
 	public static class CollectionUtils
 	{

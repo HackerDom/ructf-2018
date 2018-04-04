@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace BulletinBoard.Utils
+namespace Hologram.Utils
 {
 	internal static class ReflectionUtils
 	{

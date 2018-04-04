@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C877039A-7BFA-4090-89EC-33CD70CD537A}</ProjectGuid>
+    <ProjectGuid>{B7BC7C7C-19A2-4558-BB92-CA2FFC57E5EF}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BulletinBoard</RootNamespace>
-    <AssemblyName>BulletinBoard</AssemblyName>
+    <RootNamespace>Hologram</RootNamespace>
+    <AssemblyName>Hologram</AssemblyName>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Handlers\DocumentsHandler.cs" />
     <Compile Include="Handlers\Helpers\BaseHandler.cs" />
+    <Compile Include="Handlers\Helpers\MethodAttribute.cs" />
     <Compile Include="Http\HttpContextHelper.cs" />
     <Compile Include="Http\HttpListenerRequestExtentions.cs" />
     <Compile Include="Http\HttpServer.cs" />
@@ -64,11 +65,11 @@
     <Compile Include="Utils\TaskUtils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="App.config" />
     <Content Include="settings" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

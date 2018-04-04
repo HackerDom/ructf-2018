@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using BulletinBoard.Handlers;
-using BulletinBoard.Http;
+using Hologram.Handlers;
+using Hologram.Http;
+using Hologram.Utils;
 using log4net;
 using log4net.Config;
-using BulletinBoard.Utils;
 
-namespace TreasureMap
+namespace Hologram
 {
 	internal static class Program
 	{

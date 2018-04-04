@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BulletinBoard.Utils
+namespace Hologram.Utils
 {
 	internal class AsyncLockSource : IDisposable
 	{

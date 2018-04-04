@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hologram", "Hologram\Hologram.csproj", "{B7BC7C7C-19A2-4558-BB92-CA2FFC57E5EF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B7BC7C7C-19A2-4558-BB92-CA2FFC57E5EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7BC7C7C-19A2-4558-BB92-CA2FFC57E5EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7BC7C7C-19A2-4558-BB92-CA2FFC57E5EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7BC7C7C-19A2-4558-BB92-CA2FFC57E5EF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

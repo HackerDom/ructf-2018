@@ -1,7 +1,6 @@
-﻿using BulletinBoard.Http;
-using BulletinBoard.Handlers.Helpers;
+﻿using Hologram.Handlers.Helpers;
 
-namespace BulletinBoard.Http
+namespace Hologram.Http
 {
 	internal static class HttpServerExtentions
 	{

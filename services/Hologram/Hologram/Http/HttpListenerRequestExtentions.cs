@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 
-namespace BulletinBoard.Http
+namespace Hologram.Http
 {
     public static class HttpListenerRequestExtentions
     {

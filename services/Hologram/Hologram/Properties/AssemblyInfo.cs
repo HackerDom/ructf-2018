@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BulletinBoard")]
+[assembly: AssemblyTitle("Hologram")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("BulletinBoard")]
+[assembly: AssemblyProduct("Hologram")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("C877039A-7BFA-4090-89EC-33CD70CD537A")]
+[assembly: Guid("B7BC7C7C-19A2-4558-BB92-CA2FFC57E5EF")]
 
 // Version information for an assembly consists of the following four values:
 //

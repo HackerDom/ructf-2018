@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Net;
-using BulletinBoard.Utils;
+using Hologram.Utils;
 
-namespace BulletinBoard.Http
+namespace Hologram.Http
 {
 	internal static class HttpContextHelper
 	{
