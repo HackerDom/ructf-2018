@@ -28,6 +28,7 @@ int auth(struct Channel *channel, char *password) {
 char *generate_key() {
     char *key = malloc(KEY_SIZE);
     if (syscall(SYS_getrandom,key, KEY_SIZE, 0) != KEY_SIZE) {
+        free(key);
         return 0;
     }
     return key;

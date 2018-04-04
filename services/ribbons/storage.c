@@ -44,14 +44,11 @@ FILE *open_channel_file(int channel_id, char *mode) {
 struct Channel *read_channel(FILE *file, int channel_id) {
     char name[NAME_SIZE];
     char password[NAME_SIZE];
-    char *key;
+    char *key = malloc(KEY_SIZE);
 
     if (fread(name, sizeof(char), NAME_SIZE, file) != NAME_SIZE ||
-        fread(password, sizeof(char), PASSWORD_SIZE, file) != PASSWORD_SIZE)
-        return 0;
-
-    key = read_str(file);
-    if (!key)
+        fread(password, sizeof(char), PASSWORD_SIZE, file) != PASSWORD_SIZE ||
+        fread(key, sizeof(char), KEY_SIZE, file) != KEY_SIZE)
         return 0;
 
     struct Channel *channel = create_channel(channel_id, name, password, key);
@@ -89,7 +86,7 @@ void save_channel(struct Channel *channel) {
         return;
     fwrite(channel->name, sizeof(char), NAME_SIZE, f);
     fwrite(channel->password, sizeof(char), PASSWORD_SIZE, f);
-    write_str(channel->key, f);
+    fwrite(channel->key, sizeof(char), KEY_SIZE, f);
     struct Post *post = channel->posts;
     while (post) {
         write_post(post, f);
