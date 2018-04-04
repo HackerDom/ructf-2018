@@ -22,7 +22,7 @@ struct Channel *get_channel_by_id(int id) {
 }
 
 int auth(struct Channel *channel, char *password) {
-    return strcmp(channel->password, password) == 0;
+    return strncmp(channel->password, password, PASSWORD_SIZE) == 0;
 }
 
 char *generate_key() {
