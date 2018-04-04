@@ -4,4 +4,18 @@
 
 .card {
     margin-top: 15px;
+    height: 200px;
+}
+
+body {
+    padding-top: 70px;
+}
+
+.bottom-btn {
+    position: absolute;
+    bottom: 10px;
+}
+
+.navbar-middle-text {
+    padding-left: 50px;
 }

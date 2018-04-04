@@ -2,7 +2,7 @@ import markdown
 import html
 from markdown.extensions.toc import TocExtension
 
-from db.models import User, Article, MAX_ARTICLE_PREVIEW_TEXT_LENGTH, MAX_ARTICLE_CONTENT_LENGTH
+from db.models import User, Article, MAX_ARTICLE_PREVIEW_TEXT_LENGTH, MAX_ARTICLE_CONTENT_LENGTH, MAX_TITLE_LENGTH
 from utils import get_sha512, strip_html_tags
 
 
@@ -19,7 +19,7 @@ def is_valid_pair(username, password):
 
 
 def create_article(title, content, owner_login):
-    if len(content) > MAX_ARTICLE_CONTENT_LENGTH:
+    if len(content) > MAX_ARTICLE_CONTENT_LENGTH or len(title) > MAX_TITLE_LENGTH:
         return False
     owner_id = User.get(User.name == owner_login).id
     html_content = markdown.markdown(content, safe_mode='escape', extensions=[TocExtension(baselevel=3)])
