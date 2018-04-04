@@ -8,4 +8,6 @@ int add_channel(char *name, char *password);
 int add_post(struct Channel *channel, char *text);
 void change_password(struct Channel *channel, char *new_password);
 
+void update_channel(int channel_id);
+
 #endif //NEWS_FRONTEND_H

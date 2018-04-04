@@ -71,7 +71,13 @@ struct Channel *load_channel(int channel_id) {
     return channel;
 }
 
+int validate_channel(struct Channel *channel){
+    return channel->key && strlen(channel->key) == KEY_SIZE;
+}
+
 void save_channel(struct Channel *channel) {
+    if (!validate_channel(channel))
+        return;
     FILE * f = open_channel_file(channel->id, "wb");
     if (f == NULL)
         return;

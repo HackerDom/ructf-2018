@@ -13,11 +13,26 @@ void cache_add(struct Channel *channel) {
     tail_index = (tail_index + 1) % CHANNELS_CACHE_SIZE;
 }
 
-struct Channel *cache_find(int channel_id) {
+int find_index(int channel_id) {
     for (int i = 0; i < CHANNELS_CACHE_SIZE; i++) {
         if (channels_cache[i] && channels_cache[i]->id == channel_id) {
-            return channels_cache[i];
+            return i;
         }
     }
-    return 0;
+    return -1;
+}
+
+struct Channel *cache_find(int channel_id) {
+    int index = find_index(channel_id);
+    return index != -1 ? channels_cache[index] : 0;
+}
+
+void cache_update(int channel_id, struct Channel *channel) {
+    int index = find_index(channel_id);
+    if (index != -1) {
+        delete_channel(channels_cache[index]);
+        channels_cache[index] = channel;
+    } else {
+        cache_add(channel);
+    }
 }

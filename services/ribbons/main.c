@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <wait.h>
+#include <fcntl.h>
+#include <errno.h>
 #include "frontend.h"
 #include "types.h"
 
@@ -17,7 +21,7 @@ int input_number(char *prompt){
     return atoi(num);
 }
 
-void menu() {
+int menu() {
     puts("\nChoose action:\n");
     puts("(1) Add channel\n"
            "(2) Add post\n"
@@ -35,20 +39,20 @@ void menu() {
     choice = input_number(">");
 
     if (choice < 1 || choice > 5)
-        return;
+        return 0;
 
     if (choice != 1) {
         id = input_number("Enter channel id:");
         channel = get_channel_by_id(id);
         if (!channel) {
             puts("No such channel");
-            return;
+            return 0;
         }
         if (choice != 5) {
             input_string("Enter channel password:", password, 21);
             if (!auth(channel, password)) {
                 puts("Password incorrect");
-                return;
+                return channel->id;
             }
         }
     }
@@ -62,7 +66,7 @@ void menu() {
                 printf("# Created (id: %d)\n", id);
             else
                 puts("# Failed");
-            break;
+            return id;
 
         case 2:
             input_string("Enter text:", text_buffer, 1000);
@@ -100,11 +104,43 @@ void menu() {
             puts("# End");
             break;
     }
+    return channel->id;
+}
+
+void handle_child(int *pipefd) {
+    int affected_channel_id = menu();
+    write(pipefd[1], &affected_channel_id, sizeof(int));
+    exit(0);
+}
+
+void handle_parent(int *pipefd){
+    close(pipefd[1]);
+
+    wait(NULL);
+
+    int affected_channel_id;
+    if (read(pipefd[0], &affected_channel_id, sizeof(int)) != sizeof(int))
+        affected_channel_id = 0;
+
+    close(pipefd[0]);
+
+    if (affected_channel_id)
+        update_channel(affected_channel_id);
 }
 
 int main() {
     while (1) {
-        menu();
+        int pipefd[2];
+        pipe(pipefd);
+        pid_t cpid = fork();
+        if (cpid == -1) {
+            fprintf(stderr, "Cannot do fork(). Errno: %d. Exiting.", errno);
+            exit(1);
+        } else if (cpid == 0) {
+            handle_child(pipefd);
+        } else {
+            handle_parent(pipefd);
+        }
     }
     return 0;
 }

@@ -61,3 +61,7 @@ void change_password(struct Channel *channel, char *new_password) {
     memcpy(channel->password, new_password, strlen(new_password));
     save_channel(channel);
 }
+
+void update_channel(int channel_id) {
+    cache_update(channel_id, load_channel(channel_id));
+}
