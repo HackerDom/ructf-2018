@@ -8,8 +8,8 @@ from bottle import route, run, request, post, get, static_file, redirect, abort,
 from markdown.extensions.toc import TocExtension
 
 from db.api import is_valid_pair, is_username_busy, create_user, create_article, get_article_titles_by_login, \
-    get_article_by_id
-from utils import is_username_valid, is_password_valid
+    get_article_by_id, get_users, publish_article
+from utils import is_username_valid, is_password_valid, get_table_contents
 from webserver.sessions import SessionManager
 
 sm = SessionManager(request, response)
@@ -20,10 +20,15 @@ def get_static_files(filepath):
     return static_file(filepath, root="static")
 
 
-@route('/<username>')
+@route('/user/<username>')
 @view('user-page')
 def user_page(username):
-    return {'username': username}
+    if not sm.validate_session():
+        redirect('/')
+    return {
+        'login': username,
+        'articles': get_article_titles_by_login(username, get_drafts=False)
+    }
 
 
 @route('/')
@@ -33,7 +38,7 @@ def index():
         username = request.get_cookie('login')
         return {
             'login': request.get_cookie('login'),
-            'articles': get_article_titles_by_login(username)
+            'articles': get_article_titles_by_login(username, get_drafts=False)
         }
     else:
         return {}
@@ -77,6 +82,32 @@ def rp():
     pass
 
 
+@route('/search')
+@view('users-search')
+def us():
+    if not sm.validate_session():
+        redirect('/')
+    else:
+        username = request.get_cookie('login')
+        sort_by = request.GET.get('sortby', '').strip()
+        query = request.GET.get('query', '').strip()
+        return {
+            'login': username,
+            'users': get_users(sort_by, query),
+            'current_url': request.fullpath
+        }
+
+
+@route('/publish/<article_id>')
+def publish(article_id):
+    if not sm.validate_session():
+        redirect('/')
+    username = request.get_cookie('login')
+    if not publish_article(username, article_id):
+        abort(400, "Bad article id or username")
+    redirect('/')
+
+
 @post('/register')
 def register():
     username = request.forms.get('username')
@@ -108,6 +139,10 @@ def ivp(username, password):
 def create_article_func():
     if not sm.validate_session():
         redirect('/')
+    user = request.GET.get('user', '')
+    return {
+        'user': user
+    }
 
 
 @post('/post-article')
@@ -117,9 +152,25 @@ def post_article():
     title = request.forms.getunicode('title')
     content = request.forms.getunicode('content')
     username = request.get_cookie('login')
-    if not create_article(title, content, username):
+    user_suggestion = request.GET.get('user', None)
+    if not create_article(title, content, username, user_suggestion):
         abort(400, "Incorrect article content or title")
-    redirect('/')
+    if user_suggestion is None:
+        redirect('/')
+    else:
+        redirect('/user/' + user_suggestion)
+
+
+@get('/suggestions')
+@view('suggestions')
+def suggestions():
+    if not sm.validate_session():
+        redirect('/')
+    username = request.get_cookie('login')
+    return {
+        'login': request.get_cookie('login'),
+        'articles': get_article_titles_by_login(username, get_drafts=True)
+    }
 
 
 @route('/article/<art_id>')
@@ -133,6 +184,7 @@ def view_article(art_id):
         'login': username,
         'title': article.title,
         'content': article.content,
+        'table_contents': get_table_contents(article.content),
     }
 
 

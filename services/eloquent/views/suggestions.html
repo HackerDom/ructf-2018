@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Bootstrap Example</title>
+  <title>Suggestions</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
@@ -49,8 +49,7 @@
 </nav>
 
 <div class="container">
-    {% if login is defined and articles|length != 0 %}
-    <h3>My articles</h3>
+    <h3>Consider other user's suggestions</h3>
     {% for i in range(articles|length // 3) %}
     <div class="col-md-4">
         <div class="card">
@@ -58,6 +57,7 @@
             <div class="card-body">
                 <p class="card-text">{{ articles[i * 3].preview_text }}</p>
                 <a href="/article/{{ articles[i * 3].id }}" class="btn btn-primary bottom-btn">View article</a>
+                <p>Kreker</p>
             </div>
         </div>
     </div>
@@ -67,6 +67,7 @@
             <div class="card-body">
                 <p class="card-text">{{ articles[i * 3 + 1].preview_text }}</p>
                 <a href="/article/{{ articles[i * 3 + 1].id }}" class="btn btn-primary bottom-btn">View article</a>
+                <p>Kreker</p>
             </div>
         </div>
     </div>
@@ -76,6 +77,7 @@
             <div class="card-body">
                 <p class="card-text">{{ articles[i * 3 + 2].preview_text }}</p>
                 <a href="/article/{{ articles[i * 3 + 2].id }}" class="btn btn-primary bottom-btn">View article</a>
+                <p>Kreker</p>
             </div>
         </div>
     </div>
@@ -86,14 +88,14 @@
             <div class="card-header">{{ articles[(articles|length - (articles|length % 3)) + i].title }}</div>
             <div class="card-body">
                 <p class="card-text">{{ articles[(articles|length - (articles|length % 3)) + i].preview_text }}</p>
-                <a href="/article/{{ articles[(articles|length - (articles|length % 3)) + i].id }}" class="btn btn-primary bottom-btn" style="">View article</a>
+                <div class="btn-group bottom-btn">
+                    <a href="/article/{{ articles[(articles|length - (articles|length % 3)) + i].id }}" class="btn btn-primary bottom-btn" style="">View article</a>
+                    <a href="/publish/{{ articles[(articles|length - (articles|length % 3)) + i].id }}" class="btn btn-primary bottom-btn" style="">Publish</a>
+                </div>
             </div>
         </div>
     </div>
     {% endfor %}
-    {% else %}
-    <p class="text-center">Everybody is already writing articles! And you?</p>
-    {% endif %}
 </div>
 </body>
 </html>

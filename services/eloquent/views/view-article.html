@@ -50,6 +50,9 @@
 
 <div class="container">
     <h1>{{ title }}</h1>
+    {% for header in table_contents %}
+    <p><a href="#{{header[0]}}">{{ header[1] }}</a></p>
+    {% endfor %}
     <p>{{ content }}</p>
 </div>
 </body>

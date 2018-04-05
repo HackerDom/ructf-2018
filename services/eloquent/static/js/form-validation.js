@@ -61,9 +61,9 @@ function validateField(inputField, errorMessage, validationFunc) {
 function validateLogin() {
     return validateField(
         '#username-field',
-        'Login must satisfy regexp ^[a-z0-9_-]{4,16}$.',
+        'Login must satisfy regexp ^[a-z0-9_-]{4,20}$.',
         function (val) {
-            return /^[a-z0-9_-]{4,16}$/.test(val)
+            return /^[a-z0-9_-]{4,20}$/.test(val)
         });
 }
 
@@ -111,20 +111,65 @@ function getValidObject(objectId) {
     }
 }
 
-function onHashChange() {
-    scrollBy(0, -80);
-    var hash = window.location.hash.substr(1);
-    if (getValidObject(hash) !== "undefined") {
-        $('#mid-text').html(hash);
+function setTitleToNavbar(objId) {
+        if (getValidObject(objId) !== "undefined") {
+        $('#mid-text').html(objId);
     }
 }
 
-window.onload = function(){
+function onHashChange() {
+    scrollBy(0, -80);
+    var hash = window.location.hash.substr(1);
+    setTitleToNavbar(hash);
+}
+
+function initScrollChanging() {
+        var currentHash = "#initial_hash";
+    $(document).scroll(function () {
+        $('h3').each(function () {
+            var top = window.pageYOffset;
+            var distance = top - $(this).offset().top;
+            var hash = $(this).attr('id');
+            if (distance < 30 && distance > -30 && currentHash != hash) {
+                setTitleToNavbar(hash);
+            }
+        });
+    });
+}
+
+function parseParams(url) {
+    return url.split('&').reduce(function (params, param) {
+        var paramSplit = param.split('=').map(function (value) {
+            return decodeURIComponent(value.replace('+', ' '));
+        });
+        params[paramSplit[0]] = paramSplit[1];
+        return params;
+    }, {});
+}
+
+function doQuery() {
+    var form = $('#search-form');
+    var query = $('#search-textfield').val();
+    var params = parseParams(location.search.substring(1, location.search.length));
+    params = jQuery.extend(params, {'query': query});
+    location.href = '?' + jQuery.param(params);
+}
+
+function onKeydownSearchTextField(event) {
+    if (event.type == 'keydown' && event.keyCode == 13) {
+        doQuery();
+    }
+}
+
+$(document).ready(function () {
     var regForm = $('#reg-form');
     var loginForm = $('#login-form');
     regForm.on('submit', submitRegForm);
     regForm.on('keydown', 'input', removeError);
     loginForm.on('submit', submitLoginForm);
     loginForm.on('keydown', 'input', removeError);
+    $('#search-btn').on('click', doQuery);
+    $('#search-textfield').on('keydown', onKeydownSearchTextField);
     window.addEventListener('hashchange', onHashChange);
-}
+    initScrollChanging();
+});
