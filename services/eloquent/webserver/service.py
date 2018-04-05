@@ -180,6 +180,8 @@ def view_article(art_id):
         redirect('/')
     username = request.get_cookie('login')
     article = get_article_by_id(art_id)
+    if article is None:
+        redirect(400, "Bad article id")
     return {
         'login': username,
         'title': article.title,

@@ -2,3 +2,5 @@ markdown
 bottle==0.12.13
 redis==2.10.6
 peewee==3.1.2
+gunicorn==19.7.1
+jinja2==2.8

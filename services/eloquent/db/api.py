@@ -63,7 +63,10 @@ def get_article_titles_by_login(owner_login, get_drafts):
 
 
 def get_article_by_id(art_id):
-    return Article.get_by_id(int(art_id))
+    try:
+        return Article.get_by_id(int(art_id))
+    except ValueError:
+        return None
 
 
 def get_users(sort_by=None, query=''):
@@ -84,5 +87,9 @@ def publish_article(username, article_id):
     Article\
         .update({Article.is_draft: False})\
         .where(Article.id == article_id)\
+        .execute()
+    User\
+        .update({User.articles_count: user.articles_count + 1})\
+        .where(User.id == user.id)\
         .execute()
     return True
