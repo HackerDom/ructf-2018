@@ -1,19 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using BulletinBoard.Handlers.Helpers;
-using BulletinBoard.Http;
+using Hologram.Handlers.Helpers;
+using Hologram.Http;
 
-
-namespace BulletinBoard.Handlers
+namespace Hologram.Handlers
 {
     public class DocumentsHandler: BaseHandler
     {
         public static readonly BaseHandler Instance = new DocumentsHandler();
-
         private const int searchRadiusLimit = 20;
-        public override IEnumerable<HttpMethod> Methods => new[] {HttpMethod.Get};
+
+        public override Dictionary<HttpMethod, Func<HttpListener, Task>> Methods { get; }
         public override string Path => "/api/documents";
         public override async Task Handle(HttpListenerContext context)
         {

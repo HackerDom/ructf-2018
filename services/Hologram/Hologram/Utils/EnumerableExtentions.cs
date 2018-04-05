@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BulletinBoard.Utils
+namespace Hologram.Utils
 {
 	public static class EnumerableExtentions
 	{

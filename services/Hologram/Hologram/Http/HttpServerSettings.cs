@@ -1,4 +1,4 @@
-﻿namespace BulletinBoard.Http
+﻿namespace Hologram.Http
 {
 	internal static class HttpServerSettings
 	{

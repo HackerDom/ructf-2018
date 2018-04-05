@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace BulletinBoard.Utils
+namespace Hologram.Utils
 {
 	public static class JsonHelper
 	{

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BulletinBoard.Utils
+namespace Hologram.Utils
 {
 	public static class StringUtils
 	{

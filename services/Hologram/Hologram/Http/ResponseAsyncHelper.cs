@@ -2,9 +2,9 @@
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using BulletinBoard.Utils;
+using Hologram.Utils;
 
-namespace BulletinBoard.Http
+namespace Hologram.Http
 {
 	public static class ResponseAsyncHelper
 	{

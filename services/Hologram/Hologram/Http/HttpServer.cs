@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using log4net;
 
-namespace BulletinBoard.Http
+namespace Hologram.Http
 {
 	internal class HttpServer
 	{
