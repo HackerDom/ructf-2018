@@ -12,9 +12,10 @@ struct Channel *create_channel(int id, char *name, char *password, char *key) {
     return channel;
 }
 
-struct Post *create_post(char *text) {
+struct Post *create_post(char *text, size_t text_length) {
     struct Post *post = calloc(sizeof(struct Post), 1);
     post->text = text;
+    post->text_length = text_length;
     return post;
 }
 

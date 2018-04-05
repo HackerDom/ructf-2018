@@ -2,12 +2,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <unistd.h>
-#include <syscall.h>
 #include "constants.h"
 #include "types.h"
 #include "storage.h"
 #include "cache.h"
+#include "crypto.h"
 
 
 struct Channel *get_channel_by_id(int id) {
@@ -25,15 +24,6 @@ int auth(struct Channel *channel, char *password) {
     return strncmp(channel->password, password, PASSWORD_SIZE) == 0;
 }
 
-char *generate_key() {
-    char *key = malloc(KEY_SIZE);
-    if (syscall(SYS_getrandom,key, KEY_SIZE, 0) != KEY_SIZE) {
-        free(key);
-        return 0;
-    }
-    return key;
-}
-
 int add_channel(char *name, char *password) {
     char *key = generate_key();
     if (key == 0) {
@@ -49,7 +39,8 @@ int add_channel(char *name, char *password) {
 }
 
 int add_post(struct Channel *channel, char *text) {
-    struct Post *post = create_post(text);
+    size_t text_length = strlen(text);
+    struct Post *post = create_post(encrypt(text, text_length, channel->key), text_length);
     if (!post) {
         return 0;
     }

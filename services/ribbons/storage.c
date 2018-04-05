@@ -6,33 +6,33 @@
 
 int last_channel_id = -1;
 
-void write_str(char *str, FILE *file) {
-    size_t len = strlen(str);
-    fwrite(&len, sizeof(size_t), 1, file);
-    fwrite(str, sizeof(char), len, file);
+void write_str(char *str, size_t length, FILE *file) {
+    fwrite(&length, sizeof(size_t), 1, file);
+    fwrite(str, sizeof(char), length, file);
 }
 
-char *read_str(FILE *file) {
-    size_t len;
+char *read_str(size_t *length, FILE *file) {
+    *length = 0;
 
-    if (fread(&len, sizeof(size_t), 1, file) != 1)
+    if (fread(length, sizeof(size_t), 1, file) != 1)
         return 0;
 
-    char *result = calloc(len+1, sizeof(char));
+    char *result = calloc(*length+1, sizeof(char));
     if (!result)
         return 0;
 
-    fread(result, sizeof(char), len, file);
+    fread(result, sizeof(char), *length, file);
     return result;
 }
 
 void write_post(struct Post *post, FILE *file) {
-    write_str(post->text, file);
+    write_str(post->text, post->text_length, file);
 }
 
 struct Post *read_post(FILE *file) {
-    char *text = read_str(file);
-    return text ? create_post(text) : 0;
+    size_t text_length;
+    char *text = read_str(&text_length, file);
+    return text ? create_post(text, text_length) : 0;
 }
 
 FILE *open_channel_file(int channel_id, char *mode) {
