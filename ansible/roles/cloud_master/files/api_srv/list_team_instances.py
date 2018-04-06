@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 # Developed by Alexander Bersenev from Hackerdom team, bay@hackerdom.ru
 
-"""Shows all team instances. Doesn't show teams, who doesn't create an
-Instance.
+"""Shows all team instances
 
 Recomended to be used by cloud administrators only
 """
@@ -69,10 +68,8 @@ def main():
     teams = list(image_states.keys())
 
 
-    print("%4s %16s %16s %16s %s" % ("TEAM", "IMAGE_STATE", "TEAM_STATE", "CLOUD_IP"))
+    print("%4s %16s %16s %s" % ("TEAM", "IMAGE_STATE", "TEAM_STATE", "CLOUD_IP"))
     for team in sorted(teams):
-        if image_states[team] == "NOT_STARTED":
-            continue
         print("%4d %16s %16s %s" % (team, image_states[team], team_states[team], cloud_ips.get(team, "NO")))
             
     return 0

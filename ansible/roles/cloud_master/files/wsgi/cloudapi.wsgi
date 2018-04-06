@@ -119,7 +119,7 @@ def get_rate_limit_remaining(team, task_name):
     return max(0, int(rate_limit - (time.time() - end_time)))
 
 
-def create_task(team, task_name, script_name, args, timeout=600):
+def create_task(team, task_name, script_name, args, timeout=300):
     if not re.fullmatch(r"[a-z_]+", task_name):
         return "422 Failed to create a task", {"result": "bad task name"}
     if not re.fullmatch(r"[a-z_]+\.?[a-z]*", script_name):
