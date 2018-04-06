@@ -1,0 +1,8 @@
+- hosts: cloud-master
+  pre_tasks:
+   - name: 'Install python2'
+     raw: apt -y install python-simplejson
+     changed_when: False
+  roles:
+    - common
+    - cloud_master
