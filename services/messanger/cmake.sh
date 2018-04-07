@@ -1,0 +1,1 @@
+bazel-cmakelists //helloworld:all
