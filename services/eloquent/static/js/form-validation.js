@@ -113,7 +113,8 @@ function getValidObject(objectId) {
 
 function setTitleToNavbar(objId) {
         if (getValidObject(objId) !== "undefined") {
-        $('#mid-text').html(objId);
+            console.log(objId);
+            $('#mid-text').html("Current subtitle: " + decodeURI(objId));
     }
 }
 
@@ -130,7 +131,7 @@ function initScrollChanging() {
             var top = window.pageYOffset;
             var distance = top - $(this).offset().top;
             var hash = $(this).attr('id');
-            if (distance < 30 && distance > -30 && currentHash != hash) {
+            if (distance < 15 && distance > -15 && currentHash != hash) {
                 setTitleToNavbar(hash);
             }
         });

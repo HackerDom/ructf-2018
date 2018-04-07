@@ -24,25 +24,18 @@
         <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav">
                 <li class="active"><a href="/">Home</a></li>
-                {% if login is defined %}
                 <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Articles<span class="caret"></span></a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="">Articles<span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="/create">Create a new article</a></li>
                         <li><a href="/suggestions">Suggestions</a></li>
                     </ul>
                 </li>
                 <li><a href="/search">Users search</a></li>
-                {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                {% if login is defined %}
                 <li><span class="navbar-text"><strong>{{ login }}</strong></span></li>
                 <li><a href="/signout"><span class="glyphicon glyphicon-log-out"></span> Log Out</a></li>
-                {% else %}
-                <li><a href="/registration"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-                <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-                {% endif %}
             </ul>
         </div>
     </div>
@@ -50,7 +43,7 @@
 
 <div class="container">
     {% if articles|length %}
-    <h3>{{ login }}'s articles</h3>
+    <h3>{{ user_page_name }}'s articles</h3>
     {% for i in range(articles|length // 3) %}
     <div class="col-md-4">
         <div class="card">

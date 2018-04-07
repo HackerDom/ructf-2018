@@ -43,7 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Handlers\DocumentsHandler.cs" />
+    <Compile Include="Handlers\HologramsHandler.cs" />
     <Compile Include="Handlers\Helpers\BaseHandler.cs" />
     <Compile Include="Handlers\Helpers\MethodAttribute.cs" />
     <Compile Include="Http\HttpContextHelper.cs" />

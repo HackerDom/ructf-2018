@@ -5,13 +5,18 @@ from html import escape
 
 
 class ContentsRecord:
-    def __init__(self, r_id):
+    def __init__(self, r_id, index):
         self.r_id = r_id
         self.header = None
-        self.index = None
+        self.index = index
 
-    def to_tuple(self):
-        return self.r_id, self.header
+    def to_dict(self):
+        return {
+            'index': '.'.join(map(str, self.index)),
+            'r_id': self.r_id,
+            'header': self.header,
+            'deep': len(self.index) - 1,
+        }
 
 
 def get_tag_deep(tag):
@@ -19,18 +24,13 @@ def get_tag_deep(tag):
 
 
 class ContentsTableCreator(HTMLParser):
-    HEADER_TAGS = {'h3', 'h4', 'h5', 'h6'}
+    HEADER_TAGS = {'h3', 'h4', 'h5'}
 
     def __init__(self):
         super().__init__()
         self.table_of_contents = []
         self.collect_inner_html = False
-        self.current_levels = {
-            3: 0,
-            4: 0,
-            5: 0,
-            6: 0,
-        }
+        self.vc = VersionController()
 
     def error(self, message):
         pass
@@ -38,8 +38,8 @@ class ContentsTableCreator(HTMLParser):
     def handle_starttag(self, tag, attrs):
         if tag in ContentsTableCreator.HEADER_TAGS:
             tag_deep = get_tag_deep(tag)
-
-            self.table_of_contents.append(ContentsRecord(attrs[0][1]))
+            index = self.vc.feed(tag_deep)
+            self.table_of_contents.append(ContentsRecord(attrs[0][1], index))
             self.collect_inner_html = True
 
     def handle_data(self, data):
@@ -76,4 +76,29 @@ def get_table_contents(html_text):
     contents_table_creator = ContentsTableCreator()
     contents_table_creator.feed(html_text)
     table = contents_table_creator.table_of_contents
-    return [record.to_tuple() for record in table]
+    return [record.to_dict() for record in table]
+
+
+class VersionController:
+    def __init__(self):
+        self.current_level = ()
+        self.current_deep = -1
+
+    def feed(self, deep):
+        if self.current_deep == -1:
+            self.current_deep = deep
+            self.current_level = (1,)
+            return self.current_level
+        elif self.current_deep < deep:
+            self.current_level += (1,)
+            self.current_deep = deep
+            return self.current_level
+        elif self.current_deep == deep:
+            self.current_level = self.current_level[:-1] + (self.current_level[-1] + 1,)
+            self.current_deep = deep
+            return self.current_level
+        else:
+            delta = self.current_deep - deep
+            self.current_level = self.current_level[:-1 - delta] + (self.current_level[-1 - delta] + 1,)
+            self.current_deep = deep
+            return self.current_level

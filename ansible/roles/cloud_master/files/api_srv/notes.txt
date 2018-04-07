@@ -1,0 +1,3 @@
+Image states: NOT_STARTED -> RUNNING
+
+Team states: CLOUD -> NOT_CLOUD
