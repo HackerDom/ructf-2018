@@ -7,7 +7,7 @@ namespace Hologram.Http
 		public static HttpServer AddHandler(this HttpServer server, BaseHandler handler)
 		{
 			foreach (var method in handler.Methods)
-				server.AddHandler(method.ToString(), handler.Path, handler.Handle);
+				server.AddHandler(method.Key.ToString(), handler.Path, method.Value);
 			return server;
 		}
 	}

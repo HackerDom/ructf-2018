@@ -17,5 +17,15 @@ namespace Hologram.Utils
 
 		public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T> enumerable)
 			=> enumerable ?? Enumerable.Empty<T>();
+
+		public static Dictionary<TKey, TValue> ToDictionary<T, TKey, TValue>(
+			this IEnumerable<T> enumerable, 
+			Func<T, (TKey key, TValue value)> extractorFunc)
+		{
+			var result = new Dictionary<TKey, TValue>();
+			foreach (var kvPair in enumerable.Select(extractorFunc))
+				result[kvPair.key] = kvPair.value;
+			return result;
+		}
 	}
 }

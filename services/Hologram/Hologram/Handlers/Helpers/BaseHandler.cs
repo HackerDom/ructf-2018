@@ -10,14 +10,7 @@ namespace Hologram.Handlers.Helpers
 {
 	public abstract class BaseHandler
 	{
-		public abstract Dictionary<HttpMethod, Func<HttpListener, Task>> Methods { get; }
+		public abstract Dictionary<HttpMethod, Func<HttpListenerContext, Task>> Methods { get; }
 		public abstract string Path { get; }
-
-		public abstract Task Handle(HttpListenerContext context);
-
-		protected BaseHandler()
-		{
-			//GetType().GetMethods().Where(x => x.GetCustomAttribute<MethodAttribute>())
-		}
 	}
 }
