@@ -55,6 +55,7 @@
         <br>
         <br>
         <br>
+        {% if table_contents %}
         <div class="well well-lg">
             {% for header in table_contents %}
             <p>
@@ -64,6 +65,7 @@
                 <a href="#{{header['r_id']}}">{{ header['index'] }}) {{ header['header'] }}</a></p>
             {% endfor %}
         </div>
+        {% endif %}
     </div>
     <div class="col-md-9">
         <h1>{{ title }}</h1>
