@@ -15,7 +15,7 @@ cc_test(
 cc_binary(
     name = "client",
     srcs = ["greeter_client_main.cc"],
-    deps = [":clientlib"],
+    deps = [":clientlib", "@boost//:program_options"],
 )
 
 cc_binary(

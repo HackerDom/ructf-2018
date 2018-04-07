@@ -34,6 +34,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include <grpc++/grpc++.h>
 
@@ -46,6 +47,10 @@ using grpc::ServerContext;
 using grpc::Status;
 using helloworld::HelloRequest;
 using helloworld::HelloReply;
+using helloworld::Msg;
+using helloworld::MsgReq;
+using helloworld::Msgs;
+using helloworld::MsgReply;
 using helloworld::Greeter;
 
 // Logic and data behind the server's behavior.
@@ -58,9 +63,38 @@ class GreeterServiceImpl final : public Greeter::Service {
   }
 };
 
+class MessangerImlp final : public Greeter::Service {
+  Status SendMessage(ServerContext* context, const Msg* request,
+                     MsgReply* reply) override 
+  {
+    messages_[request->to()].push_back(*request);
+    return Status::OK;
+  }
+
+  Status RecvMessages(ServerContext* context, const MsgReq* request,
+                      Msgs* reply) override
+  {
+    std::cerr << "RecvMessages!" << std::endl;
+    const auto messages_it = messages_.find(request->uid());
+    if (messages_it == messages_.end()) {
+      std::cerr << "RecvMessages:" << request->uid() << " 0 messages" << std::endl; 
+      return Status::OK;
+    }
+
+    std::cerr << "RecvMessages:" << request->uid() << "  " << messages_it->second.size() << " messages" << std::endl;
+    for (const auto& message : messages_it->second) {
+      auto m = reply->add_messages();
+      m->MergeFrom(message);
+    }
+    return Status::OK;
+  }
+private:
+  std::unordered_map<std::string, std::vector<Msg>> messages_;
+};
+
 void RunServer() {
   std::string server_address("0.0.0.0:50051");
-  GreeterServiceImpl service;
+  MessangerImlp service;
 
   ServerBuilder builder;
   // Listen on the given address without any authentication mechanism.
