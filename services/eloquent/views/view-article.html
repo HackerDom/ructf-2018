@@ -37,6 +37,9 @@
                 </li>
                 <li><a href="/search">Users search</a></li>
             </ul>
+            <ul class="nav navbar-nav">
+                <li><span class="navbar-text navbar-middle-text" id="mid-text"></span></li>
+            </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><span class="navbar-text"><strong>{{ login }}</strong></span></li>
                 <li><a href="/signout"><span class="glyphicon glyphicon-log-out"></span> Log Out</a></li>
@@ -46,11 +49,26 @@
 </nav>
 
 <div class="container">
-    <h1>{{ title }}</h1>
-    {% for header in table_contents %}
-    <p><a href="#{{header[0]}}">{{ header[1] }}</a></p>
-    {% endfor %}
-    <p>{{ content }}</p>
+    <div class="col-md-3">
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <div class="well well-lg">
+            {% for header in table_contents %}
+            <p>
+                {% for _ in range(header['deep']) %}
+                &emsp;
+                {% endfor %}
+                <a href="#{{header['r_id']}}">{{ header['index'] }}) {{ header['header'] }}</a></p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-9">
+        <h1>{{ title }}</h1>
+        <p>{{ content }}</p>
+    </div>
 </div>
 </body>
 </html>
