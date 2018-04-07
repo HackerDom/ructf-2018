@@ -13,37 +13,41 @@
 
 <nav class="navbar navbar-default">
     <div class="container-fluid">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-      </button>
-        <a class="navbar-brand" href="/">Eloquent</a>
-    </div>
-      <div class="collapse navbar-collapse" id="myNavbar">
-        <ul class="nav navbar-nav">
-          <li class="active"><a href="/">Home</a></li>
-          <li class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Articles<span class="caret"></span></a>
-            <ul class="dropdown-menu">
-              <li><a href="#">My contribution</a></li>
-              <li><a href="#">Drafts</a></li>
-              <li><a href="#">Suggestions</a></li>
-          </ul>
-        </li>
-          <li><a href="/create">Create a new article</a></li>
-          <!--<li><a href="#">Page 3</a></li>-->
-      </ul>
-          <ul class="nav navbar-nav navbar-right">
-              <li><a href="/signout"><span class="glyphicon glyphicon-log-out"></span> Log Out</a></li>
-          </ul>
-      </div>
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Eloquent</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+                <li><a href="/">Home</a></li>
+                <li class="dropdown active">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="">Articles<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/create">Create a new article</a></li>
+                        <li><a href="/suggestions">Suggestions</a></li>
+                    </ul>
+                </li>
+                <li><a href="/search">Users search</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><span class="navbar-text"><strong>{{ login }}</strong></span></li>
+                <li><a href="/signout"><span class="glyphicon glyphicon-log-out"></span> Log Out</a></li>
+            </ul>
+        </div>
     </div>
 </nav>
 
 <div class="container">
-    <form action="/post-article" id="post-form" method="post">
+    {% if user_page_name %}
+    <h3>Create a suggestion to {{ user_page_name }}!</h3>
+    {% else %}
+    <h3>Create unique eloquent article!</h3>
+    {% endif %}
+    <form action="/post-article{{'?user=' + user if user else ''}}" id="post-form" method="post">
         <div class="form-group">
             <h3>Title</h3>
             <input type="text" class="form-control no-border" placeholder="Article title" name="title">

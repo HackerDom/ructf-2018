@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Suggestions</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/main.css">
+    <script src="../static/js/jquery.min.js"></script>
+    <script src="../static/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Eloquent</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+                <li><a href="/">Home</a></li>
+                <li class="dropdown active">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="">Articles<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/create">Create a new article</a></li>
+                        <li><a href="/suggestions">Suggestions</a></li>
+                    </ul>
+                </li>
+                <li><a href="/search">Users search</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><span class="navbar-text"><strong>{{ login }}</strong></span></li>
+                <li><a href="/signout"><span class="glyphicon glyphicon-log-out"></span> Log Out</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <h3>Consider other user's suggestions</h3>
+    {% for i in range(articles|length // 3) %}
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">{{ articles[i * 3].title }}</div>
+            <div class="card-body">
+                <p class="card-text">{{ articles[i * 3].preview_text }}</p>
+                <a href="/article/{{ articles[i * 3].id }}" class="btn btn-primary bottom-btn">View article</a>
+                <p>Kreker</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">{{ articles[i * 3 + 1].title }}</div>
+            <div class="card-body">
+                <p class="card-text">{{ articles[i * 3 + 1].preview_text }}</p>
+                <a href="/article/{{ articles[i * 3 + 1].id }}" class="btn btn-primary bottom-btn">View article</a>
+                <p>Kreker</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">{{ articles[i * 3 + 2].title }}</div>
+            <div class="card-body">
+                <p class="card-text">{{ articles[i * 3 + 2].preview_text }}</p>
+                <a href="/article/{{ articles[i * 3 + 2].id }}" class="btn btn-primary bottom-btn">View article</a>
+                <p>Kreker</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% for i in range(articles|length % 3) %}
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">{{ articles[(articles|length - (articles|length % 3)) + i].title }}</div>
+            <div class="card-body">
+                <p class="card-text">{{ articles[(articles|length - (articles|length % 3)) + i].preview_text }}</p>
+                <div class="btn-group bottom-btn">
+                    <a href="/article/{{ articles[(articles|length - (articles|length % 3)) + i].id }}" class="btn btn-primary bottom-btn" style="">View article</a>
+                    <a href="/publish/{{ articles[(articles|length - (articles|length % 3)) + i].id }}" class="btn btn-primary bottom-btn" style="">Publish</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+</body>
+</html>

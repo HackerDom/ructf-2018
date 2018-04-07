@@ -27,18 +27,18 @@
         </div>
         <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="/">Home</a></li>
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Users<span class="caret"></span></a>
+                <li><a href="/">Home</a></li>
+                <li class="dropdown active">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="">Articles<span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="/search">Search</a></li>
+                        <li><a href="/create">Create a new article</a></li>
                         <li><a href="/suggestions">Suggestions</a></li>
                     </ul>
                 </li>
-                <li><a href="/create">Create a new article</a></li>
+                <li><a href="/search">Users search</a></li>
             </ul>
             <ul class="nav navbar-nav">
-                <li><span class="navbar-text navbar-middle-text" id="mid-text">Text</span></li>
+                <li><span class="navbar-text navbar-middle-text" id="mid-text"></span></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><span class="navbar-text"><strong>{{ login }}</strong></span></li>
@@ -49,8 +49,28 @@
 </nav>
 
 <div class="container">
-    <h1>{{ title }}</h1>
-    <p>{{ content }}</p>
+    <div class="col-md-3">
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        {% if table_contents %}
+        <div class="well well-lg">
+            {% for header in table_contents %}
+            <p>
+                {% for _ in range(header['deep']) %}
+                &emsp;
+                {% endfor %}
+                <a href="#{{header['r_id']}}">{{ header['index'] }}) {{ header['header'] }}</a></p>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    <div class="col-md-9">
+        <h1>{{ title }}</h1>
+        <p>{{ content }}</p>
+    </div>
 </div>
 </body>
 </html>

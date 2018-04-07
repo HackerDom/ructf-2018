@@ -1,0 +1,11 @@
+version: '2.2'
+services:
+  eloquent:
+    build: .
+    ports:
+      - "8081:8080"
+    volumes:
+      - .:/home/eloquent
+    restart: on-failure
+    mem_limit: 512m
+    mem_reservation: 128m

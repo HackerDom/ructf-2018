@@ -1,0 +1,73 @@
+- name: install apache2 and mod_wsgi
+  apt: name={{item}} state=latest
+  with_items:
+    - apache2
+    - libapache2-mod-wsgi-py3
+
+- name: install python requests
+  apt: name={{item}} state=latest
+  with_items:
+    - python3-requests
+
+- name: create users
+  user: name={{item}} shell=/bin/bash
+  with_items:
+    - cloud
+
+- name: add keys to cloud user
+  authorized_key: user=cloud key=https://github.com/alexbers.keys
+
+- name: copy apache2 config
+  copy: src=apache2/000-default.conf dest=/etc/apache2/sites-available/000-default.conf
+  notify: restart apache2
+
+- name: enabled ssl
+  apache2_module: name=ssl state=present  
+
+- name: copy cloudapi.wsgi
+  copy: src=wsgi/cloudapi.wsgi dest=/cloud/api/
+
+- name: copy cloud.html
+  copy: src=wsgi/cloud.html dest=/var/www/html/
+
+- name: apache2 htpasswd
+  copy: src=apache2/.htpasswd dest=/etc/apache2/
+  notify: restart apache2  
+
+- name: copy backend
+  synchronize: 
+    src: api_srv/
+    dest: /cloud/backend/
+    rsync_opts:
+      - "--chmod=D0755,F0644"
+      - "--chown=root:root"
+      - "--exclude=db/"
+      - "--exclude=ructf2018_cloud_deploy"
+      - "--exclude=db_init_state/"
+      - "--exclude=*.py"
+
+- name: copy backend python files
+  synchronize: 
+    src: api_srv/
+    dest: /cloud/backend/
+    rsync_opts:
+      - "--chmod=D0755,F0755"
+      - "--chown=root:root"
+      - "--include=*.py"
+      - "--exclude=*"
+
+- name: copy backend init configs
+  synchronize:
+    src: api_srv/db_init_state
+    dest: /cloud/backend/
+    rsync_opts:
+      - "--chmod=D0700,F0600"
+      - "--chown=cloud:cloud"
+
+- name: copy keys
+  copy: src=api_srv/{{item}} dest=/cloud/backend/ mode=0600 owner=cloud group=cloud
+  with_items:
+    - ructf2018_cloud_deploy
+
+- name: copy root cloud scripts
+  copy: src=root_cloud_scripts dest=/root/ mode=0755

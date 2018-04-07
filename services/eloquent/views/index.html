@@ -26,13 +26,13 @@
                 <li class="active"><a href="/">Home</a></li>
                 {% if login is defined %}
                 <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Users<span class="caret"></span></a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="">Articles<span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="/search">Search</a></li>
+                        <li><a href="/create">Create a new article</a></li>
                         <li><a href="/suggestions">Suggestions</a></li>
                     </ul>
                 </li>
-                <li><a href="/create">Create a new article</a></li>
+                <li><a href="/search">Users search</a></li>
                 {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -49,6 +49,8 @@
 </nav>
 
 <div class="container">
+    {% if login is defined and articles|length != 0 %}
+    <h3>My articles</h3>
     {% for i in range(articles|length // 3) %}
     <div class="col-md-4">
         <div class="card">
@@ -89,6 +91,9 @@
         </div>
     </div>
     {% endfor %}
+    {% else %}
+    <p class="text-center">Everybody is already writing articles! And you?</p>
+    {% endif %}
 </div>
 </body>
 </html>

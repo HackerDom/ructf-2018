@@ -31,6 +31,8 @@ class SessionManager:
             return False
         login = login.encode()
         salt = self.storage.get(login)
+        if salt is None:
+            return False
         return b64encode(get_sha512(login + salt)).decode() == sid
 
     def remove_session(self):
