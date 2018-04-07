@@ -20,13 +20,15 @@ def get_static_files(filepath):
     return static_file(filepath, root="static")
 
 
-@route('/user/<username>')
+@route('/user/<user_page_name>')
 @view('user-page')
-def user_page(username):
+def user_page(user_page_name):
+    username = request.get_cookie('login')
     if not sm.validate_session():
         redirect('/')
     return {
         'login': username,
+        'user_page_name': user_page_name,
         'articles': get_article_titles_by_login(username, get_drafts=False)
     }
 
@@ -139,9 +141,11 @@ def ivp(username, password):
 def create_article_func():
     if not sm.validate_session():
         redirect('/')
-    user = request.GET.get('user', '')
+    user_page_name = request.GET.get('user', '')
+    username = request.get_cookie('login')
     return {
-        'user': user
+        'user_page_name': user_page_name,
+        'login': username,
     }
 
 
@@ -191,4 +195,4 @@ def view_article(art_id):
 
 
 def start_web_server(host='0.0.0.0', port=8080):
-    run(host=host, port=port, server='gunicorn')
+    run(host=host, port=port, server='gunicorn', workers=10)
