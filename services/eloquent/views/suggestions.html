@@ -54,8 +54,10 @@
             <div class="card-header">{{ articles[i * 3].title }}</div>
             <div class="card-body">
                 <p class="card-text">{{ articles[i * 3].preview_text }}</p>
-                <a href="/article/{{ articles[i * 3].id }}" class="btn btn-primary bottom-btn">View article</a>
-                <p>Kreker</p>
+                <div class="btn-group bottom-btn">
+                    <a href="/article/{{ articles[i * 3].id }}" class="btn btn-primary bottom-btn" style="">View</a>
+                    <a href="/publish/{{ articles[i * 3].id }}" class="btn btn-primary bottom-btn" style="">Publish</a>
+                </div>
             </div>
         </div>
     </div>
@@ -64,8 +66,10 @@
             <div class="card-header">{{ articles[i * 3 + 1].title }}</div>
             <div class="card-body">
                 <p class="card-text">{{ articles[i * 3 + 1].preview_text }}</p>
-                <a href="/article/{{ articles[i * 3 + 1].id }}" class="btn btn-primary bottom-btn">View article</a>
-                <p>Kreker</p>
+                <div class="btn-group bottom-btn">
+                    <a href="/article/{{ articles[i * 3 + 1].id }}" class="btn btn-primary bottom-btn" style="">View</a>
+                    <a href="/publish/{{ articles[i * 3 + 1].id }}" class="btn btn-primary bottom-btn" style="">Publish</a>
+                </div>
             </div>
         </div>
     </div>
@@ -74,8 +78,10 @@
             <div class="card-header">{{ articles[i * 3 + 2].title }}</div>
             <div class="card-body">
                 <p class="card-text">{{ articles[i * 3 + 2].preview_text }}</p>
-                <a href="/article/{{ articles[i * 3 + 2].id }}" class="btn btn-primary bottom-btn">View article</a>
-                <p>Kreker</p>
+                <div class="btn-group bottom-btn">
+                    <a href="/article/{{ articles[i * 3].id + 2 }}" class="btn btn-primary bottom-btn" style="">View</a>
+                    <a href="/publish/{{ articles[i * 3].id + 2 }}" class="btn btn-primary bottom-btn" style="">Publish</a>
+                </div>
             </div>
         </div>
     </div>
@@ -87,7 +93,7 @@
             <div class="card-body">
                 <p class="card-text">{{ articles[(articles|length - (articles|length % 3)) + i].preview_text }}</p>
                 <div class="btn-group bottom-btn">
-                    <a href="/article/{{ articles[(articles|length - (articles|length % 3)) + i].id }}" class="btn btn-primary bottom-btn" style="">View article</a>
+                    <a href="/article/{{ articles[(articles|length - (articles|length % 3)) + i].id }}" class="btn btn-primary bottom-btn" style="">View</a>
                     <a href="/publish/{{ articles[(articles|length - (articles|length % 3)) + i].id }}" class="btn btn-primary bottom-btn" style="">Publish</a>
                 </div>
             </div>

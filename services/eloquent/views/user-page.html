@@ -86,12 +86,12 @@
     </div>
     {% endfor %}
     {% else %}
-    <p class="text-center">{{ login }} is already writing an article! And you?</p>
+    <p class="text-center">{{ user_page_name }} is already writing an article! And you?</p>
     {% endif %}
 </div>
 
 <div class="container">
-    <p><a href="/create?user={{ login }}">Suggest</a> <b>{{ user_page_name }}</b>  your own article for publish.</p>
+    <p><a href="/create?user={{ user_page_name }}">Suggest</a> <b>{{ user_page_name }}</b>  your own article for publish.</p>
 </div>
 
 </body>
