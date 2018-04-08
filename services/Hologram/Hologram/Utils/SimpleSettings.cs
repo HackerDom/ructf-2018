@@ -48,7 +48,7 @@ namespace Hologram.Utils
 		public string GetValue(string key)
 		{
 			if (!settings.ContainsKey(key))
-				throw new KeyNotFoundException($"settings file '{path}' doesn't contains key '{key}'");
+				throw new KeyNotFoundException($"settings file '{path}' doesn't contain key '{key}'");
 			return settings[key];
 		}
 
