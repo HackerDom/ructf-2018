@@ -49,6 +49,7 @@
     <p>Somebody is already writing articles for you! <a href="/create">Start</a> writing articles now!</p>
     {% endif %}
     {% for i in range(articles|length // 3) %}
+
     <div class="col-md-4">
         <div class="card">
             <div class="card-header">{{ articles[i * 3].title }}</div>
@@ -61,6 +62,7 @@
             </div>
         </div>
     </div>
+
     <div class="col-md-4">
         <div class="card">
             <div class="card-header">{{ articles[i * 3 + 1].title }}</div>
@@ -73,14 +75,15 @@
             </div>
         </div>
     </div>
+
     <div class="col-md-4">
         <div class="card">
             <div class="card-header">{{ articles[i * 3 + 2].title }}</div>
             <div class="card-body">
                 <p class="card-text">{{ articles[i * 3 + 2].preview_text }}</p>
                 <div class="btn-group bottom-btn">
-                    <a href="/article/{{ articles[i * 3].id + 2 }}" class="btn btn-primary bottom-btn" style="">View</a>
-                    <a href="/publish/{{ articles[i * 3].id + 2 }}" class="btn btn-primary bottom-btn" style="">Publish</a>
+                    <a href="/article/{{ articles[i * 3 + 2].id }}" class="btn btn-primary bottom-btn" style="">View</a>
+                    <a href="/publish/{{ articles[i * 3 + 2].id }}" class="btn btn-primary bottom-btn" style="">Publish</a>
                 </div>
             </div>
         </div>
