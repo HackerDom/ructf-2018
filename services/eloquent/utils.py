@@ -90,7 +90,8 @@ class VersionController:
             self.current_level = (1,)
             return self.current_level
         elif self.current_deep < deep:
-            self.current_level += (1,)
+            delta = deep - self.current_deep
+            self.current_level += (1,) * delta
             self.current_deep = deep
             return self.current_level
         elif self.current_deep == deep:
