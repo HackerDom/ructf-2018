@@ -1,1 +1,1 @@
-bazel fetch //helloworld:all
+bazel fetch //thinkerer:all

@@ -7,19 +7,19 @@ RUN echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8
 RUN curl https://bazel.build/bazel-release.pub.gpg | apt-key add -
 RUN apt-get update
 RUN apt-get install -y bazel git build-essential clang
-COPY helloworld /messanger/helloworld
-COPY WORKSPACE /messanger/
-COPY build.sh /messanger/
-COPY fetch.sh /messanger/
-WORKDIR /messanger
+COPY thinkerer /thinkerer/thinkerer
+COPY WORKSPACE /thinkerer/
+COPY build.sh /thinkerer/
+COPY fetch.sh /thinkerer/
+WORKDIR /thinkerer
 RUN ls -lh
 RUN ./fetch.sh
 RUN ./build.sh
-RUN ldd /messanger/bazel-bin/helloworld/server
+RUN ldd /thinkerer/bazel-bin/thinkerer/server
 
 FROM ubuntu:latest
 WORKDIR /bin
-COPY --from=build /messanger/bazel-bin/helloworld/server /bin
+COPY --from=build /thinkerer/bazel-bin/thinkerer/server /bin
 
 ENTRYPOINT /bin/server
 EXPOSE 50051

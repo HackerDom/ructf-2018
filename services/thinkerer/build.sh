@@ -1,1 +1,1 @@
-bazel build //helloworld:all
+bazel build //thinkerer:all
