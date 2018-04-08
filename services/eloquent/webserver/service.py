@@ -1,11 +1,8 @@
-import html
 import json
 from base64 import b64decode
 from urllib.parse import unquote
 
-import markdown
 from bottle import route, run, request, post, get, static_file, redirect, abort, response, jinja2_view as view
-from markdown.extensions.toc import TocExtension
 
 from db.api import is_valid_pair, is_username_busy, create_user, create_article, get_article_titles_by_login, \
     get_article_by_id, get_users, publish_article
@@ -29,7 +26,7 @@ def user_page(user_page_name):
     return {
         'login': username,
         'user_page_name': user_page_name,
-        'articles': get_article_titles_by_login(username, get_drafts=False)
+        'articles': get_article_titles_by_login(user_page_name, get_drafts=False)
     }
 
 
@@ -37,10 +34,8 @@ def user_page(user_page_name):
 @view('index')
 def index():
     if sm.validate_session():
-        username = request.get_cookie('login')
         return {
             'login': request.get_cookie('login'),
-            'articles': get_article_titles_by_login(username, get_drafts=False)
         }
     else:
         return {}
@@ -69,12 +64,6 @@ def signin():
 @get('/login')
 @view('login')
 def login_func():
-    pass
-
-
-@route('/sb')
-@view('sandbox')
-def sandbox():
     pass
 
 
@@ -163,6 +152,19 @@ def post_article():
         redirect('/')
     else:
         redirect('/user/' + user_suggestion)
+
+
+@route('/my-articles')
+@view('my-articles')
+def my_articles():
+    if sm.validate_session():
+        username = request.get_cookie('login')
+        return {
+            'login': username,
+            'articles': get_article_titles_by_login(username, get_drafts=False)
+        }
+    else:
+        return {}
 
 
 @get('/suggestions')
