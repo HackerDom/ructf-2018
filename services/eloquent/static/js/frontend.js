@@ -113,7 +113,6 @@ function getValidObject(objectId) {
 
 function setTitleToNavbar(objId) {
         if (getValidObject(objId) !== "undefined") {
-            console.log(objId);
             $('#mid-text').html("Current subtitle: " + decodeURI(objId));
     }
 }
