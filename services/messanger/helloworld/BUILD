@@ -14,12 +14,14 @@ cc_test(
 
 cc_binary(
     name = "client",
+    linkstatic = 1,
     srcs = ["greeter_client_main.cc"],
     deps = [":clientlib", "@boost//:program_options"],
 )
 
 cc_binary(
     name = "server",
+    linkstatic = 1,
     srcs = ["greeter_server.cc"],
     deps = ["//helloworld/proto:cpp"],
 )
