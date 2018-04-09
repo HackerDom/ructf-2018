@@ -34,16 +34,16 @@ def main():
         file_from = "db/team%d/root_passwd_hash.txt" % TEAM
         file_to = "%s:/home/cloud/root_passwd_hash_team%d.txt" % (cloud_ip,
                                                                   TEAM)
-        ret = call_unitl_zero_exit(["scp"] + SSH_YA_OPTS +
+        ret = call_unitl_zero_exit(["scp"] + SSH_CLOUD_OPTS +
                                    [file_from, file_to])
         if not ret:
-            log_stderr("scp to YA failed")
+            log_stderr("scp to CLOUD failed")
             return 1
 
         log_progress("25%")
 
         cmd = ["sudo", "/cloud/scripts/launch_vm.sh", str(TEAM)]
-        ret = call_unitl_zero_exit(["ssh"] + SSH_YA_OPTS +
+        ret = call_unitl_zero_exit(["ssh"] + SSH_CLOUD_OPTS +
                                    [cloud_ip] + cmd)
         if not ret:
             log_stderr("launch team vm")
