@@ -52,7 +52,7 @@ class ContentsTableCreator(HTMLParser):
             self.collect_inner_html = False
 
 
-USERNAME_TEMPLATE = re.compile('^[a-z0-9_-]{4,20}$')
+USERNAME_TEMPLATE = re.compile('^[a-zA-Z0-9_-]{4,20}$')
 PASSWORD_TEMPLATE = re.compile('^.{1,20}$')
 
 

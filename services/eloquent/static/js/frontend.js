@@ -61,9 +61,9 @@ function validateField(inputField, errorMessage, validationFunc) {
 function validateLogin() {
     return validateField(
         '#username-field',
-        'Login must satisfy regexp ^[a-z0-9_-]{4,20}$.',
+        'Login must satisfy regexp ^[a-zA-Z0-9_-]{4,20}$.',
         function (val) {
-            return /^[a-z0-9_-]{4,20}$/.test(val)
+            return /^[a-zA-Z0-9_-]{4,20}$/.test(val)
         });
 }
 
