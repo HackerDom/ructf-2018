@@ -30,6 +30,7 @@ int iterate_post (void *req, enum MHD_ValueKind kind, const char *key,
 struct MHD_Response *empty_response;
 
 struct Request request;
+struct MHD_PostProcessor *postProcessor;
 
 static int request_callback(
         void *param,
@@ -47,6 +48,7 @@ static int request_callback(
         memset(&request, 0, sizeof(struct Request));
         request.method = method;
         request.url = url;
+        postProcessor = NULL;
         *context = &request;
         return MHD_YES;
     }
@@ -54,10 +56,9 @@ static int request_callback(
     if (*upload_data_size != 0) {
         // Body received
 
-        struct MHD_PostProcessor *postProcessor = MHD_create_post_processor(
+        postProcessor = MHD_create_post_processor(
                 connection, POSTBUFFERSIZE, iterate_post, &request);
         MHD_post_process(postProcessor, upload_data, *upload_data_size);
-        MHD_destroy_post_processor(postProcessor);
 
         *upload_data_size = 0;
         return MHD_YES;
@@ -73,6 +74,9 @@ static int request_callback(
     int ret = MHD_queue_response (connection, (unsigned int) status_code, mhd_response ? mhd_response : empty_response);
     if (mhd_response)
         MHD_destroy_response (mhd_response);
+    if (postProcessor){
+        MHD_destroy_post_processor(postProcessor);
+    }
     return ret;
 }
 
