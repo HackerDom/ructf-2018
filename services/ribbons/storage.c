@@ -77,6 +77,10 @@ int validate_channel(struct Channel *channel){
     return result;
 }
 
+void write_channel_posts(struct Channel *channel, FILE *file) {
+    ITERATE_POSTS(channel, post, write_post(post, file))
+}
+
 void save_channel(struct Channel *channel) {
     // prevents crash while writing to file
     validate_channel(channel);
@@ -87,11 +91,7 @@ void save_channel(struct Channel *channel) {
     fwrite(channel->name, sizeof(char), NAME_SIZE, f);
     fwrite(channel->password, sizeof(char), PASSWORD_SIZE, f);
     fwrite(channel->key, sizeof(char), KEY_SIZE, f);
-    struct Post *post = channel->posts;
-    while (post) {
-        write_post(post, f);
-        post = post->next;
-    }
+    write_channel_posts(channel, f);
     fclose(f);
 }
 

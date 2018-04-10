@@ -24,7 +24,7 @@ int auth(struct Channel *channel, char *password) {
     return strncmp(channel->password, password, PASSWORD_SIZE) == 0;
 }
 
-int add_channel(char *name, char *password) {
+struct Channel *add_channel(char *name, char *password) {
     char *key = generate_key();
     if (key == 0) {
         return 0;
@@ -35,7 +35,7 @@ int add_channel(char *name, char *password) {
     }
     save_channel(channel);
     cache_add(channel);
-    return channel->id;
+    return channel;
 }
 
 int add_post(struct Channel *channel, char *text) {

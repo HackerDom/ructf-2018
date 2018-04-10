@@ -7,4 +7,7 @@
 #define CHANNELS_CACHE_SIZE 1000
 #define FOLDER "data"
 
+#define CONNECTION_TIMEOUT 60
+#define PORT 80
+
 #endif //NEWS_CONSTANTS_H

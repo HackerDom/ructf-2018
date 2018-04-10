@@ -3,7 +3,7 @@
 #include "constants.h"
 #include "types.h"
 
-struct Channel *create_channel(int id, char *name, char *password, char *key) {
+struct Channel *create_channel(int id, const char *name, const char *password, char *key) {
     struct Channel *channel = calloc(sizeof(struct Channel), 1);
     channel->id = id;
     strncpy(channel->name, name, NAME_SIZE);
