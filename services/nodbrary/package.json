@@ -1,0 +1,23 @@
+{
+  "name": "nodbrary",
+  "dependencies": {
+    "config": "^1.30.0",
+    "cross-env": "^5.1.4",
+    "koa": "2.5.0",
+    "koa-body": "^2.5.0",
+    "koa-compose": "^4.0.0",
+    "koa-convert": "^1.2.0",
+    "koa-pug": "^3.0.0-2",
+    "koa-router": "^7.4.0",
+    "mongoose": "^5.0.14",
+    "mongoose-auto-increment": "^5.0.1",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "rimraf": "2.5.2"
+  },
+  "scripts": {
+    "start": "cross-env NODE_ENV=production node src/server/index.js",
+    "clean": "rimraf node_modules/"
+  }
+}

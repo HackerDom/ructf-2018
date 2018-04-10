@@ -1,0 +1,9 @@
+extends ../main.pug
+
+block content
+    each card in cards
+        div
+            a(href="/book?id=" + card.bookId) #{card.bookName}
+            p #{card.bookDescription}
+
+    a(href="/create", class="button") Пожертвовать книгу библиотеке
