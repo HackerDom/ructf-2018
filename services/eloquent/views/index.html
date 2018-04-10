@@ -28,6 +28,7 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="">Articles<span class="caret"></span></a>
                     <ul class="dropdown-menu">
+                        <li><a href="/my-articles">My articles</a></li>
                         <li><a href="/create">Create a new article</a></li>
                         <li><a href="/suggestions">Suggestions</a></li>
                     </ul>
@@ -49,51 +50,24 @@
 </nav>
 
 <div class="container">
-    {% if login is defined and articles|length != 0 %}
-    <h3>My articles</h3>
-    {% for i in range(articles|length // 3) %}
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header">{{ articles[i * 3].title }}</div>
-            <div class="card-body">
-                <p class="card-text">{{ articles[i * 3].preview_text }}</p>
-                <a href="/article/{{ articles[i * 3].id }}" class="btn btn-primary bottom-btn">View article</a>
-            </div>
-        </div>
+    <div class="col-md-1"></div>
+    <div class="col-md-9">
+        <h3>Eloquent</h3>
+        <p>Hello! Thank you for choosing Eloquent!</p>
+        <p>Here you can create simple articles for express thoughts in words.</p>
+        <p>Use <a href="https://en.wikipedia.org/wiki/Markdown">markdown</a> to set appearance of the text.
+            Furthermore, for each article service will auto-generate table of contents using headers.</p>
+        <p>Use suggestions to offer the article for publishing to your friends.
+            Your friend will be able to publish the article as its author.
+            Before this action no one will be able to see the article except for your friend.</p>
+        <p>Use <a href="/search">search</a> to find like-minded users.</p>
+        <p>There is also an adaptation for mobile devices.</p>
+        {% if login is not defined %}
+        <p><a href="/registration">Register</a> or <a href="/login">sign in</a> existing account now!</p>
+        {% else %}
+        <p><a href="/create">Create</a> your amazing article now!</p>
+        {% endif %}
     </div>
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header">{{ articles[i * 3 + 1].title }}</div>
-            <div class="card-body">
-                <p class="card-text">{{ articles[i * 3 + 1].preview_text }}</p>
-                <a href="/article/{{ articles[i * 3 + 1].id }}" class="btn btn-primary bottom-btn">View article</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header">{{ articles[i * 3 + 2].title }}</div>
-            <div class="card-body">
-                <p class="card-text">{{ articles[i * 3 + 2].preview_text }}</p>
-                <a href="/article/{{ articles[i * 3 + 2].id }}" class="btn btn-primary bottom-btn">View article</a>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-    {% for i in range(articles|length % 3) %}
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header">{{ articles[(articles|length - (articles|length % 3)) + i].title }}</div>
-            <div class="card-body">
-                <p class="card-text">{{ articles[(articles|length - (articles|length % 3)) + i].preview_text }}</p>
-                <a href="/article/{{ articles[(articles|length - (articles|length % 3)) + i].id }}" class="btn btn-primary bottom-btn" style="">View article</a>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-    {% else %}
-    <p class="text-center">Everybody is already writing articles! And you?</p>
-    {% endif %}
 </div>
 </body>
 </html>

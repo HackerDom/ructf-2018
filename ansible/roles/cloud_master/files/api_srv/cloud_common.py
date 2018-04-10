@@ -40,7 +40,7 @@ def log_progress(*params):
     print("progress:", *params, flush=True)
 
 
-def call_unitl_zero_exit(params, redirect_out_to_err=True, attempts=30, timeout=10):
+def call_unitl_zero_exit(params, redirect_out_to_err=True, attempts=30, timeout=5):
     if redirect_out_to_err:
         stdout = sys.stderr
     else:

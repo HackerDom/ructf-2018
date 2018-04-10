@@ -52,7 +52,7 @@ class ContentsTableCreator(HTMLParser):
             self.collect_inner_html = False
 
 
-USERNAME_TEMPLATE = re.compile('^[a-z0-9_-]{4,20}$')
+USERNAME_TEMPLATE = re.compile('^[a-zA-Z0-9_-]{4,20}$')
 PASSWORD_TEMPLATE = re.compile('^.{1,20}$')
 
 
@@ -90,7 +90,8 @@ class VersionController:
             self.current_level = (1,)
             return self.current_level
         elif self.current_deep < deep:
-            self.current_level += (1,)
+            delta = deep - self.current_deep
+            self.current_level += (1,) * delta
             self.current_deep = deep
             return self.current_level
         elif self.current_deep == deep:

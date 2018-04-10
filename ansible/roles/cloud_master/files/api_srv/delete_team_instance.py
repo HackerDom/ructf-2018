@@ -36,7 +36,7 @@ def main():
             return 1
 
         cmd = ["sudo", "/cloud/scripts/remove_vm.sh", str(TEAM)]
-        ret = call_unitl_zero_exit(["ssh"] + SSH_YA_OPTS + [cloud_ip] + cmd)
+        ret = call_unitl_zero_exit(["ssh"] + SSH_CLOUD_OPTS + [cloud_ip] + cmd)
         if not ret:
             log_stderr("failed to remove team vm")
             return 1

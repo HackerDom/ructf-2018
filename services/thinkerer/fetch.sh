@@ -1,0 +1,1 @@
+bazel fetch //thinkerer:all
