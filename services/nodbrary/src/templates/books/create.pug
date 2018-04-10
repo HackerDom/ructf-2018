@@ -4,6 +4,12 @@ block content
     form(method="post", action="/add")
         label(for="name") Название книги:
         input(type="text", name="name", value="", id="name")
+        label(for="author") Автор:
+        input(type="text", name="author", value="", id="author")
+        label(for="year") Год выпуска:
+        input(type="number", name="year", value="", id="year")
+        label(for="publisher") Издательство:
+        input(type="number", name="publisher", value="", id="publisher")
         label(for="description") Описание книги:
         input(type="text", name="description", value="", id="description")
         label(for="content") Текст книги:

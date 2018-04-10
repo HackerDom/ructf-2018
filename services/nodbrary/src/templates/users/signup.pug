@@ -1,0 +1,13 @@
+extends ../main.pug
+
+block content
+    if error != undefined
+        div #{error}
+    form(method="post", action="/signup")
+        label(for="login") Логин:
+        input(type="text", name="login", value="" + params.login, id="login")
+        label(for="pass") Пароль:
+        input(type="password", name="pass", value="" + params.pass, id="pass")
+        label(for="passConfirm") Подтвердите пароль:
+        input(type="password", name="passConfirm", value="" + params.passConfirm, id="passConfirm")
+        input(type="submit", id="button", value="Зарегистрироваться")

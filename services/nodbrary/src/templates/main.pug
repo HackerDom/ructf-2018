@@ -7,6 +7,13 @@ html
             ul(class="nav")
                 li
                     a(href="/") Главная
-                li
-                    a(href="/login") Войти
+                if user
+                    li
+                        a(href="/logout") Выйти
+                else
+                    li
+                        a(href="/signin") Войти
+                    li
+                        a(href="/signup") Зарегистрироваться
+
             block content

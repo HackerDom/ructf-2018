@@ -6,6 +6,8 @@ const compose = require('koa-compose');
 const config = require('config');
 const path = require('path');
 
+const handlers = require('./handlers');
+
 const app = new koa();
 
 const pug = new Pug({
@@ -23,10 +25,13 @@ app.use(async (ctx, next) => {
         await next();
     } catch (err) {
         console.log(err);
-        await ctx.render('service/error', {
-            message: err.message,
-            error: err
-        });
+        if (ctx.response.status == 404)
+            await ctx.render('service/404');
+        else
+            await ctx.render('service/error', {
+                message: err.message,
+                error: err
+            });
     }}
 );
 
@@ -48,8 +53,8 @@ app.use(async (ctx, next) => {
 
 pug.use(app);
 
-var projectRoot = __dirname;
-var staticRoot = path.join(projectRoot, '../public');
+let projectRoot = __dirname;
+let staticRoot = path.join(projectRoot, '../public');
 console.log(staticRoot);
 
 var middlewareStack = [
@@ -58,6 +63,8 @@ var middlewareStack = [
 ];
 
 app.use(compose(middlewareStack));
-app.use(require('./handlers').routes());
+
+app.use(handlers.routes());
+app.use(handlers.allowedMethods());
 
 app.listen(config.get('server.port'));

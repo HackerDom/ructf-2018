@@ -1,0 +1,11 @@
+extends ../main.pug
+
+block content
+    if error != undefined
+        div #{error}
+    form(method="post", action="/signin")
+        label(for="login") Логин:
+        input(type="text", name="login", value="" + params.login, id="login")
+        label(for="pass") Пароль:
+        input(type="password", name="pass", value="" + params.pass, id="pass")
+        input(type="submit", id="button", value="Войти")
