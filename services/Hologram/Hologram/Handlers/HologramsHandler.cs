@@ -9,14 +9,14 @@ using Hologram.Utils;
 
 namespace Hologram.Handlers
 {
-    public class DocumentsHandler: BaseHandler
+    public class HologramsHandler: BaseHandler
     {
-        public static readonly BaseHandler Instance = new DocumentsHandler();
+        public static readonly BaseHandler Instance = new HologramsHandler();
         private const int searchRadiusLimit = 20;
         public override Dictionary<HttpMethod, Func<HttpListenerContext, Task>> Methods { get; }
         public override string Path => "/api/holograms";
 
-        private DocumentsHandler() => 
+        private HologramsHandler() => 
             Methods = new Dictionary<HttpMethod, Func<HttpListenerContext, Task>>
             {
                 [HttpMethod.Get] = LookupForHolograms

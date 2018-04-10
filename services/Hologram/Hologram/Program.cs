@@ -40,7 +40,7 @@ namespace Hologram
 			var server = new HttpServer(port);
 
 			server
-				.AddHandler(DocumentsHandler.Instance);
+				.AddHandler(HologramsHandler.Instance);
 //				.AddHandler(LoginHandler.Instance)
 //				.AddHandler(AddPointHandler.Instance)
 //				.AddHandler(GetAllPublicsHandler.Instance)

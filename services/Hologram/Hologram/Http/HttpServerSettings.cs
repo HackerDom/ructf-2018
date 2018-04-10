@@ -2,7 +2,7 @@
 {
 	internal static class HttpServerSettings
 	{
-		public const string ServerName = "BulletinBoard/1.0";
+		public const string ServerName = "Holograms/1.0";
 
 		public const int MaxRequestSize = 4096;
 

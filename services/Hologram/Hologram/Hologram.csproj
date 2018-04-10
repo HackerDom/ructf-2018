@@ -45,13 +45,15 @@
   <ItemGroup>
     <Compile Include="Handlers\HologramsHandler.cs" />
     <Compile Include="Handlers\Helpers\BaseHandler.cs" />
-    <Compile Include="Handlers\Helpers\MethodAttribute.cs" />
     <Compile Include="Http\HttpContextHelper.cs" />
     <Compile Include="Http\HttpListenerRequestExtentions.cs" />
     <Compile Include="Http\HttpServer.cs" />
     <Compile Include="Http\HttpServerExtentions.cs" />
     <Compile Include="Http\HttpServerSettings.cs" />
     <Compile Include="Http\ResponseAsyncHelper.cs" />
+    <Compile Include="Models\Hologram.cs" />
+    <Compile Include="Models\HologramField.cs" />
+    <Compile Include="Models\Point.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\AsyncLockSource.cs" />
