@@ -1,5 +1,5 @@
-#ifndef NEWS_FRONTEND_H
-#define NEWS_FRONTEND_H
+#ifndef RIBBONS_FRONTEND_H
+#define RIBBONS_FRONTEND_H
 
 struct Channel *get_channel_by_id(int id);
 int auth(struct Channel *channel, char *password);
@@ -10,4 +10,4 @@ void change_password(struct Channel *channel, char *new_password);
 
 void update_channel(int channel_id);
 
-#endif //NEWS_FRONTEND_H
+#endif //RIBBONS_FRONTEND_H

@@ -1,6 +1,6 @@
-#ifndef NEWS_CLI_H
-#define NEWS_CLI_H
+#ifndef RIBBONS_CLI_H
+#define RIBBONS_CLI_H
 
 int cli_main();
 
-#endif //NEWS_CLI_H
+#endif //RIBBONS_CLI_H

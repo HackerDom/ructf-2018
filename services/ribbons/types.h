@@ -1,5 +1,5 @@
-#ifndef NEWS_TYPES_H
-#define NEWS_TYPES_H
+#ifndef RIBBONS_TYPES_H
+#define RIBBONS_TYPES_H
 
 #include <stddef.h>
 #include "constants.h"
@@ -31,4 +31,4 @@ struct Post *create_post(char *text, size_t text_length);
 void append_post(struct Post **head, struct Post *post);
 void delete_channel(struct Channel* channel);
 
-#endif //NEWS_TYPES_H
+#endif //RIBBONS_TYPES_H

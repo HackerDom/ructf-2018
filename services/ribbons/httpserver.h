@@ -2,8 +2,8 @@
 #include <stdint.h>
 #include "types.h"
 
-#ifndef NEWS_HTTPSERVER_H
-#define NEWS_HTTPSERVER_H
+#ifndef RIBBONS_HTTPSERVER_H
+#define RIBBONS_HTTPSERVER_H
 
 #define POSTBUFFERSIZE 512
 
@@ -24,4 +24,4 @@ struct Response {
 
 void run_server(uint16_t port);
 
-#endif //NEWS_HTTPSERVER_H
+#endif //RIBBONS_HTTPSERVER_H

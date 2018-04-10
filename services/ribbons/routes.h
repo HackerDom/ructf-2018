@@ -1,5 +1,5 @@
-#ifndef NEWS_ROUTES_H
-#define NEWS_ROUTES_H
+#ifndef RIBBONS_ROUTES_H
+#define RIBBONS_ROUTES_H
 
 #define ROUTE_CHANNEL_NEEDED 1
 #define ROUTE_AUTH_NEEDED 2
@@ -16,4 +16,4 @@ struct Route {
 void register_routes();
 int handle_request(struct Request *request, struct MHD_Response **mhd_response);
 
-#endif //NEWS_ROUTES_H
+#endif //RIBBONS_ROUTES_H
