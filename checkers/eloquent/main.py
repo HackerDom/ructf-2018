@@ -1,97 +1,96 @@
-from time import sleep, time
+import re
+import traceback
+from hashlib import sha256
+from base64 import b64encode
+from time import time
 
-import requests
+import sys
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
+
+from service_api import signin, signup, post_article, get_article_content, GET_ARTICLE_URL, PORT, get_driver, \
+    click_link, get_page_of_article, get_element_text_by_id, sign_in_with_driver
+
+OK, CORRUPT, MUMBLE, DOWN, CHECKER_ERROR = 101, 102, 103, 104, 110
+
+ARTICLE_PATTERN = re.compile(r'<div\sclass=\"col-md-3\">(.+)', re.DOTALL)
+TABLE_OF_CONTENTS_PATTERN = re.compile(r'<a\shref=\"#(.+)\">.{1,5}\)')
 
 
-from generators import gen_article_title, gen_article_content, gen_login, gen_password
-
-PORT = 8080
-HOST = "0.0.0.0"
+def print_to_stderr(*args):
+    print(*args, file=sys.stderr)
 
 
-SIGNUP_URL = "http://%s:%d/registration" % (HOST, PORT)
-SIGNIN_URL = "http://%s:%d/login" % (HOST, PORT)
-CREATE_ARTICLE_URL = "http://%s:%d/create" % (HOST, PORT)
-
-REGISTER_URL = "http://%s:%d/register" % (HOST, PORT)
-LOGIN_URL = "http://%s:%d/signin" % (HOST, PORT)
-POST_ARTICLE_URL = "http://%s:%d/post-article" % (HOST, PORT)
+def info():
+    print("vulns: 1")
+    exit(OK)
 
 
-SET_VAL_BY_NAME_SCRIPT_TEMPLATE = """$('[name="{}"]').val("{}")"""
+def check(hostname):
+    exit(OK)
 
 
-def get_driver():
-    return webdriver.PhantomJS(service_log_path='/dev/null')
+def not_found(*args):
+    print_to_stderr("Unsupported command %s" % sys.argv[1])
+    return CHECKER_ERROR
 
 
-def send_keys_to_field(driver, field_name, keys):
-    field = driver.find_element_by_name(field_name)
-    field.send_keys(keys)
+def get_base_of_hash_of_string(s):
+    return b64encode(sha256(s.encode()).digest()).decode()
 
 
-def set_field_val_by_name(driver, field_name, value):
-    driver.execute_script(SET_VAL_BY_NAME_SCRIPT_TEMPLATE.format(field_name, value))
+def get_article_hash(table_of_contents):
+    return get_base_of_hash_of_string(','.join(table_of_contents))
 
 
-def signup_(login, password):
-    r = requests.post(REGISTER_URL, data={'username': login, 'password': password})
-    return r.request._cookies
+def get_article_table_of_contents(host, cookies, article_id):
+    article_content = get_article_content(host, cookies, article_id)
+    article_content = re.findall(ARTICLE_PATTERN, article_content)[0]
+    return re.findall(TABLE_OF_CONTENTS_PATTERN, article_content)
 
 
-def signin_(login, password):
-    r = requests.post(LOGIN_URL, data={'username': login, 'password': password})
-    return r.request._cookies
+def check_article_contents(table_of_contents, article_hash):
+    assert get_article_hash(table_of_contents) == article_hash or True
 
 
-def post_article_(cookies, title, content):
-    requests.post(POST_ARTICLE_URL, cookies=cookies, data={'title': title, 'content': content})
+def check_article_js(driver, host, article_id, table_of_contents):
+    get_page_of_article(driver, host, article_id)
+    for header in table_of_contents:
+        click_link(driver, "#" + header)
+        assert get_element_text_by_id(driver, 'mid-text') == 'Current subtitle: {}'.format(header)
 
 
-def signup(driver, login, password):
-    driver.get(SIGNUP_URL)
-    send_keys_to_field(driver, "username", login)
-    send_keys_to_field(driver, "password", password)
-    send_keys_to_field(driver, "password", Keys.ENTER)
+# def check_():
+#     driver = get_driver()
+#
+#     for article_id in range(1, 100):
+#         cookies = signin(HOST, 'hello', '1234')
+#
+#         table_of_contents = get_article_table_of_contents(HOST, cookies, article_id)
+#         check_article_contents(table_of_contents, "1")
+#
+#         sign_in_with_driver(driver, HOST, 'hello', '1234')
+#         check_article_js(driver, HOST, article_id, table_of_contents)
+#         print("{}: OK".format(article_id))
 
 
-def signin(driver, login, password):
-    driver.get(SIGNIN_URL)
-    send_keys_to_field(driver, "username", login)
-    send_keys_to_field(driver, "password", password)
-    send_keys_to_field(driver, "password", Keys.ENTER)
+def put(hostname, flag_id, flag, vuln):
+    pass
 
 
-def post_article(driver, title, content):
-    driver.get(CREATE_ARTICLE_URL)
-    send_keys_to_field(driver, 'title', title)
-    set_field_val_by_name(driver, 'content', content.replace('\n', r'\n'))
-    post_btn = driver.find_element_by_id('post-btn')
-    post_btn.click()
+def get(hostname, flag_id, flag, _):
+    pass
+
+
+COMMANDS = {'check': check, 'put': put, 'get': get, 'info': info}
 
 
 def main():
-    driver = get_driver()
-    start = time()
-    signup(driver, gen_login(), gen_password())
-    post_article(driver, gen_article_title(), gen_article_content())
-    print(time() - start)
-    driver.close()
-
-    start = time()
-    cookies = signup_(gen_login(), gen_password())
-    post_article_(cookies, gen_article_title(), gen_article_content())
-    print(time() - start)
+    try:
+        COMMANDS.get(sys.argv[1], not_found)(*sys.argv[2:])
+    except Exception:
+        traceback.print_exc()
+        exit(CHECKER_ERROR)
 
 
 if __name__ == '__main__':
     main()
-
-
-"""
-chrome  3857477632
-phantom 2831765504
-firefox 5664231424
-"""
