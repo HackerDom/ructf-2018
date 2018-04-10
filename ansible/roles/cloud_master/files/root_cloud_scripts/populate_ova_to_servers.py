@@ -15,10 +15,7 @@ import subprocess
 OVA_NAME = sys.argv[1]
 VM_NAME = sys.argv[2]
 
-CLOUD_IPS = ["93.158.156.113", "93.158.156.114", "93.158.156.115",
-             "93.158.156.116", "93.158.156.117", "93.158.156.118",
-             "93.158.156.119", "93.158.156.120", "93.158.156.121",
-             "93.158.156.122"]
+CLOUD_IPS = ["10.60.1.253"]
 
 SSH_OPTS = [
     "-o", "StrictHostKeyChecking=no",
@@ -47,7 +44,7 @@ def main():
         code = subprocess.call(["rsync", "--progress"] + ssh_arg +
                                    [file_from, file_to])
         if code != 0:
-            log_stderr("scp to YA host %s failed" % cloud_ip)
+            log_stderr("scp to CLOUD host %s failed" % cloud_ip)
             return 1
 
         code = subprocess.call(["ssh"] + SSH_OPTS + [cloud_ip] +

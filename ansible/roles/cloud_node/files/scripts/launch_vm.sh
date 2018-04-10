@@ -10,7 +10,7 @@ fi
 vm="test_team${TEAM}"
 
 if ! VBoxManage showvminfo "$vm" &>/dev/null; then
-  VBoxManage clonevm "Ubuntu_template" --register --name "$vm" --basefolder="/home/vbox_drives/" --mode all
+  VBoxManage clonevm "ructf2018" --register --name "$vm" --basefolder="/home/vbox_drives/" --mode all
 fi
 
 if ! VBoxManage list runningvms | grep -qP "\W${vm}\W"; then
