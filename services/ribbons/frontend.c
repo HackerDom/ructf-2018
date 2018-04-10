@@ -50,6 +50,7 @@ int add_post(struct Channel *channel, char *text) {
 }
 
 void change_password(struct Channel *channel, char *new_password) {
+    memset(channel->password, 0, sizeof(channel->password));
     memcpy(channel->password, new_password, strlen(new_password));
     save_channel(channel);
 }
