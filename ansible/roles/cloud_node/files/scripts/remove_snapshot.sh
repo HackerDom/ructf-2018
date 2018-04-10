@@ -3,8 +3,8 @@
 TEAM=${1?Syntax: ./remove_snapshot.sh <team_id> <name>}
 NAME=${2?Syntax: ./remove_snapshot.sh <team_id> <name>}
 
-QUOTA=25
-WARN_FROM=10
+QUOTA=250
+WARN_FROM=100
 
 if ! [[ $TEAM =~ ^[0-9]+$ ]]; then
   echo "team number validation error"

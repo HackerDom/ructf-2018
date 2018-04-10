@@ -20,4 +20,6 @@ while VBoxManage showvminfo "$vm" &>/dev/null; do
 done
 
 VBoxManage import "$vm_path" --vsys 0 --vmname "$vm"
+VBoxManage modifyvm "$vm" --cpus=8
+VBoxManage modifyvm "$vm" --bridgeadapter1 "eth0"
 vboxmanage snapshot "$vm" take initial
