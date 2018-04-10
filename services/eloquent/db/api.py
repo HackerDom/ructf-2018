@@ -1,6 +1,7 @@
 import markdown
 import html
 from markdown.extensions.toc import TocExtension
+from peewee import DoesNotExist
 
 from db.models import User, Article, MAX_ARTICLE_PREVIEW_TEXT_LENGTH, MAX_ARTICLE_CONTENT_LENGTH, MAX_TITLE_LENGTH, \
     SORT_MAP
@@ -29,9 +30,9 @@ def create_article(title, content, owner_login, user_suggestion):
         return False
     user = User.get(User.name == owner_login)
     if user_suggestion is None:
-        owner_id = user.id
+        owner = user
     else:
-        owner_id = User.get(User.name == user_suggestion)
+        owner = User.get(User.name == user_suggestion)
     articles_count = user.articles_count
     html_content = markdown.markdown(content, safe_mode='escape', extensions=[TocExtension(baselevel=3)])
     stripped_text = strip_html_tags(html_content)
@@ -42,13 +43,13 @@ def create_article(title, content, owner_login, user_suggestion):
         title=html.escape(title),
         content=html_content,
         preview_text=preview_text,
-        owner_id=owner_id,
+        owner=owner,
         is_draft=user_suggestion is not None
     ).save()
     if user_suggestion is None:
         User\
             .update({User.articles_count: articles_count + 1})\
-            .where(User.id == owner_id)\
+            .where(User.id == owner)\
             .execute()
     return True
 
@@ -56,16 +57,19 @@ def create_article(title, content, owner_login, user_suggestion):
 def get_article_titles_by_login(owner_login, get_drafts):
     if not is_username_busy(owner_login):
         return None
-    owner_id = User.get(User.name == owner_login).id
+    owner = User.get(User.name == owner_login)
     return Article\
         .select(Article.id, Article.preview_text, Article.title)\
-        .where(Article.owner_id == owner_id, Article.is_draft == get_drafts)
+        .where(Article.owner == owner, Article.is_draft == get_drafts)
 
 
-def get_article_by_id(art_id):
+def get_article_by_id(art_id, username):
     try:
-        return Article.get_by_id(int(art_id))
-    except ValueError:
+        article = Article.get_by_id(int(art_id))
+        if User.get(User.name == username).id != article.owner.id and article.is_draft:
+            return None
+        return article
+    except (ValueError, DoesNotExist):
         return None
 
 
@@ -80,8 +84,8 @@ def get_users(sort_by=None, query=''):
 
 
 def publish_article(username, article_id):
-    article = Article.get(Article.id == article_id)
-    user = User.get(User.id == article.owner_id)
+    article = Article.get_by_id(article_id)
+    user = article.owner
     if user.name != username:
         return False
     Article\

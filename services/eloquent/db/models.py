@@ -39,7 +39,7 @@ class Article(Model):
     title = CharField(MAX_TITLE_LENGTH)
     content = TextField()
     preview_text = CharField(MAX_ARTICLE_PREVIEW_TEXT_LENGTH)
-    owner_id = ForeignKeyField(User)
+    owner = ForeignKeyField(User)
     is_draft = BooleanField()
 
     class Meta:
