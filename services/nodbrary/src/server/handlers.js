@@ -30,7 +30,7 @@ router
             await ctx.redirect("/");
         let bookCards = await catalog.catalog();
         let pagesCount = Math.ceil(bookCards.length / 9);
-        if (pagesCount < currentPage)
+        if (pagesCount > 0 && pagesCount < currentPage)
             await ctx.redirect("/");
         let pages = Array.apply(null, {length: pagesCount}).map((n, i) => i + 1);
 
