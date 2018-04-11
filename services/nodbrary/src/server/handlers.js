@@ -3,6 +3,7 @@
 const Router = require('koa-router');
 const KoaBody = require('koa-body');
 const convert = require('koa-convert');
+const passport = require('koa-passport');
 let router = new Router();
 let koaBody = convert(KoaBody());
 let catalog = require('../app/catalog').routes;
@@ -73,6 +74,7 @@ router
                 ctx.state.body = userSignInModel;
                 await next();
             } catch(e) {
+                ctx.status = 403;
                 if (e instanceof ValidationError)
                     await ctx.render("./users/signin", {error: e.message, params: ctx.request.body});
                 else
@@ -80,13 +82,15 @@ router
             }
         },
         async (ctx, next) => {
-            let body = ctx.state.body;
-            let userModel = await user.signin(body);
-            if (userModel)
-                await ctx.redirect("/");
-            else
-                await ctx.render("./users/signin", {error: "Такого пользователя не существует", params: ctx.request.body});
-            await next();
+            await passport.authenticate('local', async(err, user) => {
+                if(!user){
+                    await ctx.render("./users/signin", { error: "Неверный логин или пароль", params: ctx.request.body });
+                } else {
+                    await ctx.login(user);
+                    await ctx.redirect('/');
+                    await next();
+                }
+            })(ctx);
         })
     .get('/signup', async (ctx, next) => {
         await ctx.render("./users/signup", {params: {login: "", pass: "", passConfirm: ""}});
@@ -125,10 +129,16 @@ router
         },
         async (ctx, next) => {
             let body = ctx.state.body;
-            await user.signup(body);
+            var userModel = await user.signup(body);
+            await ctx.login(userModel);
             await ctx.redirect("/");
             await next();
-        });
+        })
+    .get('/logout', async (ctx, next) => {
+        ctx.logout();
+        await ctx.redirect("/");
+        await next();
+    });
 
 exports.routes = () => { return router.routes() };
 exports.allowedMethods = () => { return router.allowedMethods() };

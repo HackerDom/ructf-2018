@@ -59,12 +59,19 @@ let projectRoot = __dirname;
 let staticRoot = path.join(projectRoot, '../public');
 console.log(staticRoot);
 
+app.keys = ["secret"];
+
 var middlewareStack = [
     require('koa-session')(app),
     require('koa-static')(staticRoot),
 ];
 
 app.use(compose(middlewareStack));
+
+require('../app/auth');
+const passport = require('koa-passport');
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(handlers.routes());
 app.use(handlers.allowedMethods());
