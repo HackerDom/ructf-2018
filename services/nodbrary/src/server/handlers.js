@@ -21,8 +21,25 @@ router
 
 router
     .get(['/', '/home'], async (ctx, next) => {
+        await ctx.redirect('./home/1');
+        await next();
+    })
+    .get('/home/:page', async (ctx, next) => {
+        let currentPage = Number.parseInt(ctx.params.page);
+        if (!Number.parseInt(ctx.params.page) || currentPage < 0)
+            await ctx.redirect("/");
         let bookCards = await catalog.catalog();
-        await ctx.render('./books/catalog', {cards: bookCards});
+        let pagesCount = Math.ceil(bookCards.length / 9);
+        if (pagesCount < currentPage)
+            await ctx.redirect("/");
+        let pages = Array.apply(null, {length: pagesCount}).map((n, i) => i + 1);
+
+        await ctx.render('./books/catalog', {
+            cards: bookCards.slice(9*(currentPage-1), 9*(currentPage)),
+            pages: pages,
+            nextPage: currentPage + 1,
+            previousPage: currentPage - 1
+        });
         await next();
     })
     .get('/book', async (ctx, next) => {

@@ -1,9 +1,32 @@
 extends ../main.pug
 
 block content
-    each card in cards
-        div
-            a(href="/book?id=" + card.bookId) #{card.bookName} #{card.year}
-            p #{card.bookDescription}
+    div(class="container")
+        h1(class="my-4") Central library
+            small of Naboo planet
+        div(class="row")
+            each card in cards
+                div(class="col-lg-4 col-sm-6 portfolio-item")
+                    div(class="card h-100")
+                        a(href="/book?id=" + card.bookId)
+                            img(class="card-img-top", src="/img/book.jpg", alt="book")
+                        div(class="card-body")
+                            h4(class="card-title")
+                                a(href="/book?id=" + card.bookId) #{card.bookName}, by #{card.author}
+                            p(class="card-text") #{card.bookDescription}
 
-    a(href="/create", class="button") Пожертвовать книгу библиотеке
+        a(href="/create", class="btn btn-primary") Пожертвовать книгу библиотеке &rarr;
+
+        if pages
+            ul(class="pagination justify-content-center")
+                li(class="page-item")
+                    a(class="page-link", href="/home/" + previousPage, aria-label="Previous")
+                        span(aria-hidden="true") &laquo;
+                        span(class="sr-only") Previous
+                each page in pages
+                    li(class="page-item")
+                        a(class="page-link", href="/home/" + page) #{page}
+                li(class="page-item")
+                    a(class="page-link", href="/home/" + nextPage, aria-label="Next")
+                        span(aria-hidden="true") &raquo;
+                        span(class="sr-only") Next

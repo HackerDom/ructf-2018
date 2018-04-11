@@ -2,10 +2,10 @@ extends ../main.pug
 
 block content
     if error != undefined
-        div #{error}
-    form(method="post", action="/signin")
-        label(for="login") Логин:
-        input(type="text", name="login", value="" + params.login, id="login")
-        label(for="pass") Пароль:
-        input(type="password", name="pass", value="" + params.pass, id="pass")
-        input(type="submit", id="button", value="Войти")
+        div(class="error") #{error}
+    div(class="text-center")
+        form(method="post", action="/signin", class="form-signin")
+            h1(class="h3 mb-3 font-weight-normal") Please sign in
+            input(type="text", placeholder="Login", name="login", class="form-control", value="" + params.login, id="login", required, autofocus)
+            input(type="password", placeholder="Password", name="pass", class="form-control", value="" + params.pass, id="pass", required)
+            input(class="btn btn-lg btn-primary btn-block btn-h", type="submit", id="button", value="Go")

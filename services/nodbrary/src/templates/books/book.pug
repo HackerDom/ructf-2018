@@ -1,10 +1,14 @@
 extends ../main.pug
 
 block content
-    div
-        p #{card.bookName}
-        p #{card.year}
-        p #{card.author}
-        p #{card.publisher}
-        p #{card.bookDescription}
-        p #{book.content}
+    div(class="container")
+        div(class="row")
+            div(class="col-lg-11")
+                h1(class="mt-4") #{card.bookName}
+                p(class="lead") by #{card.author}
+                hr
+                p in #{card.year} #{card.publisher}
+                hr
+                p(class="lead") #{card.bookDescription}
+                hr
+                p(class="mt-4") #{book.content}

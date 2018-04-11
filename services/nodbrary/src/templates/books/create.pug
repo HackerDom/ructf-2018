@@ -2,18 +2,13 @@ extends ../main.pug
 
 block content
     if error != undefined
-        div #{error}
-    form(method="post", action="/add")
-        label(for="name") Название книги:
-        input(type="text", name="name", value="" + params.name, id="name")
-        label(for="author") Автор:
-        input(type="text", name="author", value="" + params.author, id="author")
-        label(for="year") Год выпуска:
-        input(type="number", name="year", value="" + params.year, id="year")
-        label(for="publisher") Издательство:
-        input(type="text", name="publisher", value="" + params.publisher, id="publisher")
-        label(for="description") Описание книги:
-        input(type="text", name="description", value="" + params.description, id="description")
-        label(for="content") Текст книги:
-        input(type="text", name="content", value="" + params.content, id="content")
-        input(type="submit", id="button", value="Добавить")
+        div(class="error") #{error}
+    div(class="text-center")
+        form(method="post", action="/add", class="form-signin")
+            input(type="text", placeholder="Name", name="name", class="form-control", value="" + params.name)
+            input(type="text", placeholder="Author", name="author", class="form-control", value="" + params.author)
+            input(type="number", placeholder="Publish year", name="year", class="form-control", value="" + params.year)
+            input(type="text", placeholder="Publisher", name="publisher", class="form-control", value="" + params.publisher)
+            textarea(rows=3, placeholder="Short description", name="description", class="form-control")
+            textarea(rows=3, placeholder="Content", name="content", class="form-control")
+            input(type="submit", class="btn btn-lg btn-primary btn-block btn-h", id="button", value="Добавить")
