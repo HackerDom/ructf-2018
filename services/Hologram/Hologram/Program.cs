@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Hologram.Database.Loaders;
 using Hologram.Handlers;
 using Hologram.Http;
+using Hologram.Models;
 using Hologram.Utils;
 using log4net;
 using log4net.Config;
@@ -21,7 +23,7 @@ namespace Hologram
 
 				var sleepPeriod = int.Parse(settings.GetValue("sleep"));
 				var ttl = int.Parse(settings.GetValue("ttl"));
-				Database.HologramField.Init();
+				Database.HologramField.Init(settings.GetValue("holograms"));
 
 				var server = PrepareServer(settings);
 				Task.WhenAll(server.AcceptLoopAsync(CancellationToken.None)).Wait();

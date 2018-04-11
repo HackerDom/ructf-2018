@@ -5,3 +5,4 @@ credentials = dump/credentials
 points = dump/points
 sleep = 30000
 ttl = 1800000
+holograms = points.dat
