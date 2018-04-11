@@ -1,0 +1,5 @@
+- name: enable and start xorg
+  service: name=xorg enabled=yes state=started
+
+- name: enable and restart tcpimg
+  service: name=tcpimg enabled=yes state=restarted
