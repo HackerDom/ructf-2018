@@ -14,6 +14,7 @@ router
     .use('/book', async (ctx, next) => {
         if (!ctx.query.id)
             await ctx.render('./service/404');
+        await next();
     });
 
 router
