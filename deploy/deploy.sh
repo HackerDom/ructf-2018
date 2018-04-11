@@ -1,3 +1,4 @@
+sudo sed 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="net.ifnames=0 biosdevname=0"/' /etc/default/grub | sudo tee /etc/default/grub
 sudo rm /etc/apt/sources.list
 sudo apt-get update
 sudo cp sources.list /etc/apt/sources.list
