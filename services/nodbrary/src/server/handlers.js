@@ -9,6 +9,7 @@ let catalog = require('../app/catalog').routes;
 let book = require('../app/book').routes;
 let user = require('../app/user').routes;
 let validator = require('../app/inputValidator').validator;
+let ValidationError = require('../app/inputValidator').ValidationError;
 
 router
     .use('/book', async (ctx, next) => {
@@ -29,15 +30,35 @@ router
         await next();
     })
     .get('/create', async (ctx, next) => {
-        await ctx.render("./books/create");
+        await ctx.render("./books/create", {params: {name: "", author: "", year: 2000, publisher: "", description: "", content: ""}});
         await next();
     })
-    .post('/add', koaBody, async (ctx, next) => {
-        let body = ctx.request.body;
-        let bookId = await book.add(body);
-        await ctx.redirect("/book?id=" + bookId);
-        await next();
-    })
+    .post('/add', koaBody,
+        async (ctx, next) => {
+            let body = ctx.request.body;
+            try {
+                let bookModel = {};
+                bookModel.name = validator.validateString(body.name, "Название книги");
+                bookModel.author = validator.validateString(body.author, "Автор");
+                bookModel.year = validator.validateNumber(body.year, "Год");
+                bookModel.publisher = validator.validateString(body.publisher, "Издатель");
+                bookModel.description = validator.validateString(body.description, "Описание книги");
+                bookModel.content = validator.validateString(body.content, "Текст книги");
+                ctx.state.body = bookModel;
+                await next();
+            } catch(e) {
+                if (e instanceof ValidationError)
+                    await ctx.render("./books/create", {error: e.message, params: body});
+                else
+                    throw e;
+            }
+        },
+        async (ctx, next) => {
+            let body = ctx.request.body;
+            let bookId = await book.add(body);
+            await ctx.redirect("/book?id=" + bookId);
+            await next();
+        })
     .get('/signin', async (ctx, next) => {
         await ctx.render("./users/signin", {params: {login: "", pass: ""}});
         await next();
@@ -45,20 +66,26 @@ router
     .post('/signin', koaBody,
         async (ctx, next) => {
             let body = ctx.request.body;
-            if (!validator.validateString(body.login) ||
-                !validator.validatePassString(body.pass)) {
-                await ctx.render("./users/signin", {error: "Исправьте ошибки", params: body});
-            }
-            else
+            try {
+                let userSignInModel = {};
+                userSignInModel.login = validator.validateLogin(body.login);
+                userSignInModel.pass = validator.validatePass(body.pass);
+                ctx.state.body = userSignInModel;
                 await next();
+            } catch(e) {
+                if (e instanceof ValidationError)
+                    await ctx.render("./users/signin", {error: e.message, params: ctx.request.body});
+                else
+                    throw e;
+            }
         },
         async (ctx, next) => {
-            let body = ctx.request.body;
+            let body = ctx.state.body;
             let userModel = await user.signin(body);
             if (userModel)
                 await ctx.redirect("/");
             else
-                await ctx.redirect("/signin");
+                await ctx.render("./users/signin", {error: "Такого пользователя не существует", params: ctx.request.body});
             await next();
         })
     .get('/signup', async (ctx, next) => {
@@ -68,25 +95,36 @@ router
     .post('/signup', koaBody,
         async (ctx, next) => {
             let body = ctx.request.body;
-            if (!validator.validateString(body.login) ||
-                !validator.validatePassString(body.pass) ||
-                !validator.validatePassString(body.passConfirm))
-                await ctx.render("./users/signup", {error: "Исправьте ошибки", params: body});
-            else
+            try {
+                let userSignUpModel = {};
+                userSignUpModel.login = validator.validateLogin(body.login);
+                userSignUpModel.pass = validator.validatePass(body.pass);
+                userSignUpModel.passConfirm = validator.validatePass(body.passConfirm);
+                ctx.state.body = userSignUpModel;
                 await next();
+            } catch(e) {
+                if (e instanceof ValidationError)
+                    await ctx.render("./users/signup", {error: e.message, params: body});
+                else
+                    throw e;
+            }
         },
         async (ctx, next) => {
-            let body = ctx.request.body;
-            console.log(body.pass)
-            console.log(body.passConfirm)
-
+            let body = ctx.state.body;
             if (body.pass != body.passConfirm)
-                await ctx.render("./users/signup", {error: "Исправьте ошибки", params: body});
+                await ctx.render("./users/signup", {error: "Поле подтверждение пароля не совпадает с полем пароль", params: ctx.request.body});
             else
                 await next();
         },
         async (ctx, next) => {
-            let body = ctx.request.body;
+            let body = ctx.state.body;
+            if (await user.isExist(body.login))
+                await ctx.render("./users/signup", {error: "Такой пользователь уже существует", params: ctx.request.body});
+            else
+                await next();
+        },
+        async (ctx, next) => {
+            let body = ctx.state.body;
             await user.signup(body);
             await ctx.redirect("/");
             await next();

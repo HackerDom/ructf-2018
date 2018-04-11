@@ -1,17 +1,19 @@
 extends ../main.pug
 
 block content
+    if error != undefined
+        div #{error}
     form(method="post", action="/add")
         label(for="name") Название книги:
-        input(type="text", name="name", value="", id="name")
+        input(type="text", name="name", value="" + params.name, id="name")
         label(for="author") Автор:
-        input(type="text", name="author", value="", id="author")
+        input(type="text", name="author", value="" + params.author, id="author")
         label(for="year") Год выпуска:
-        input(type="number", name="year", value="", id="year")
+        input(type="number", name="year", value="" + params.year, id="year")
         label(for="publisher") Издательство:
-        input(type="text", name="publisher", value="", id="publisher")
+        input(type="text", name="publisher", value="" + params.publisher, id="publisher")
         label(for="description") Описание книги:
-        input(type="text", name="description", value="", id="description")
+        input(type="text", name="description", value="" + params.description, id="description")
         label(for="content") Текст книги:
-        input(type="text", name="content", value="", id="content")
+        input(type="text", name="content", value="" + params.content, id="content")
         input(type="submit", id="button", value="Добавить")

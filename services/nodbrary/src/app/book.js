@@ -24,22 +24,6 @@ const book = {
         });
         await bookCard.save();
         return bookModel.id;
-    },
-    validateBook: async (book) => {
-        let bookModel = new Book({content: bookParameters.content});
-        await bookModel.save();
-        let bookCard = new Card({
-            bookId: bookModel.id,
-            bookName: bookParameters.name,
-            author: bookParameters.author,
-            year: bookParameters.year,
-            publisher: bookParameters.publisher,
-            bookDescription: bookParameters.description,
-            ownerId: userId,
-            createDate: new Date()
-        });
-        await bookCard.save();
-        return bookModel.id;
     }
 };
 

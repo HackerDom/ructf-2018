@@ -23,9 +23,11 @@ require('koa-locals')(app);
 app.use(async (ctx, next) => {
     try {
         await next();
+        if (ctx.status == 404)
+            await ctx.render('service/404');
     } catch (err) {
         console.log(err);
-        if (ctx.response.status == 404)
+        if (err.status == 404)
             await ctx.render('service/404');
         else
             await ctx.render('service/error', {

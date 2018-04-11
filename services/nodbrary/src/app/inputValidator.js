@@ -1,16 +1,39 @@
 'use strict';
 
+class ValidationError extends Error{}
+
 let validator = {
-    validateNumber: str => {
+    validateNumber: (str, obj) => {
+        if (!str)
+            throw new ValidationError("Не заполнено поле " + obj);
         let number = Number.parseInt(str);
-        return number === Number.NaN ? null : number;
+        if (number === Number.NaN)
+            throw new ValidationError("Поле " + obj + " должно быть числом");
+        return number;
     },
-    validateString: str => {
-        return str && str.match(/^[a-z]*$/i) ? str : null;
+    validateLogin: str => {
+        if (!str)
+            throw new ValidationError("Не заполнено поле логин");
+        str = str.toLowerCase();
+        if (!str.match(/^[a-z0-9]*$/i))
+            throw new ValidationError("Поле логин может содержать только цифры и буквы латинского алфавита");
+        return str;
     },
-    validatePassString: str => {
-        return str && str.match(/^[a-z0-9]*$/i) && str.length > 8 ? str : null;
+    validatePass: str => {
+        if (!str)
+            throw new ValidationError("Не заполнено поле пароль");
+        if (!str.match(/^[a-z0-9]*$/i))
+            throw new ValidationError("Поле пароль может содержать только цифры и буквы латинского алфавита");
+        return str;
+    },
+    validateString: (str, obj) => {
+        if (!str)
+            throw new ValidationError("Не заполнено поле " + obj);
+        if (!str.match(/^[a-z0-9,.()\-"!?;:' ]*$/i))
+            throw new ValidationError("Поле " + obj + " может содержать только цифры, буквы латинского алфавита и символы ',', '.', '(', ')', '-', '\"', '!', '?', ';', ':', '''");
+        return str;
     }
 };
 
 exports.validator = validator;
+exports.ValidationError = ValidationError;
