@@ -10,3 +10,4 @@
   roles:
     - common
     - cloud_node
+    - tcpimg
