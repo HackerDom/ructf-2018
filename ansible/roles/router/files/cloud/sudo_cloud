@@ -1,0 +1,2 @@
+cloud  ALL=NOPASSWD:/root/cloud/isolate_network.sh
+cloud  ALL=NOPASSWD:/root/cloud/open_network.sh

@@ -245,8 +245,6 @@ def cmd_take_snapshot(team, args):
     name = str(args[0])
     if not re.fullmatch(r"[0-9a-zA-Z_]+", name):
         return "422 Failed to take snapshot", {"result": "bad snapshot name"}
-    if len(args) < 2 or not args[1].startswith("coins_stopped"):
-        return "422 Failed to take snapshot", {"result": "please do 'systemctl stop PirateCoin' before making a snapshot\nor it never finishes. After that exec:\ntake_snapshot <snapshot_name> coins_stopped"}
     return create_task(team, "take_snapshot", "take_snapshot.py", [str(team), name])
 
 def cmd_list_snapshots(team, args):

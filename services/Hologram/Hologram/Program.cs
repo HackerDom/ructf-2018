@@ -21,6 +21,7 @@ namespace Hologram
 
 				var sleepPeriod = int.Parse(settings.GetValue("sleep"));
 				var ttl = int.Parse(settings.GetValue("ttl"));
+				Database.HologramField.Init();
 
 				var server = PrepareServer(settings);
 				Task.WhenAll(server.AcceptLoopAsync(CancellationToken.None)).Wait();

@@ -6,3 +6,4 @@
   roles:
     - common
     - cloud_master
+    - router

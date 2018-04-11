@@ -10,12 +10,12 @@ import os
 import re
 import shlex
 import subprocess
-
+from multiprocessing import Pool
 
 OVA_NAME = sys.argv[1]
 VM_NAME = sys.argv[2]
 
-CLOUD_IPS = ["10.60.1.253"]
+CLOUD_IPS = ["10.60.%d.253" % i for i in range(1, 32+1)]
 
 SSH_OPTS = [
     "-o", "StrictHostKeyChecking=no",
@@ -28,30 +28,41 @@ SSH_OPTS = [
     "-o", "User=root"
 ]
 
+THREAD_POOL_SIZE = 16
 
 def log_stderr(*params):
     print(*params, file=sys.stderr)
 
 
+def deploy(cloud_ip):
+    print("deploying %s:" % cloud_ip)
+
+    file_from = OVA_NAME
+    file_to_name = "/root/%s.ova" % VM_NAME
+    file_to = "%s:%s" % (cloud_ip, file_to_name)
+    ssh_arg = ["-e"] + [" ".join(map(shlex.quote, ["ssh"] + SSH_OPTS))]
+    code = subprocess.call(["rsync", "--progress"] + ssh_arg +
+                               [file_from, file_to])
+    if code != 0:
+        log_stderr("scp to CLOUD host %s failed" % cloud_ip)
+        return False
+
+    code = subprocess.call(["ssh"] + SSH_OPTS + [cloud_ip] +
+                           ["/cloud/scripts/reimport_vm.sh", VM_NAME])
+    if code != 0:
+        log_stderr("reimport vm failed on %s" % cloud_ip)
+        return False
+    return True
+
+
+
 def main():
-    for cloud_ip in CLOUD_IPS:
-        print("deploying %s:" % cloud_ip)
+    p = Pool(THREAD_POOL_SIZE)
 
-        file_from = OVA_NAME
-        file_to_name = "/root/%s.ova" % VM_NAME
-        file_to = "%s:%s" % (cloud_ip, file_to_name)
-        ssh_arg = ["-e"] + [" ".join(map(shlex.quote, ["ssh"] + SSH_OPTS))]
-        code = subprocess.call(["rsync", "--progress"] + ssh_arg +
-                                   [file_from, file_to])
-        if code != 0:
-            log_stderr("scp to CLOUD host %s failed" % cloud_ip)
-            return 1
+    result = dict(zip(CLOUD_IPS, p.map(deploy, CLOUD_IPS)))
+    for ip in sorted(result.keys()):
+        print("%s: %s" % (ip, result[ip]))
 
-        code = subprocess.call(["ssh"] + SSH_OPTS + [cloud_ip] +
-                               ["/cloud/scripts/reimport_vm.sh", VM_NAME])
-        if code != 0:
-            log_stderr("reimport vm failed on %s" % cloud_ip)
-            return 1
     return 0
 
 
