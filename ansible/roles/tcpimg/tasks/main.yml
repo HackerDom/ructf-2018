@@ -1,0 +1,18 @@
+- name: install tcpimg packages
+  apt: name={{item}} state=latest
+  with_items:
+    - xorg
+    - mplayer2
+    - xterm
+
+- name: copy xorg systemd service
+  copy: src=xorg.service dest=/lib/systemd/system/
+  notify: enable and restart xorg
+
+- name: copy tcpimg binary
+  copy: src=tcpimg dest=/root mode=755
+  notify: enable and restart tcpimg
+
+- name: copy tcpimg systemd service
+  copy: src=tcpimg.service dest=/lib/systemd/system/
+  notify: enable and restart tcpimg
