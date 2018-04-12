@@ -35,7 +35,7 @@ void get(ThinkererClient& client, const std::string& id, const std::string& flag
 
 int main(int argc, char** argv) {
   if (argc < 5) {
-    std::cerr << "Should be at least 2 parametes" << std::endl;
+    std::cerr << "Should be at least 4 parametes" << std::endl;
     exit(1);
   }
 
