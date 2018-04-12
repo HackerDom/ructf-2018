@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hologram.Handlers;
 using Hologram.Http;
-using Hologram.Utils;
 using log4net;
 using log4net.Config;
 
@@ -16,14 +15,9 @@ namespace Hologram
 			XmlConfigurator.Configure();
 			try
 			{
-				var settings = SimpleSettings.Create("settings");
+				Database.HologramField.Init(Settings.HologramsPath);
 
-
-				var sleepPeriod = int.Parse(settings.GetValue("sleep"));
-				var ttl = int.Parse(settings.GetValue("ttl"));
-				Database.HologramField.Init();
-
-				var server = PrepareServer(settings);
+				var server = PrepareServer();
 				Task.WhenAll(server.AcceptLoopAsync(CancellationToken.None)).Wait();
 			}
 			catch (Exception ex)
@@ -34,21 +28,11 @@ namespace Hologram
 			}
 		}
 
-		private static HttpServer PrepareServer(SimpleSettings settings)
+		private static HttpServer PrepareServer()
 		{
-			var port = int.Parse(settings.GetValue("port"));
-
-			var server = new HttpServer(port);
-
-			server
+			var server = new HttpServer(int.Parse(Settings.HttpPort));
+			return server
 				.AddHandler(HologramsHandler.Instance);
-//				.AddHandler(LoginHandler.Instance)
-//				.AddHandler(AddPointHandler.Instance)
-//				.AddHandler(GetAllPublicsHandler.Instance)
-//				.AddHandler(GetPointsHandler.Instance)
-//				.AddHandler(ShortestPathHandler.Instance);
-
-			return server;
 		}
 
 		private static readonly ILog Log = LogManager.GetLogger(typeof(Program));

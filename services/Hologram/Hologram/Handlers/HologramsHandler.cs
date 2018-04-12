@@ -58,7 +58,7 @@ namespace Hologram.Handlers
 
             if (!HologramField.TryGetHologram(guid, out var hologram))
                 await context.Response.WriteObjectAsync(
-                    new Dictionary<string, string> {["error"] = "no such id was found"});
+                    new Dictionary<string, string> {["error"] = "This id doesn't exist!"});
             else
                 await context.Response.WriteObjectAsync(NewHologram.FromHolo(hologram));
         }

@@ -36,6 +36,7 @@
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
@@ -50,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Database\HologramField.cs" />
+    <Compile Include="Database\Loaders\Dumper.cs" />
     <Compile Include="Handlers\HologramsHandler.cs" />
     <Compile Include="Handlers\Helpers\BaseHandler.cs" />
     <Compile Include="Handlers\Schemas\NewHologram.cs" />
@@ -63,18 +65,17 @@
     <Compile Include="Models\Point.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Utils\AsyncLockSource.cs" />
     <Compile Include="Utils\EnumerableExtentions.cs" />
     <Compile Include="Utils\JsonHelper.cs" />
     <Compile Include="Utils\ReflectionUtils.cs" />
     <Compile Include="Utils\RuntimeHelper.cs" />
-    <Compile Include="Utils\SimpleSettings.cs" />
     <Compile Include="Utils\StringUtils.cs" />
     <Compile Include="Utils\TaskUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
-    <Content Include="settings" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -98,7 +98,7 @@ namespace Hologram.Http
 		private async Task ProcessRequestAsync(HttpListenerContext context)
 		{
 			var possibleUrlHandlers = FindPossibleUrlHandlers(context.Request.Url.LocalPath);
-			if(possibleUrlHandlers == null)
+			if(ReferenceEquals(possibleUrlHandlers, null))
 				throw new HttpException(404, "Not Found");
 			
 			if(!possibleUrlHandlers.ContainsKey(context.Request.HttpMethod))
