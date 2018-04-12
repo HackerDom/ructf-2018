@@ -72,14 +72,19 @@ namespace Hologram.Database.Loaders
 
         private static IEnumerable<T> Load(string path)
         {
-            try 
+            try
             {
                 using (var fs = new FileStream(path, FileMode.Open))
                     return (IEnumerable<T>) new BinaryFormatter().Deserialize(fs);
             }
+            catch (FileNotFoundException e)
+            {
+                Log.Warn($"DB file doesn't exist!");
+                return null;
+            }
             catch (SerializationException e) 
             {
-                Console.WriteLine("Failed to deserialize. Reason: " + e.Message);
+                Log.Warn($"Failed to deserialize. Reason: {e.Message}");
                 return null;
             }
         }
