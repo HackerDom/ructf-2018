@@ -24,34 +24,77 @@ router
         await ctx.redirect('./home/1');
         await next();
     })
-    .get('/home/:page', async (ctx, next) => {
-        let currentPage = Number.parseInt(ctx.params.page);
-        if (!Number.parseInt(ctx.params.page) || currentPage < 0)
-            await ctx.redirect("/");
-        let bookCards = await catalog.catalog();
-        let pagesCount = Math.ceil(bookCards.length / 9);
-        if (pagesCount > 0 && pagesCount < currentPage)
-            await ctx.redirect("/");
-        let pages = Array.apply(null, {length: pagesCount}).map((n, i) => i + 1);
+    .get('/home/:page',
+        async (ctx, next) => {
+            try {
+                ctx.state.page = validator.validateNumber(ctx.params.page);
+                if (!ctx.state.page || ctx.state.page <= 0)
+                    throw new ValidationError();
+                await next();
+            } catch(e) {
+                if (e instanceof ValidationError)
+                    await ctx.redirect("/");
+                else
+                    throw e;
+            }
+        },
+        async (ctx, next) => {
+            let currentPage = ctx.state.page;
+            let bookCards = await catalog.catalog();
+            let pagesCount = Math.ceil(bookCards.length / 9);
+            if (pagesCount > 0 && pagesCount < currentPage)
+                await ctx.redirect("/");
+            let pages = Array.apply(null, {length: pagesCount}).map((n, i) => i + 1);
 
-        await ctx.render('./books/catalog', {
-            cards: bookCards.slice(9*(currentPage-1), 9*(currentPage)),
-            pages: pages,
-            nextPage: currentPage + 1,
-            previousPage: currentPage - 1
-        });
-        await next();
-    })
-    .get('/book', async (ctx, next) => {
-        let response = await book.book(ctx.query.id);
-        await ctx.render('./books/book', response);
-        await next();
-    })
-    .get('/create', async (ctx, next) => {
-        await ctx.render("./books/create", {params: {name: "", author: "", year: 2000, publisher: "", description: "", content: ""}});
-        await next();
-    })
-    .post('/add', koaBody,
+            await ctx.render('./books/catalog', {
+                cards: bookCards.slice(9*(currentPage-1), 9*(currentPage)),
+                pages: pages,
+                nextPage: currentPage + 1,
+                previousPage: currentPage - 1,
+                isAuthenticated: ctx.isAuthenticated()
+            });
+            await next();
+        })
+    .get('/book/:id',
+        async (ctx, next) => {
+            try {
+                ctx.state.id = validator.validateNumber(ctx.params.id);
+                if (ctx.state.id < 0)
+                    throw new ValidationError();
+                await next();
+            } catch(e) {
+                if (e instanceof ValidationError)
+                    await ctx.redirect("./service/404");
+                else
+                    throw e;
+            }
+        },
+        async (ctx, next) => {
+            let response = await book.book(ctx.state.id);
+            if (!response.book)
+                await ctx.redirect(".//service/404");
+            await ctx.render('./books/book', response);
+            await next();
+        })
+    .get('/create',
+        async (ctx, next) => {
+            if (!ctx.isAuthenticated())
+                await ctx.render("./service/404");
+            else
+                await next()
+        },
+        async (ctx, next) => {
+            await ctx.render("./books/create", { params: { name: "", author: "", year: 2000, publisher: "", description: "", content: "" }});
+            await next();
+        })
+    .post('/add',
+        async (ctx, next) => {
+            if (!ctx.isAuthenticated())
+                await ctx.render("./service/404");
+            else
+                await next()
+        },
+        koaBody,
         async (ctx, next) => {
             let body = ctx.request.body;
             try {

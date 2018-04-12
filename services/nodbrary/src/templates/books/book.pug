@@ -4,11 +4,13 @@ block content
     div(class="container")
         div(class="row")
             div(class="col-lg-11")
-                h1(class="mt-4") #{card.bookName}
-                p(class="lead") by #{card.author}
+                h1(class="mt-4") #{book.name}
+                p(class="lead") by #{book.author}
                 hr
-                p in #{card.year} #{card.publisher}
+                p in #{book.year} #{book.publisher}
                 hr
-                p(class="lead") #{card.bookDescription}
+                p(class="lead") #{book.description}
+                hr
+                p added by #{book.owner} on #{book.date}
                 hr
                 p(class="mt-4") #{book.content}
