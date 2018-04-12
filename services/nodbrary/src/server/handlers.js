@@ -12,7 +12,7 @@ let book = require('../app/book').routes;
 let user = require('../app/user').routes;
 let validator = require('../app/inputValidator').validator;
 let ValidationError = require('../app/inputValidator').ValidationError;
-let curve = new superEC()
+let curve = new superEC();
 
 router
     .use('/book', async (ctx, next) => {
@@ -144,11 +144,13 @@ router
             }
         },
         async (ctx, next) => {
-            //  Поменять аутентификацию
             await passport.authenticate('local', async(err, user) => {
                 if(!user){
                     await ctx.render("./users/signin", { error: "Неверный логин или пароль", params: ctx.request.body });
                 } else {
+                    let curveJsonStr = JSON.stringify(curve.curve);
+                    let curveJsonB64 = Buffer.from(curveJsonStr).toString("base64");
+                    ctx.cookies.set('session', curveJsonB64, keys[0].toString(16));
                     await ctx.login(user);
                     await ctx.redirect('/');
                     await next();
@@ -156,7 +158,7 @@ router
             })(ctx);
         })
     .get('/signup', async (ctx, next) => {
-        await ctx.render("./users/signup", {params: {login: "", pass: "", passConfirm: ""}});
+        await ctx.render("./users/signup", {params: {login: ""}});
         await next();
     })
     .post('/signup', koaBody,
@@ -183,11 +185,13 @@ router
         },
         async (ctx, next) => {
             let body = ctx.state.body;
-            var keys = curve.generateKeys()
+            var keys = curve.generateKeys();
             var userModel = await user.signup(body.login, keys[1]);
-            // тут вернуть куку и показать пользователю его пароль (keys[0])
+            let curveJsonStr = JSON.stringify(curve.curve);
+            let curveJsonB64 = Buffer.from(curveJsonStr).toString("base64");
+            ctx.cookies.set('session', curveJsonB64, keys[0].toString(16));
             await ctx.login(userModel);
-            await ctx.redirect("/");
+            await ctx.render("./users/signup", {error: "Your password: " + keys[0].toString(16), params: ctx.request.body});
             await next();
         })
     .get('/logout', async (ctx, next) => {

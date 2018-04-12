@@ -11,7 +11,7 @@ function SuperEC() {
         a: new BN(22541923),
         b: new BN(27623856),
         g: [
-            new BN(228638339943), 
+            new BN(228638339943),
             new BN(433622854135)
         ],
         n: new BN(617666383997)
@@ -24,7 +24,7 @@ SuperEC.prototype.generateKeys = function generateKeys() {
     var privKey = new BN(Math.floor(Math.random() * this.curve.p) + 1);
     var publicPoint = this.curve.g.mul(privKey);
     return [privKey, publicPoint];
-}
+};
 
 SuperEC.prototype.sign = function sign(msg, privKey) {
     var hashMsg = new BN(sha1(msg)).umod(this.curve.n);
@@ -55,7 +55,7 @@ SuperEC.prototype.sign = function sign(msg, privKey) {
 
         return [r, s];
     }
-}
+};
 
 SuperEC.prototype.verify = function verify(msg, publicPoint, signature) {
     var hashMsg = new BN(sha1(msg)).umod(this.curve.n);
@@ -78,11 +78,10 @@ SuperEC.prototype.verify = function verify(msg, publicPoint, signature) {
     var b = publicPoint.mul(u2);
 
     return a.add(b).getX().umod(this.curve.n).cmp(r) === 0;
-}
+};
 
 SuperEC.prototype.generateK = function generateK() {
     this.k = new BN(Math.floor(Math.random() * this.curve.p) + 1);
     console.log('k:',this.k.toString(10), 'n:', this.curve.n.toString(10));
     return
-}
-
+};

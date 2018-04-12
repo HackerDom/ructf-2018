@@ -1,6 +1,8 @@
 const passport = require('koa-passport');
 const User = require('./models/user');
 const Strategy = require('passport-local').Strategy;
+const superEC = require('../app/super-ec');
+let curve = new superEC();
 
 passport.use(new Strategy({
         usernameField: 'login',
@@ -13,7 +15,11 @@ passport.use(new Strategy({
             if (!user) {
                 return done(null, false);
             }
-            if (user.pass != password) {
+            let sign = curve.sign(msg, password);
+            let x = new BN(user.keyX);
+            let y = new BN(user.keyY);
+            let pubKey = curve.curve.point((x, y));
+            if (!curve.verify(msg, pubKey, sign)) {
                 return done(null, false);
             }
             return done(null, user);
