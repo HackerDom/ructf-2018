@@ -4,15 +4,16 @@ import shutil
 
 from config import CONFIG, SERVICES_PATH, NGINX_CONF_PATH
 
+STATIC_LOCATION_TEMPLATE = """
+    location /%s {
+                alias %s;
+        }
+"""
 
 NGINX_CONF_TEMPLATE = """server {
         listen %d default_server;
-
         server_name %s;
-
-        location /%s {
-                alias %s;
-        }
+        %s
         location / {
                 proxy_pass http://0.0.0.0:%d;
         }
@@ -20,11 +21,12 @@ NGINX_CONF_TEMPLATE = """server {
 
 
 def render_nginx_conf(name, external_port, docker_port, static_dir_path, static_dir_full_path):
+    static_record = STATIC_LOCATION_TEMPLATE % (static_dir_path, static_dir_full_path)\
+        if static_dir_path is not None else ""
     return NGINX_CONF_TEMPLATE % (
         external_port,
         name,
-        static_dir_path,
-        static_dir_full_path,
+        static_record,
         docker_port,
     )
 
@@ -33,8 +35,9 @@ def find_ports(service_name):
     flag = False
     with open(os.path.join(SERVICES_PATH, service_name, 'docker-compose.yml')) as service_file:
         for line in service_file:
+            print('in-file:', line)
             if flag:
-                ports = re.search(r'\"(\d{4}):(\d{4})\"', line)
+                ports = re.search(r'\"(\d+):(\d+)\"', line)
                 return int(ports.group(1)), int(ports.group(2))
             if line.strip() == "ports:":
                 flag = True
@@ -57,8 +60,8 @@ def main():
                 service_name,
                 external_port,
                 docker_port,
-                config['static_dir_path'],
-                os.path.join(os.getcwd(), config['static_dir_path']),
+                config.get('static_dir_path', None),
+                os.path.join(os.getcwd(), config['static_dir_path']) if 'static_dir_path' in config else None,
             ))
         os.chdir('..')
         os.system('ln -s {} {}'.format(
@@ -70,3 +73,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
