@@ -52,7 +52,7 @@ def main():
         print("deploying", service_name)
         docker_port, external_port = find_ports(service_name)
         os.chdir(os.path.join(SERVICES_PATH, service_name))
-
+        os.system('sudo docker-compose build')
         config = CONFIG[service_name]
         if not config.get('nonginx', False):
             with open(os.path.join(NGINX_CONF_PATH, 'sites-available', service_name), 'w') as nginx_conf:
