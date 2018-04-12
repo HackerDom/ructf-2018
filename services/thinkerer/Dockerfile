@@ -8,13 +8,13 @@ RUN curl https://bazel.build/bazel-release.pub.gpg | apt-key add -
 RUN apt-get update
 RUN apt-get install -y bazel git build-essential clang
 COPY thinkerer /thinkerer/thinkerer
+COPY proto /thinkerer/proto
 COPY WORKSPACE /thinkerer/
-COPY build.sh /thinkerer/
-COPY fetch.sh /thinkerer/
 WORKDIR /thinkerer
 RUN ls -lh
-RUN ./fetch.sh
-RUN ./build.sh
+RUN bazel build //thinkerer:all
+RUN ls -la ~
+RUN ls -la ~/.cache
 RUN ldd /thinkerer/bazel-bin/thinkerer/server
 
 FROM ubuntu:latest
