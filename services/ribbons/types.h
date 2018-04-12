@@ -29,6 +29,7 @@ struct Post {
 struct Channel *create_channel(int id, const char *name, const char *password, char* key);
 struct Post *create_post(char *text, size_t text_length);
 void append_post(struct Post **head, struct Post *post);
+void delete_posts(struct Channel *channel);
 void delete_channel(struct Channel* channel);
 
 #endif //RIBBONS_TYPES_H

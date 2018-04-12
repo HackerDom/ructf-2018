@@ -31,13 +31,12 @@ void append_post(struct Post **head, struct Post *post){
     current->next = post;
 }
 
+void delete_posts(struct Channel *channel) {
+    ITERATE_POSTS(channel, post, free(post));
+}
+
 void delete_channel(struct Channel* channel){
     free(channel->key);
-    struct Post *current = channel->posts;
-    while (current) {
-        struct Post *post = current;
-        current = current->next;
-        free(post);
-    }
+    delete_posts(channel);
     free(channel);
 }

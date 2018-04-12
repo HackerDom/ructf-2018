@@ -1,3 +1,5 @@
+#include <string.h>
+#include <stdlib.h>
 #include "constants.h"
 #include "types.h"
 #include "storage.h"
@@ -30,8 +32,11 @@ struct Channel *cache_find(int channel_id) {
 void cache_update(int channel_id, struct Channel *channel) {
     int index = find_index(channel_id);
     if (index != -1) {
-        delete_channel(channels_cache[index]);
-        channels_cache[index] = channel;
+        struct Channel *old_channel = channels_cache[index];
+        free(old_channel->key);
+        delete_posts(old_channel);
+        memcpy(channels_cache[index], channel, sizeof(struct Channel));
+        free(channel);
     } else {
         cache_add(channel);
     }
