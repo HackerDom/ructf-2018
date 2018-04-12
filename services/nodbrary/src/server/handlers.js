@@ -4,6 +4,7 @@ const Router = require('koa-router');
 const KoaBody = require('koa-body');
 const convert = require('koa-convert');
 const passport = require('koa-passport');
+const superEC = require('../app/super-ec');
 let router = new Router();
 let koaBody = convert(KoaBody());
 let catalog = require('../app/catalog').routes;
@@ -11,6 +12,7 @@ let book = require('../app/book').routes;
 let user = require('../app/user').routes;
 let validator = require('../app/inputValidator').validator;
 let ValidationError = require('../app/inputValidator').ValidationError;
+let curve = new superEC()
 
 router
     .use('/book', async (ctx, next) => {
@@ -130,7 +132,7 @@ router
             try {
                 let userSignInModel = {};
                 userSignInModel.login = validator.validateLogin(body.login);
-                userSignInModel.pass = validator.validatePass(body.pass);
+                userSignInModel.key = validator.validateString(body.key);
                 ctx.state.body = userSignInModel;
                 await next();
             } catch(e) {
@@ -142,6 +144,7 @@ router
             }
         },
         async (ctx, next) => {
+            //  Поменять аутентификацию
             await passport.authenticate('local', async(err, user) => {
                 if(!user){
                     await ctx.render("./users/signin", { error: "Неверный логин или пароль", params: ctx.request.body });
@@ -162,8 +165,6 @@ router
             try {
                 let userSignUpModel = {};
                 userSignUpModel.login = validator.validateLogin(body.login);
-                userSignUpModel.pass = validator.validatePass(body.pass);
-                userSignUpModel.passConfirm = validator.validatePass(body.passConfirm);
                 ctx.state.body = userSignUpModel;
                 await next();
             } catch(e) {
@@ -175,13 +176,6 @@ router
         },
         async (ctx, next) => {
             let body = ctx.state.body;
-            if (body.pass != body.passConfirm)
-                await ctx.render("./users/signup", {error: "Поле подтверждение пароля не совпадает с полем пароль", params: ctx.request.body});
-            else
-                await next();
-        },
-        async (ctx, next) => {
-            let body = ctx.state.body;
             if (await user.isExist(body.login))
                 await ctx.render("./users/signup", {error: "Такой пользователь уже существует", params: ctx.request.body});
             else
@@ -189,7 +183,9 @@ router
         },
         async (ctx, next) => {
             let body = ctx.state.body;
-            var userModel = await user.signup(body);
+            var keys = curve.generateKeys()
+            var userModel = await user.signup(body.login, keys[1]);
+            // тут вернуть куку и показать пользователю его пароль (keys[0])
             await ctx.login(userModel);
             await ctx.redirect("/");
             await next();

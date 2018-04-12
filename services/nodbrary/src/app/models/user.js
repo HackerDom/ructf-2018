@@ -11,7 +11,8 @@ let userSchema = new Schema({
         unique: true
     },
     login: String,
-    pass: String
+    keyX: String,
+    keyY: String
 });
 
 userSchema.plugin(autoIncrement.plugin, {model: 'User', field: 'id'});
