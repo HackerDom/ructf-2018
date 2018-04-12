@@ -35,7 +35,6 @@ def find_ports(service_name):
     flag = False
     with open(os.path.join(SERVICES_PATH, service_name, 'docker-compose.yml')) as service_file:
         for line in service_file:
-            print('in-file:', line)
             if flag:
                 ports = re.search(r'\"(\d+):(\d+)\"', line)
                 return int(ports.group(1)), int(ports.group(2))
@@ -55,19 +54,20 @@ def main():
         os.chdir(service_name)
         os.system('sudo docker-compose up -d')
         config = CONFIG[service_name]
-        with open(os.path.join(NGINX_CONF_PATH, 'sites-available', service_name), 'w') as nginx_conf:
-            nginx_conf.write(render_nginx_conf(
-                service_name,
-                external_port,
-                docker_port,
-                config.get('static_dir_path', None),
-                os.path.join(os.getcwd(), config['static_dir_path']) if 'static_dir_path' in config else None,
+        if not config.get('nonginx', False):
+            with open(os.path.join(NGINX_CONF_PATH, 'sites-available', service_name), 'w') as nginx_conf:
+                nginx_conf.write(render_nginx_conf(
+                    service_name,
+                    external_port,
+                    docker_port,
+                    config.get('static_dir_path', None),
+                    os.path.join(os.getcwd(), config['static_dir_path']) if 'static_dir_path' in config else None,
+                ))
+            os.chdir('..')
+            os.system('ln -s {} {}'.format(
+                os.path.join(NGINX_CONF_PATH, 'sites-available', service_name),
+                os.path.join(NGINX_CONF_PATH, 'sites-enabled', service_name),
             ))
-        os.chdir('..')
-        os.system('ln -s {} {}'.format(
-            os.path.join(NGINX_CONF_PATH, 'sites-available', service_name),
-            os.path.join(NGINX_CONF_PATH, 'sites-enabled', service_name),
-        ))
     os.system('sudo service nginx restart')
 
 
