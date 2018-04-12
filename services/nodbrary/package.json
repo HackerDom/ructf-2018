@@ -3,6 +3,7 @@
   "dependencies": {
     "config": "^1.30.0",
     "cross-env": "^5.1.4",
+    "elliptic": "^6.4.0",
     "koa": "2.5.0",
     "koa-body": "^2.5.0",
     "koa-compose": "^4.0.0",
@@ -16,7 +17,9 @@
     "mongoose": "^5.0.14",
     "mongoose-auto-increment": "^5.0.1",
     "passport-local": "^1.0.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "randomstring": "^1.1.5",
+    "sha1": "^1.1.1"
   },
   "devDependencies": {
     "rimraf": "2.5.2"

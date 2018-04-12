@@ -7,5 +7,5 @@ block content
         form(method="post", action="/signin", class="form-signin")
             h1(class="h3 mb-3 font-weight-normal") Please sign in
             input(type="text", placeholder="Login", name="login", class="form-control", value="" + params.login, id="login", required, autofocus)
-            input(type="password", placeholder="Password", name="pass", class="form-control", value="" + params.pass, id="pass", required)
+            input(type="text", placeholder="Password", name="key", class="form-control", value="" + params.key, id="key", required)
             input(class="btn btn-lg btn-primary btn-block btn-h", type="submit", id="button", value="Go")

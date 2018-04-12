@@ -123,7 +123,7 @@ router
             await next();
         })
     .get('/signin', async (ctx, next) => {
-        await ctx.render("./users/signin", {params: {login: "", pass: ""}});
+        await ctx.render("./users/signin", {params: {login: "", key: ""}});
         await next();
     })
     .post('/signin', koaBody,
@@ -132,7 +132,7 @@ router
             try {
                 let userSignInModel = {};
                 userSignInModel.login = validator.validateLogin(body.login);
-                userSignInModel.key = validator.validateString(body.key);
+                userSignInModel.key = validator.validateHex(body.key);
                 ctx.state.body = userSignInModel;
                 await next();
             } catch(e) {
@@ -144,14 +144,23 @@ router
             }
         },
         async (ctx, next) => {
-            await passport.authenticate('local', async(err, user) => {
-                if(!user){
+            await passport.authenticate('local', async(err, body) => {
+                if(!body){
                     await ctx.render("./users/signin", { error: "Неверный логин или пароль", params: ctx.request.body });
                 } else {
-                    let curveJsonStr = JSON.stringify(curve.curve);
+                    var key = body.key;
+                    let curveJsonStr = JSON.stringify({
+                        p:curve.curve.p.toString(16),
+                        a:curve.curve.a.toString(16),
+                        b:curve.curve.b.toString(16),
+                        n:curve.curve.n.toString(16),
+                        gX:curve.curve.g.getX().toString(16),
+                        gY:curve.curve.g.getY().toString(16),
+                        priv_key:key
+                    });
                     let curveJsonB64 = Buffer.from(curveJsonStr).toString("base64");
-                    ctx.cookies.set('session', curveJsonB64, keys[0].toString(16));
-                    await ctx.login(user);
+                    ctx.cookies.set('session', curveJsonB64);
+                    await ctx.login(body.user);
                     await ctx.redirect('/');
                     await next();
                 }
@@ -185,11 +194,19 @@ router
         },
         async (ctx, next) => {
             let body = ctx.state.body;
-            var keys = curve.generateKeys();
-            var userModel = await user.signup(body.login, keys[1]);
-            let curveJsonStr = JSON.stringify(curve.curve);
+            let keys = curve.generateKeys();
+            let userModel = await user.signup(body.login, keys[1]);
+            let curveJsonStr = JSON.stringify({
+                p:curve.curve.p.toString(16),
+                a:curve.curve.a.toString(16),
+                b:curve.curve.b.toString(16),
+                n:curve.curve.n.toString(16),
+                gX:curve.curve.g.getX().toString(16),
+                gY:curve.curve.g.getY().toString(16),
+                priv_key:keys[0].toString(16)
+            });
             let curveJsonB64 = Buffer.from(curveJsonStr).toString("base64");
-            ctx.cookies.set('session', curveJsonB64, keys[0].toString(16));
+            ctx.cookies.set('session', curveJsonB64);
             await ctx.login(userModel);
             await ctx.render("./users/signup", {error: "Your password: " + keys[0].toString(16), params: ctx.request.body});
             await next();
