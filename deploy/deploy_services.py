@@ -42,7 +42,8 @@ def find_ports(service_name):
 
 def main():
     print("copying files")
-    shutil.rmtree(SERVICES_PATH)
+    if os.path.isdir(SERVICES_PATH):
+        shutil.rmtree(SERVICES_PATH)
     shutil.copytree('../services', SERVICES_PATH)
     os.chdir(SERVICES_PATH)
     for service_name, service_settings in CONFIG.items():
