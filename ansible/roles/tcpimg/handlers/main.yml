@@ -3,3 +3,6 @@
 
 - name: enable and restart tcpimg
   service: name=tcpimg enabled=yes state=restarted
+
+- name: enable and restart disable_screen_turning_off
+  service: name=disable_screen_turning_off enabled=yes state=restarted

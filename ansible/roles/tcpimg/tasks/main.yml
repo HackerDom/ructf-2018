@@ -19,3 +19,10 @@
 - name: copy tcpimg systemd service
   copy: src=tcpimg.service dest=/lib/systemd/system/
   notify: enable and restart tcpimg
+
+- name: copy disable_screen_turning_off systemd service
+  copy: src=disable_screen_turning_off.service dest=/lib/systemd/system/
+  notify: enable and restart disable_screen_turning_off
+
+  
+  
