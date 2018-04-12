@@ -1,9 +1,10 @@
 #!/bin/bash
 # sudo rm /etc/apt/sources.list
 # sudo cp sources.list /etc/apt/sources.list
-sudo apt-get update
+sudo apt-get update && sudo apt-get upgrade
 sudo apt-get install -y nginx libltdl7 gcc make perl
 sudo cp cloud-init.service /lib/systemd/system/
+sudo cp cloud-init.sh /etc/cloud-init/
 sudo systemctl enable cloud-init
 sudo mount /dev/cdrom /mnt
 sudo /mnt/VBoxLinuxAdditions.run
