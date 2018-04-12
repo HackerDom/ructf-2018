@@ -1,0 +1,10 @@
+version: '2.2'
+services:
+  thinkerer:
+    build: .
+    ports:
+      - "50052:50051"
+    restart: on-failure
+    mem_limit: 512m
+    mem_reservation: 128m
+
