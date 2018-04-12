@@ -51,7 +51,7 @@ def main():
     for service_name, service_settings in CONFIG.items():
         print("deploying", service_name)
         docker_port, external_port = find_ports(service_name)
-        os.chdir(service_name)
+        os.chdir(os.path.join(SERVICES_PATH, service_name))
         os.system('sudo docker-compose up -d')
         config = CONFIG[service_name]
         if not config.get('nonginx', False):
