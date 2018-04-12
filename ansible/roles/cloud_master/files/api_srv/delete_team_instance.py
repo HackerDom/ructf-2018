@@ -22,11 +22,6 @@ def log_stderr(*params):
 
 
 def main():
-    team_state = open("db/team%d/team_state" % TEAM).read().strip()
-    if team_state != "NOT_CLOUD":
-        log_stderr("isolate the network first")
-        return 1
-
     image_state = open("db/team%d/image_deploy_state" % TEAM).read().strip()
 
     if image_state == "RUNNING":

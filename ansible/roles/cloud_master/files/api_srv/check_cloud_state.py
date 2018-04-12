@@ -33,9 +33,8 @@ def log_team(team, *params):
     log_stderr("team %d:" % team, *params)
 
 
-def get_vm_states():
+def get_image_states():
     image_states = {}
-    team_states = {}
 
     for filename in os.listdir("db"):
         m = re.fullmatch(r"team([0-9]+)", filename)
@@ -46,11 +45,9 @@ def get_vm_states():
             image_state = open("db/%s/image_deploy_state" % (filename)).read().strip()
             image_states[team] = image_state
 
-            team_state = open("db/%s/team_state" % (filename)).read().strip()
-            team_states[team] = team_state
         except FileNotFoundError: 
             log_team(team, "failed to load states")
-    return image_states, team_states
+    return image_states
 
 
 def get_cloud_ips():
@@ -97,11 +94,10 @@ def get_running_vms_on_cloud_ip(cloud_ip):
 
 
 def main():
-    image_states, team_states = get_vm_states()
+    image_states = get_image_states()
     cloud_ips = get_cloud_ips()
     #cloud_ips = {"cld1": "10.60.1.253"}
 
-    assert image_states.keys() == team_states.keys()
     teams = list(image_states.keys())
 
     p = Pool(THREAD_POOL_SIZE)
@@ -142,9 +138,6 @@ def main():
                     log_team(team, "image state is RUNNING but there another vm on cloud_ip %s" % check_cloud_ip)
                 elif team in cloud_ip_to_running_vms[check_cloud_ip]:
                     log_team(team, "image state is RUNNING but there another running vm on cloud_ip %s" % check_cloud_ip)
-
-        if team_states[team] == "NOT_CLOUD" and image_states[team] == "NOT_STARTED":
-            log_team(team, "team state is NOT_CLOUD, but image state is NOT_STARTED")
             
     return 0
     
