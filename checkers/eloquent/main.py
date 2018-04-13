@@ -1,15 +1,12 @@
 import re
 import traceback
-from copy import copy
 from hashlib import sha256
 from base64 import b64encode
-from time import time
 
 import sys
 
 import markdown
 from markdown.extensions.toc import TocExtension
-from selenium import webdriver
 
 from generators import gen_login, gen_password, gen_article_title, gen_article_content, gen_flag
 from service_api import signin, signup, post_article, get_article_content, GET_ARTICLE_URL, PORT, get_driver, \
@@ -117,34 +114,15 @@ def get(host, flag_id, flag, vuln):
 COMMANDS = {'check': check, 'put': put, 'get': get, 'info': info}
 
 
-def main_():
+def main():
     try:
         COMMANDS.get(sys.argv[1], not_found)(*sys.argv[2:])
+    except ApiException as e:
+        print_to_stderr(e.exc_message)
+        print(int(e.exc_type.value))
     except Exception:
         traceback.print_exc()
         exit(CHECKER_ERROR)
-
-
-def main():
-    try:
-        print('OK, CORRUPT, MUMBLE, DOWN, CHECKER_ERROR = 101, 102, 103, 104, 110')
-        # host = "10.60.1.1"
-        host = "0.0.0.0"
-        # check(host)
-        # flag = gen_flag()
-        # flag_id = put(host, 'kek', flag, 1)
-        # get(host, flag_id, flag, 1)
-        username = gen_login()
-        password = gen_password()
-        print(username, password)
-        put(host, '', '=FLAG', '')
-        driver = get_driver()
-        emulate_articles_view(driver, host, username, password)
-        driver.close()
-
-    except ApiException as e:
-        print_to_stderr(e.exc_message)
-        print(e.exc_type)
 
 if __name__ == '__main__':
     main()

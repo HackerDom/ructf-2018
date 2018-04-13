@@ -1,12 +1,9 @@
-import json
 from enum import Enum
-from time import sleep
 
 import re
 import requests
-from requests.cookies import RequestsCookieJar
-from requests.exceptions import ConnectTimeout, ConnectionError
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 
 PORT = 8080
@@ -23,8 +20,8 @@ GET_ARTICLE_URL = "http://{host}:{port}/article/{article_id}"
 SET_VAL_BY_NAME_SCRIPT_TEMPLATE = """$('[name="{}"]').val("{}")"""
 MY_SUGGESTIONS = "http://{host}:{port}/suggestions"
 MY_ARTICLES = "http://{host}:{port}/my-articles"
-TABLE_OF_CONTENTS_PATTERN = re.compile(r'<a\shref=\"#(.+)\">.{1,5}\)')
 
+TABLE_OF_CONTENTS_PATTERN = re.compile(r'<a\shref=\"#.+\">(.+)</a>')
 ARTICLE_BTN_TEMPLATE = re.compile(r'<a\shref=\"/article/(\d+)\"\sclass=\"btn\sbtn-primary\sbottom-btn\"')
 ARTICLE_ID_TEMPLATE = re.compile(r"/article/(\d+)")
 
@@ -56,6 +53,7 @@ def api_method(func):
 def get_driver():
     # driver = webdriver.PhantomJS(service_log_path='/dev/null')
     # driver.set_window_size(1600, 900)
+    # driver.set_page_load_timeout(5)
     # return driver
     return webdriver.Chrome()
 
@@ -169,12 +167,14 @@ def set_field_val_by_name(driver, field_name, value):
     driver.execute_script(SET_VAL_BY_NAME_SCRIPT_TEMPLATE.format(field_name, value))
 
 
-def emulate_articles_view(driver, host, username, password):
-    sign_in_with_driver(driver, host, username, password)
-    sleep(10)
-    driver.get(MY_SUGGESTIONS.format(host=host, port=PORT))
-    source = driver.page_source
-    for article_id in re.findall(ARTICLE_BTN_TEMPLATE, source):
-        driver.get(GET_ARTICLE_URL.format(host=host, port=PORT, article_id=article_id))
-        for href in re.findall(TABLE_OF_CONTENTS_PATTERN, driver.page_source):
-            click_link(driver, '#' + href)
+def emulate_articles_view(driver: webdriver.Chrome, host, username, password):
+    try:
+        sign_in_with_driver(driver, host, username, password)
+        driver.get(MY_SUGGESTIONS.format(host=host, port=PORT))
+        source = driver.page_source
+        for article_id in re.findall(ARTICLE_BTN_TEMPLATE, source):
+            driver.get(GET_ARTICLE_URL.format(host=host, port=PORT, article_id=article_id))
+            for href in re.findall(TABLE_OF_CONTENTS_PATTERN, driver.page_source):
+                driver.find_element_by_link_text(href).click()
+    except NoSuchElementException as e:
+        raise ApiException(ExceptionType.MUMBLE, e)
