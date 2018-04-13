@@ -11,10 +11,16 @@ $(document).ready(function() {
 
     $("#tag_input").keyup(function(event) {
         if(event.keyCode==13) {
-            addTag(event.target.value);
-            $(".tags").removeClass("show");
-            $(".dropdown-menu").removeClass("show");
-            event.target.value = "";
+            $("#tag_input").removeClass("red-input");
+            var tag = event.target.value;
+            if (!tag.match(/^[a-z0-9,.()\-"!?;:'= ]*$/i))
+                $("#tag_input").addClass("red-input");
+            else
+            {
+                addTag(tag);
+                $(".tags").removeClass("show");
+                $(".dropdown-menu").removeClass("show");
+            }
         }
     });
 });

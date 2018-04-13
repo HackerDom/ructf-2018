@@ -59,7 +59,7 @@ let projectRoot = __dirname;
 let staticRoot = path.join(projectRoot, '../public');
 console.log(staticRoot);
 
-app.keys = ["secret"];
+app.keys = config.get('session.keys');
 
 var middlewareStack = [
     require('koa-session')(app),
