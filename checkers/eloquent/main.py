@@ -1,3 +1,4 @@
+#!/bin/python3
 import re
 import traceback
 from hashlib import sha256
