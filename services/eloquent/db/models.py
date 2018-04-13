@@ -31,7 +31,7 @@ if not User.table_exists():
 SORT_MAP = {
     'username': User.name,
     'rtime': User.registration_date.desc(),
-    'pac': User.articles_count,
+    'pac': User.articles_count.desc(),
 }
 
 
