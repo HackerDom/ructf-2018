@@ -148,6 +148,8 @@ def post_article():
     user_suggestion = request.GET.get('user', None)
     if not create_article(title, content, username, user_suggestion):
         abort(400, "Incorrect article content or title")
+    if not is_username_busy(user_suggestion):
+        abort(400, "Suggested user doesn't exist")
     if user_suggestion is None:
         redirect('/my-articles')
     else:
@@ -198,3 +200,4 @@ def view_article(art_id):
 
 def start_web_server(host='0.0.0.0', port=8080):
     run(host=host, port=port, server='gunicorn', workers=10)
+
