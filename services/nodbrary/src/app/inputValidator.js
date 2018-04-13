@@ -29,8 +29,8 @@ let validator = {
     validateString: (str, obj) => {
         if (!str)
             throw new ValidationError("Не заполнено поле " + obj);
-        if (!str.match(/^[a-z0-9,.()\-"!?;:' ]*$/i))
-            throw new ValidationError("Поле " + obj + " может содержать только цифры, буквы латинского алфавита и символы ',', '.', '(', ')', '-', '\"', '!', '?', ';', ':', '''");
+        if (!str.match(/^[a-z0-9,.()\-"!?;:'= ]*$/i))
+            throw new ValidationError("Поле " + obj + " может содержать только цифры, буквы латинского алфавита и символы ',', '.', '(', ')', '-', '\"', '!', '?', ';', ':', ''', '='");
         return str;
     },
     validateHex: (str, obj) => {

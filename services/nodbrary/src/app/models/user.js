@@ -6,14 +6,13 @@ autoIncrement.initialize(mongoose.connection);
 
 let Schema = mongoose.Schema;
 let userSchema = new Schema({
-    id: {
-        type: Number,
-        unique: true
-    },
+    id:  Number,
     login: String,
     keyX: String,
     keyY: String
 });
+
+userSchema.index({ id: 1, login: 1 }, { unique: true });
 
 userSchema.plugin(autoIncrement.plugin, {model: 'User', field: 'id'});
 module.exports = mongoose.model('User', userSchema);
