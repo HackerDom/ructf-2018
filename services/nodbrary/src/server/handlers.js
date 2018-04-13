@@ -70,10 +70,16 @@ router
             }
         },
         async (ctx, next) => {
-            let response = await book.book(ctx.state.id);
-            if (!response.book)
+            let result = await book.book(ctx.state.id);
+            let tags = null;
+            let auth = false;
+            if (ctx.isAuthenticated()) {
+                tags = await book.tags(ctx.state.user.id, ctx.state.id);
+                auth = true;
+            }
+            if (!result)
                 await ctx.redirect(".//service/404");
-            await ctx.render('./books/book', response);
+            await ctx.render('./books/book', {book: result, tags: tags, auth: auth});
             await next();
         })
     .get('/create',
@@ -198,7 +204,35 @@ router
         ctx.logout();
         await ctx.redirect("/");
         await next();
-    });
+    })
+    .post('/tag',
+        async (ctx, next) => {
+            if (!ctx.isAuthenticated())
+                ctx.response.status = 403;
+            else
+                await next()
+        }, koaBody,
+        async (ctx, next) => {
+            let body = ctx.request.body;
+            try {
+                let bookId = validator.validateNumber(body.bookId);
+                let tag = validator.validateString(body.tag);
+                if (tag.length > 20)
+                    throw new ValidationError("");
+                ctx.state.body = {bookId: bookId, tag: tag};
+                await next();
+            } catch(e) {
+                if (e instanceof ValidationError)
+                    ctx.response.status = 404;
+                else
+                    throw e;
+            }
+        },
+        async (ctx, next) => {
+            book.addTag(ctx.state.user.id, ctx.state.body.bookId, ctx.state.body.tag);
+            ctx.response.status = 200;
+            await next();
+        });
 
 exports.routes = () => { return router.routes() };
 exports.allowedMethods = () => { return router.allowedMethods() };

@@ -2,7 +2,7 @@ extends ../main.pug
 
 block content
     if error != undefined
-        div(class="error") #{error}
+        div(class="alert alert-danger", role="alert") #{error}
     div(class="text-center")
         form(method="post", action="/signin", class="form-signin")
             h1(class="h3 mb-3 font-weight-normal") Please sign in

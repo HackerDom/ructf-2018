@@ -3,6 +3,7 @@
 const Book = require('./models/book');
 const Card = require('./models/card');
 const User = require('./models/user');
+const Tag = require('./models/tag');
 
 const book = {
     book: async (id) => {
@@ -35,6 +36,21 @@ const book = {
         });
         await bookCard.save();
         return bookModel.id;
+    },
+    tags: async (userId, bookId) => {
+        let tags = await Tag.findOne({"userId": userId, "bookId": bookId}).exec();
+        console.log(tags);
+        if(tags)
+            return tags.tags;
+    },
+    addTag: async (userId, bookId, tag) => {
+        let tags = await Tag.findOne({"userId": userId, "bookId": bookId}).exec();
+        if (!tags) {
+            tags = new Tag({userId: userId, bookId: bookId, tags: [tag]});
+            await tags.save();
+        } else {
+            await Tag.update({"userId": userId, "bookId": bookId}, {$push: {"tags": tag}}).exec();
+        }
     }
 };
 
