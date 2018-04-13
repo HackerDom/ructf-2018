@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Hologram.Database.Loaders;
+using Hologram.Handlers.Schemas;
 using Hologram.Models;
 using log4net;
 
@@ -11,10 +12,12 @@ namespace Hologram.Database
     public static class HologramField
     {
         private static ConcurrentDictionary<Guid, Holo> Holograms;
+        private static Action<Holo, string> _listener;
 
-        public static void Init(string path)
+        public static void Init(string path, Action<Holo, string> listener)
         {
             Holograms = new ConcurrentDictionary<Guid, Holo>();
+            _listener = listener;
 
             var dumper = Dumper<Holo>
                 .Create(path, DumpHologramsAsync)
@@ -32,6 +35,7 @@ namespace Hologram.Database
 
         public static Guid AddHologram(Holo holo)
         {
+            _listener(holo, null);
             Holograms[holo.Id] = holo;
             return holo.Id;
         }

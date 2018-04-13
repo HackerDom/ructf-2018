@@ -24,17 +24,7 @@ namespace Hologram.Handlers
             {
                 [HttpMethod.Get] = GetHologramAsync,
                 [HttpMethod.Post] = PostHologramAsync,
-                [HttpMethod.Put] = PutHologramLookuper
             };
-
-        private async Task PutHologramLookuper(HttpListenerContext context) // todo logic + ws alternative
-        {
-            var query = context.Request.Query();
-            if (!int.TryParse(query.Find(x => x.key == "rad").value, out var rad) || rad > searchRadiusLimit)
-                throw new HttpException(400, $"Radius should be lower than {searchRadiusLimit}");
-            await context.WriteStringAsync($"{string.Join(",", query)} and dict: {string.Join(",", query.ToDictionary(x => (x.key, x.value)))}")
-                .ConfigureAwait(false);
-        }
 
         private async Task PostHologramAsync(HttpListenerContext context)
         {
