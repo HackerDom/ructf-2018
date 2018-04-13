@@ -5,39 +5,32 @@ class ValidationError extends Error{}
 let validator = {
     validateNumber: (str, obj) => {
         if (!str)
-            throw new ValidationError("Не заполнено поле " + obj);
+            throw new ValidationError("Field " + obj + "couldn't be empty");
         let number = Number.parseInt(str);
         if (number === Number.NaN)
-            throw new ValidationError("Поле " + obj + " должно быть числом");
+            throw new ValidationError("Field " + obj + " must be a digit");
         return number;
     },
     validateLogin: str => {
         if (!str)
-            throw new ValidationError("Не заполнено поле логин");
+            throw new ValidationError("Field login couldn't be empty");
         str = str.toLowerCase();
         if (!str.match(/^[a-z0-9]*$/i))
-            throw new ValidationError("Поле логин может содержать только цифры и буквы латинского алфавита");
+            throw new ValidationError("Field login must contains only letters, digits");
         return str;
     },
-    // validatePass: str => {
-    //     if (!str)
-    //         throw new ValidationError("Не заполнено поле пароль");
-    //     if (!str.match(/^[a-z0-9]*$/i))
-    //         throw new ValidationError("Поле пароль может содержать только цифры и буквы латинского алфавита");
-    //     return str;
-    // },
     validateString: (str, obj) => {
         if (!str)
-            throw new ValidationError("Не заполнено поле " + obj);
+            throw new ValidationError("Field " + obj + " couldn't be empty");
         if (!str.match(/^[a-z0-9,.()\-"!?;:'= ]*$/i))
-            throw new ValidationError("Поле " + obj + " может содержать только цифры, буквы латинского алфавита и символы ',', '.', '(', ')', '-', '\"', '!', '?', ';', ':', ''', '='");
+            throw new ValidationError("Field  " + obj + " must contains only letters, digits or symbols: ',', '.', '(', ')', '-', '\"', '!', '?', ';', ':', ''', '='");
         return str;
     },
     validateHex: (str, obj) => {
         if (!str)
-            throw new ValidationError("Не заполнено поле " + obj);
+            throw new ValidationError("Field " + obj + "couldn't be empty");
         if (!str.match(/^[a-f0-9]*$/i))
-            throw new ValidationError("Поле " + obj + " может содержать только hex-символы");
+            throw new ValidationError("Field " + obj + " must contains only hex-symbols");
         return str;
     }
 };

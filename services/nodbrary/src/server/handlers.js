@@ -107,12 +107,12 @@ router
             let body = ctx.request.body;
             try {
                 let bookModel = {};
-                bookModel.name = validator.validateString(body.name, "Название книги");
-                bookModel.author = validator.validateString(body.author, "Автор");
-                bookModel.year = validator.validateNumber(body.year, "Год");
-                bookModel.publisher = validator.validateString(body.publisher, "Издатель");
-                bookModel.description = validator.validateString(body.description, "Описание книги");
-                bookModel.content = validator.validateString(body.content, "Текст книги");
+                bookModel.name = validator.validateString(body.name, "Book name");
+                bookModel.author = validator.validateString(body.author, "Author");
+                bookModel.year = validator.validateNumber(body.year, "Year");
+                bookModel.publisher = validator.validateString(body.publisher, "Publisher");
+                bookModel.description = validator.validateString(body.description, "Book Description");
+                bookModel.content = validator.validateString(body.content, "Book Content");
                 ctx.state.body = bookModel;
                 await next();
             } catch(e) {
@@ -152,7 +152,7 @@ router
         async (ctx, next) => {
             await passport.authenticate('local', async(err, body) => {
                 if(!body){
-                    await ctx.render("./users/signin", { error: "Неверный логин или пароль", params: ctx.request.body });
+                    await ctx.render("./users/signin", { error: "Incorrect login or password", params: ctx.request.body });
                 } else {
                     var key = body.key;
                     let curveJsonStr = curve.toJSONwithKey(key);
@@ -186,7 +186,7 @@ router
         async (ctx, next) => {
             let body = ctx.state.body;
             if (await user.isExist(body.login))
-                await ctx.render("./users/signup", {error: "Такой пользователь уже существует", params: ctx.request.body});
+                await ctx.render("./users/signup", {error: "This user already exists", params: ctx.request.body});
             else
                 await next();
         },
