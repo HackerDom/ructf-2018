@@ -1,4 +1,4 @@
-FROM ubuntu:latest as build
+FROM ubuntu:latest
 
 RUN sed -i 's|http://archive|http://ru.archive|g' /etc/apt/sources.list
 RUN apt-get update
@@ -13,13 +13,7 @@ COPY WORKSPACE /thinkerer/
 WORKDIR /thinkerer
 RUN ls -lh
 RUN bazel build //thinkerer:all
-RUN ls -la ~
-RUN ls -la ~/.cache
-RUN ldd /thinkerer/bazel-bin/thinkerer/server
+RUN mkdir -p /thinkerer/data
 
-FROM ubuntu:latest
-WORKDIR /bin
-COPY --from=build /thinkerer/bazel-bin/thinkerer/server /bin
-
-ENTRYPOINT /bin/server
+ENTRYPOINT /thinkerer/bazel-bin/thinkerer/server
 EXPOSE 50051
