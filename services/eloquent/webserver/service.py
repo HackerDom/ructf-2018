@@ -23,6 +23,8 @@ def user_page(user_page_name):
     username = request.get_cookie('login')
     if not sm.validate_session():
         redirect('/')
+    if not is_username_busy(user_page_name):
+        abort(400, "User doesn't exist")
     return {
         'login': username,
         'user_page_name': user_page_name,
@@ -131,6 +133,9 @@ def create_article_func():
     if not sm.validate_session():
         redirect('/')
     user_page_name = request.GET.get('user', '')
+    if user_page_name != '':
+        if not is_username_busy(user_page_name):
+            abort(400, "Suggested user doesn't exist")
     username = request.get_cookie('login')
     return {
         'user_page_name': user_page_name,
@@ -146,10 +151,11 @@ def post_article():
     content = request.forms.getunicode('content')
     username = request.get_cookie('login')
     user_suggestion = request.GET.get('user', None)
+    if user_suggestion is not None:
+        if not is_username_busy(user_suggestion):
+            abort(400, "Suggested user doesn't exist")
     if not create_article(title, content, username, user_suggestion):
         abort(400, "Incorrect article content or title")
-    if not is_username_busy(user_suggestion):
-        abort(400, "Suggested user doesn't exist")
     if user_suggestion is None:
         redirect('/my-articles')
     else:
