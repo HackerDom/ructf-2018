@@ -1,6 +1,9 @@
 CONFIG = {
     'eloquent': {
         'static_dir_path': 'static',
+    },
+    'thinkerer': {
+        'nonginx': True
     }
 }
 

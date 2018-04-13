@@ -7,13 +7,9 @@ RUN echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8
 RUN curl https://bazel.build/bazel-release.pub.gpg | apt-key add -
 RUN apt-get update
 RUN apt-get install -y bazel git build-essential clang
-COPY thinkerer /thinkerer/thinkerer
+COPY checker /thinkerer/checker
 COPY proto /thinkerer/proto
 COPY WORKSPACE /thinkerer/
 WORKDIR /thinkerer
 RUN ls -lh
-RUN bazel build //thinkerer:all
-RUN mkdir -p /thinkerer/data
-
-ENTRYPOINT /thinkerer/bazel-bin/thinkerer/server
-EXPOSE 50051
+RUN bazel build //checker:all

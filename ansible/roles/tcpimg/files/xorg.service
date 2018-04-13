@@ -2,7 +2,7 @@
     Description=Xorg
 
 [Service]
-    ExecStart=/usr/bin/Xorg
+    ExecStart=/root/startxorg.sh
     WorkingDirectory=/root
     User=root
     Group=root

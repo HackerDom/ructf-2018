@@ -5,8 +5,8 @@
 
 #include <grpc++/grpc++.h>
 
-#include "thinkerer/proto/thinkerer.pb.h"
-#include "thinkerer/proto/thinkerer.grpc.pb.h"
+#include "proto/thinkerer.pb.h"
+#include "proto/thinkerer.grpc.pb.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;

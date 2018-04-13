@@ -97,3 +97,4 @@ def publish_article(username, article_id):
         .where(User.id == user.id)\
         .execute()
     return True
+

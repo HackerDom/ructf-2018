@@ -63,7 +63,7 @@
                 {% for _ in range(header['deep']) %}
                 &emsp;
                 {% endfor %}
-                <a href="#{{header['r_id']}}">{{ header['index'] }}) {{ header['header'] }}</a></p>
+                <a href="#{{header['r_id']}}">{{ header['index'] }}) {{ header['header'].lower() }}</a></p>
             {% endfor %}
         </div>
         {% endif %}
