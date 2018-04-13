@@ -25,7 +25,7 @@ TABLE_OF_CONTENTS_PATTERN = re.compile(r'<a\shref=\"#.+\">(.+)</a>')
 ARTICLE_BTN_TEMPLATE = re.compile(r'<a\shref=\"/article/(\d+)\"\sclass=\"btn\sbtn-primary\sbottom-btn\"')
 ARTICLE_ID_TEMPLATE = re.compile(r"/article/(\d+)")
 
-TIMEOUT = 2
+TIMEOUT = 10
 
 
 class ExceptionType(Enum):
@@ -177,3 +177,4 @@ def emulate_articles_view(driver: webdriver.Chrome, host, username, password):
                 driver.find_element_by_link_text(href).click()
     except NoSuchElementException as e:
         raise ApiException(ExceptionType.MUMBLE, e)
+
