@@ -7,7 +7,7 @@ if ! [[ $vm =~ ^[a-zA-Z_0-9]+$ ]]; then
   exit 1
 fi
 
-vm_path="/root/${vm}.ova"
+vm_path="/home/cloud/${vm}.ova"
 
 if [ ! -f "$vm_path" ]; then
   echo "there is no file ${vm_path}"
@@ -22,4 +22,5 @@ done
 VBoxManage import "$vm_path" --vsys 0 --vmname "$vm"
 VBoxManage modifyvm "$vm" --cpus=8
 VBoxManage modifyvm "$vm" --bridgeadapter1 "eth0"
+VBoxManage modifyvm "$vm" --nic1 bridged
 vboxmanage snapshot "$vm" take initial
