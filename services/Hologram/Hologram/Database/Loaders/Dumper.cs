@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using System.Threading;
 using log4net;
 
@@ -12,11 +11,11 @@ namespace Hologram.Database.Loaders
     public class Dumper<T>
     {
         private int secondsToSleep;
-        private string path;
-        private Func<IEnumerable<T>> objectsCollectionExtractor;
+        private readonly string path;
+        private readonly Func<IEnumerable<T>> objectsCollectionExtractor;
         private Thread worker;
-        
-        internal Dumper(string path, Func<IEnumerable<T>> objectsCollectionExtractor)
+
+        private Dumper(string path, Func<IEnumerable<T>> objectsCollectionExtractor)
         {
             secondsToSleep = 30;
             this.path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);

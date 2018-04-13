@@ -15,7 +15,6 @@ namespace Hologram.Handlers
     public class HologramsHandler: BaseHandler
     {
         public static readonly BaseHandler Instance = new HologramsHandler();
-        private const int searchRadiusLimit = 20;
         public override Dictionary<HttpMethod, Func<HttpListenerContext, Task>> Methods { get; }
         public override string Path => "/api/holograms";
 
