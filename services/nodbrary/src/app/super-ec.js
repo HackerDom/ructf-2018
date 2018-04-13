@@ -90,8 +90,8 @@ SuperEC.prototype._generateK = function _generateK() {
 SuperEC.prototype.toJSONwithKey = function toJSONwithKey(key) {
     return JSON.stringify({
         p:this.curve.p.toString(16),
-        a:this.curve.a.toString(16),
-        b:this.curve.b.toString(16),
+        a:this.curve.a.fromRed().toString(16),
+        b:this.curve.b.fromRed().toString(16),
         n:this.curve.n.toString(16),
         gX:this.curve.g.getX().toString(16),
         gY:this.curve.g.getY().toString(16),
