@@ -25,7 +25,8 @@ SSH_OPTS = [
     "-o", "LogLevel=ERROR",
     "-o", "UserKnownHostsFile=/dev/null",
     "-o", "ConnectTimeout=10",
-    "-o", "User=root"
+    "-o", "User=cloud",
+    "-o", "IdentityFile=/cloud/backend/ructf2018_cloud_deploy"
 ]
 
 THREAD_POOL_SIZE = 16
@@ -38,7 +39,7 @@ def deploy(cloud_ip):
     print("deploying %s:" % cloud_ip)
 
     file_from = OVA_NAME
-    file_to_name = "/root/%s.ova" % VM_NAME
+    file_to_name = "/home/cloud/%s.ova" % VM_NAME
     file_to = "%s:%s" % (cloud_ip, file_to_name)
     ssh_arg = ["-e"] + [" ".join(map(shlex.quote, ["ssh"] + SSH_OPTS))]
     code = subprocess.call(["rsync", "--progress"] + ssh_arg +
@@ -48,7 +49,7 @@ def deploy(cloud_ip):
         return False
 
     code = subprocess.call(["ssh"] + SSH_OPTS + [cloud_ip] +
-                           ["/cloud/scripts/reimport_vm.sh", VM_NAME])
+                           ["sudo", "/cloud/scripts/reimport_vm.sh", VM_NAME])
     if code != 0:
         log_stderr("reimport vm failed on %s" % cloud_ip)
         return False

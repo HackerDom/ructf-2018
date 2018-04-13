@@ -7,22 +7,14 @@
     - libqt5widgets5
     - libaa1-dev
     - libmikmod-dev
+    - unclutter
 
 - name: copy xorg systemd service
   copy: src=xorg.service dest=/lib/systemd/system/
   notify: enable and start xorg
 
 - name: copy tcpimg binary
-  copy: src=tcpimg dest=/root mode=755
-  notify: enable and restart tcpimg
+  copy: src=tcpimg dest=/root/ mode=755
 
-- name: copy tcpimg systemd service
-  copy: src=tcpimg.service dest=/lib/systemd/system/
-  notify: enable and restart tcpimg
-
-- name: copy disable_screen_turning_off systemd service
-  copy: src=disable_screen_turning_off.service dest=/lib/systemd/system/
-  notify: enable and restart disable_screen_turning_off
-
-  
-  
+- name: copy startxorg.sh binary
+  copy: src=startxorg.sh dest=/root/ mode=755
