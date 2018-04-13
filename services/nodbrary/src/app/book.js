@@ -10,6 +10,7 @@ const book = {
         let bookCard = await Card.findOne({bookId: id}).exec();
         let book = await Book.findOne({id: id}).exec();
         let user = await User.findOne({id: bookCard.ownerId}).exec();
+
         return {book: {
             name: bookCard.bookName,
             author: bookCard.author,

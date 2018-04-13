@@ -80,7 +80,7 @@ router
                 auth = true;
             }
             if (!result)
-                await ctx.redirect(".//service/404");
+                await ctx.redirect("./service/404");
             await ctx.render('./books/book', {book: result, tags: tags, auth: auth});
             await next();
         })
@@ -124,8 +124,8 @@ router
         },
         async (ctx, next) => {
             let body = ctx.request.body;
-            let bookId = await book.add(body);
-            await ctx.redirect("/book?id=" + bookId);
+            let bookId = await book.add(body, ctx.state.user.id);
+            await ctx.redirect("/book/" + bookId);
             await next();
         })
     .get('/signin', async (ctx, next) => {
