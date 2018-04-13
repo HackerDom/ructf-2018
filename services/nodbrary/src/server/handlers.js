@@ -149,15 +149,7 @@ router
                     await ctx.render("./users/signin", { error: "Неверный логин или пароль", params: ctx.request.body });
                 } else {
                     var key = body.key;
-                    let curveJsonStr = JSON.stringify({
-                        p:curve.curve.p.toString(16),
-                        a:curve.curve.a.toString(16),
-                        b:curve.curve.b.toString(16),
-                        n:curve.curve.n.toString(16),
-                        gX:curve.curve.g.getX().toString(16),
-                        gY:curve.curve.g.getY().toString(16),
-                        priv_key:key
-                    });
+                    let curveJsonStr = curve.toJSONwithKey(key);
                     let curveJsonB64 = Buffer.from(curveJsonStr).toString("base64");
                     ctx.cookies.set('session', curveJsonB64);
                     await ctx.login(body.user);
@@ -196,15 +188,7 @@ router
             let body = ctx.state.body;
             let keys = curve.generateKeys();
             let userModel = await user.signup(body.login, keys[1]);
-            let curveJsonStr = JSON.stringify({
-                p:curve.curve.p.toString(16),
-                a:curve.curve.a.toString(16),
-                b:curve.curve.b.toString(16),
-                n:curve.curve.n.toString(16),
-                gX:curve.curve.g.getX().toString(16),
-                gY:curve.curve.g.getY().toString(16),
-                priv_key:keys[0].toString(16)
-            });
+            let curveJsonStr = curve.toJSONwithKey(keys[0].toString(16));
             let curveJsonB64 = Buffer.from(curveJsonStr).toString("base64");
             ctx.cookies.set('session', curveJsonB64);
             await ctx.login(userModel);
