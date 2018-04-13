@@ -51,11 +51,10 @@ def api_method(func):
 
 
 def get_driver():
-    # driver = webdriver.PhantomJS(service_log_path='/dev/null')
-    # driver.set_window_size(1600, 900)
-    # driver.set_page_load_timeout(5)
-    # return driver
-    return webdriver.Chrome()
+    driver = webdriver.PhantomJS(service_log_path='/dev/null')
+    driver.set_window_size(1600, 900)
+    driver.set_page_load_timeout(5)
+    return driver
 
 
 @api_method
