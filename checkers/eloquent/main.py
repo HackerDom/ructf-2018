@@ -9,8 +9,8 @@ import sys
 import markdown
 from markdown.extensions.toc import TocExtension
 
-from generators import gen_login, gen_password, gen_article_title, gen_article_content, gen_flag
-from service_api import signin, signup, post_article, get_article_content, GET_ARTICLE_URL, PORT, get_driver, \
+from generators import gen_login, gen_password, gen_article_title, gen_article_content
+from service_api import signin, signup, post_article, get_article_content, get_driver, \
     click_link, get_page_of_article, get_element_text_by_id, sign_in_with_driver, suggest_article,\
     get_article_id_by_cookies, get_suggestions_by_cookies, ApiException, emulate_articles_view
 
@@ -93,7 +93,7 @@ def put(host, flag_id, flag, vuln):
     suggest_article(host, cookies, article_title, article_content, username)
     article_id = get_article_id_by_cookies(host, cookies)
     table_of_contents = get_article_table_of_contents(html_content, pregen=True)
-    return ','.join([username, password, article_id, get_article_hash(table_of_contents)])
+    print(','.join([username, password, article_id, get_article_hash(table_of_contents)]))
 
 
 def get(host, flag_id, flag, vuln):
@@ -127,3 +127,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
