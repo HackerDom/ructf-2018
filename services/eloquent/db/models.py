@@ -30,7 +30,7 @@ if not User.table_exists():
 
 SORT_MAP = {
     'username': User.name,
-    'rtime': User.registration_date,
+    'rtime': User.registration_date.desc(),
     'pac': User.articles_count,
 }
 
@@ -47,3 +47,4 @@ class Article(Model):
 
 if not Article.table_exists():
     Article.create_table()
+
