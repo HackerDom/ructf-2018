@@ -137,7 +137,7 @@ router
             try {
                 let userSignInModel = {};
                 userSignInModel.login = validator.validateLogin(body.login);
-                userSignInModel.key = validator.validateHex(body.key, password);
+                userSignInModel.key = validator.validateHex(body.key, "password");
                 ctx.state.body = userSignInModel;
                 await next();
             } catch(e) {
@@ -158,6 +158,7 @@ router
                     let curveJsonStr = curve.toJSONwithKey(key);
                     let curveJsonB64 = Buffer.from(curveJsonStr).toString("base64");
                     ctx.cookies.set('session', curveJsonB64);
+                    await user.addVisit(body.user, body.note);
                     await ctx.login(body.user);
                     await ctx.redirect('/');
                     await next();
@@ -236,6 +237,19 @@ router
         async (ctx, next) => {
             book.addTag(ctx.state.user.id, ctx.state.body.bookId, ctx.state.body.tag);
             ctx.response.status = 200;
+            await next();
+        })
+    .get('/journal',
+        async (ctx, next) => {
+            if (!ctx.isAuthenticated())
+                ctx.response.status = 403;
+            else
+                await next();
+        },
+        async (ctx, next) => {
+            let visits = await user.getLastUsers();
+            visits = visits.map((e, i) => {return {login: e.login, note: e.note, date: e.date, index: i + 1}});
+            await ctx.render("./users/journal", {visits: visits});
             await next();
         });
 

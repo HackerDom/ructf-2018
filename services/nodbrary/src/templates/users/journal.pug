@@ -1,0 +1,12 @@
+extends ../main.pug
+
+block content
+    div(class="container")
+        h1(class="my-4") Visits journal
+        div(class="row")
+            each visit in visits
+                div(class="col-lg-11 portfolio-item")
+                    div(class="card h-100")
+                        div(class="card-body")
+                            p(class="card-text") #{visit.index}) #{visit.login} at #{visit.date}.
+                                small(class="card-text font-italic")  Librarian's note: #{visit.note}

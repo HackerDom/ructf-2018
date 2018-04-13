@@ -19,6 +19,7 @@
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
     "randomstring": "^1.1.5",
+    "sentencer": "^0.1.5",
     "sha1": "^1.1.1"
   },
   "devDependencies": {
