@@ -69,6 +69,7 @@ def check(host):
     sign_in_with_driver(driver, host, username, password)
     check_article_js(driver, host, article_id, table_of_contents)
     driver.close()
+    exit(OK)
 
 
 def get_flag_by_cookies(host, cookies):
@@ -94,6 +95,7 @@ def put(host, flag_id, flag, vuln):
     article_id = get_article_id_by_cookies(host, cookies)
     table_of_contents = get_article_table_of_contents(html_content, pregen=True)
     print(','.join([username, password, article_id, get_article_hash(table_of_contents)]))
+    exit(OK)
 
 
 def get(host, flag_id, flag, vuln):
@@ -110,6 +112,7 @@ def get(host, flag_id, flag, vuln):
         exit(CORRUPT)
     driver = get_driver()
     emulate_articles_view(driver, host, username, password)
+    exit(OK)
 
 
 COMMANDS = {'check': check, 'put': put, 'get': get, 'info': info}
