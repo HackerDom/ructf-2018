@@ -1,0 +1,5 @@
+main: server whitedbutils args utils
+server: network poll utils picoparserutils whitedbutils textbuilder
+picoparserutils: picohttpparser
+utils: textbuilder
+args: argutils

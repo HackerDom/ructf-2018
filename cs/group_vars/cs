@@ -73,5 +73,5 @@ services: |
   {name => 'Eloquent',  path => 'checkers/eloquent/main.py', timeout => 10, tcp_port => 8080},
   {name => 'Ribbons',   path => 'checkers/checker.py', timeout => 10},
   {name => 'Nodbrary',  path => 'checkers/nodbrary/nodbrary.checker.py', timeout => 10, tcp_port => 3000},
-  {name => 'LifeSim',   path => 'checkers/checker.py', timeout => 10},
+  {name => 'LifeSim',   path => 'checkers/lifesim/lifesim.checker.py', timeout => 10, tcp_port => 8084},
   {name => 'Thinkerer', path => 'checkers/thinkerer/thinkerer_checker', timeout => 10},
