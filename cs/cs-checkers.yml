@@ -3,7 +3,7 @@
 
     - name: thinkerer build
       connection: local
-      script: ../checkers/thinkerer/get_checker.sh
+      shell: chdir=../checkers/thinkerer ./get_checker.sh
 
     - name: sync catalog
       synchronize: src="../checkers" dest="{{cs_dir}}"
