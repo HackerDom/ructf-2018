@@ -152,7 +152,7 @@ int main(int argc, char** argv) {
     }
   } catch (std::exception& e) {
     std::cerr << "Host:" << host << " exception: " << e.what() << std::endl;
-    exit(ESTATUS::MUMBLE);
+    exit(ESTATUS::DOWN);
   }
 
   exit(ESTATUS::CHECKER_ERROR);
