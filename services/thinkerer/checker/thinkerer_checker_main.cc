@@ -109,12 +109,24 @@ void check(ThinkererClient& client) {
 
 int main(int argc, char** argv) {
   srand(time(NULL));
+  if (argc < 1) {
+    std::cerr << "Should be at least 1 parametes" << std::endl;
+    exit(1);
+  }
+
+  std::string command = argv[1];
+
+  if (command == "info") {
+    std::cout << "vulns: 1:1" << std::endl;
+    exit(101);
+  }
+
   if (argc < 2) {
     std::cerr << "Should be at least 2 parametes" << std::endl;
     exit(1);
   }
 
-  std::string command = argv[1];
+
   std::string host = argv[2];
   std::string id;
   std::string flag;
