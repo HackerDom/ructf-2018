@@ -68,11 +68,6 @@ def main():
                 os.path.join(NGINX_CONF_PATH, 'sites-available', service_name),
                 os.path.join(NGINX_CONF_PATH, 'sites-enabled', service_name),
             ))
-    print("running all services")
-    for service_name, service_settings in CONFIG.items():
-        os.chdir(os.path.join(SERVICES_PATH, service_name))
-        os.system('sudo docker-compose up -d')
-    os.system('sudo service nginx restart')
 
 
 if __name__ == '__main__':
