@@ -3,7 +3,7 @@ server {
 
 	location / {
 		index index.html;
-		root /home/hologram/deploy/Static;
+		root /home/Hologram/Deploy/Static;
 	}
 
 	location /api/ {
