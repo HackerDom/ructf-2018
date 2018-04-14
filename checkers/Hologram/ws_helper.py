@@ -1,6 +1,7 @@
 from ws4py.client import WebSocketBaseClient
 from ws4py.manager import WebSocketManager
 import time
+import random
 
 m = WebSocketManager()
 
@@ -16,31 +17,17 @@ class EchoClient(WebSocketBaseClient):
         self.writer.append(str(msg))
 
 
-def run_ws(team_addr, x, y, z, rad):
+def run_ws(ws_addr, delegate):
     messages = []
 
-    try:
-        m.start()
-        client = EchoClient(
-            'ws://{}/ws/holograms?x={}&y={}&z={}&rad={}&rad=10000'
-            .format(team_addr, x, y, z, rad)
-        )
-        client.add_writer(messages)
-        client.connect()
-
-        while True:
-            for ws in m:
-                if not ws.terminated:
-                   break
-            else:
-                break
-            time.sleep(0.1)
-    except KeyboardInterrupt:
-        print(messages)
-        m.close_all()
-        m.stop()
-        m.join()
-
-
-if __name__ == '__main__':
-    run_ws("127.0.0.1:8081", 0, 0, 0, 10)
+    m.start()
+    client = EchoClient(ws_addr)
+    client.add_writer(messages)
+    client.connect()
+    time.sleep(random.randint(110, 300) / 100)
+    delegate()
+    time.sleep(0.5)
+    m.close_all()
+    m.stop()
+    m.join()
+    return messages
