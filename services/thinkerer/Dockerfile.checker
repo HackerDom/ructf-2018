@@ -9,6 +9,7 @@ RUN apt-get update
 RUN apt-get install -y bazel git build-essential clang
 COPY checker /thinkerer/checker
 COPY proto /thinkerer/proto
+COPY client /thinkerer/client
 COPY WORKSPACE /thinkerer/
 WORKDIR /thinkerer
 RUN ls -lh

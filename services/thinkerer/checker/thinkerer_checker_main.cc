@@ -1,6 +1,6 @@
 #include <iostream>
-
-#include "thinkerer_client.h"
+#include <functional>
+#include "client/thinkerer_client.h"
 
 enum ESTATUS {
   OK = 101,
@@ -11,6 +11,12 @@ enum ESTATUS {
 };
 
 const auto PORT = "50051";
+const std::string SALT = "sv46kmfdjCCu7Dsjn00jsSx@343e2356Jhgvds";
+const std::string SALT_B = "f44tsgsdfvsfvsldfgm43gwejrngkj456hertg";
+
+std::string getPassword(const std::string& id) {
+  return std::to_string(std::hash<std::string>()(id + SALT));
+}
 
 std::string randomString(size_t length) {
   auto randchar = []() -> char
@@ -27,14 +33,23 @@ std::string randomString(size_t length) {
   return str;
 }
 
-void put(ThinkererClient& client, const std::string& id, const std::string& flag) {
-  client.SendMessage(randomString(15), id, flag);
+void put(ThinkererClient& client, const std::string& id, const std::string& flag, const size_t vuln) {
+  const auto usernameFrom = randomString(15);
+  const auto passFrom = getPassword(usernameFrom);
+  std::string msgId;
+  if (vuln == 2) {
+    msgId = randomString(10);
+  }
+
+  client.Register(usernameFrom, passFrom);
+  client.Register(id, getPassword(id));
+  client.SendMessage(usernameFrom, passFrom, id, flag, msgId);
   exit(ESTATUS::OK);
 }
 
 void get(ThinkererClient& client, const std::string& id, const std::string& flag) {
     std::cerr << "Recv messages for " << id << std::endl;
-    const auto& msgs = client.RecvMessages(id);
+    const auto& msgs = client.RecvMessages(id, getPassword(id));
     bool found = false;
     for (const auto& m : msgs) {
       found = found || m.message() == flag;
@@ -56,16 +71,22 @@ void check(ThinkererClient& client) {
 
   std::cerr << "message:" << message << " from:" << from << " to:" << to << " forwardTo:" << forwardTo << std::endl;
 
-  client.SendMessage(from, to, message);
-  auto msgs = client.RecvMessages(from);
+  client.Register(from, getPassword(from));
+  client.Register(to, getPassword(to));
+  client.Register(forwardTo, getPassword(forwardTo));
+
+  client.SendMessage(from, getPassword(from), to, message, "");
+  auto msgs = client.RecvMessages(from, getPassword(from));
   std::string msgId;
   time_t msgTs;
   std::cerr << "[getID]" << std::endl;
   for (const auto& m : msgs) {
-    std::cerr << m.id() << "\t" << m.from() << "\t" << m.to() << "\t" << m.message() << std::endl;
+    std::cerr << m.id() << "\t" << m.from() << "\t" << m.to() << "\t" << m.message() << "\t" << m.ts() << std::endl;
     if (m.message() == message) {
       msgId = m.id();
       msgTs = m.ts();
+      std::cerr << "Found: " << msgId << " " << msgTs << std::endl;
+      break;
     }
   }
 
@@ -73,17 +94,17 @@ void check(ThinkererClient& client) {
     exit(ESTATUS::CORRUPT);
   }
 
-  client.SendMessage(to, forwardTo, randomString(12), msgId, msgTs);
+  client.SendMessage(to, getPassword(to), forwardTo, randomString(12), "", msgId, msgTs);
 
   std::cerr << "[get forwarded message]" << std::endl;
-  msgs = client.RecvMessages(forwardTo);
+  msgs = client.RecvMessages(forwardTo, getPassword(forwardTo));
   for (const auto& m : msgs) {
     std::cerr << m.id() << "\t" << m.from() << "\t" << m.to() << "\t" << m.message() << std::endl;
     if (m.message() == message) {
       exit(ESTATUS::OK);
     }
   }
-  exit(ESTATUS::CORRUPT);
+  exit(ESTATUS::DOWN);
 }
 
 int main(int argc, char** argv) {
@@ -103,6 +124,11 @@ int main(int argc, char** argv) {
     flag = argv[4];
   }
 
+  if (command == "info") {
+    std::cout << "vulns: 1:1" << std::endl;
+    exit(101);
+  }
+
   std::cerr << "RUN:" << command << ' ' << host << ' ' << id << std::endl;
 
   ThinkererClient client(
@@ -114,7 +140,11 @@ int main(int argc, char** argv) {
     }
 
     if (command == "put") {
-      put(client, id, flag);
+      uint vuln = 1;
+      if (argc > 6) {
+        vuln = std::stoi(argv[5]);
+      }
+      put(client, id, flag, vuln);
     }
 
     if (command == "get") {
@@ -122,7 +152,7 @@ int main(int argc, char** argv) {
     }
   } catch (std::exception& e) {
     std::cerr << "Host:" << host << " exception: " << e.what() << std::endl;
-    exit(ESTATUS::MUMBLE);
+    exit(ESTATUS::DOWN);
   }
 
   exit(ESTATUS::CHECKER_ERROR);

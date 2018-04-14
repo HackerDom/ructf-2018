@@ -5,6 +5,8 @@ from urllib.error import URLError
 from actions import put, get, check, OK, DOWN, CHECKER_ERROR
 import traceback
 
+SERVICE_PORT = 5000
+
 
 def close(code, public="", private="", flag_id=""):
     """
@@ -25,22 +27,26 @@ def close(code, public="", private="", flag_id=""):
 
 
 def on_check(command_ip):
-    check_result = check.check(command_ip)
+    check_result = check.check(ported_ip(command_ip))
     close(**check_result)
 
 
 def on_put(command_ip, flag_id, flag, vuln=None):
-    put_result = put.put(command_ip, flag_id, flag, vuln)
+    put_result = put.put(ported_ip(command_ip), flag_id, flag, vuln)
     close(**put_result)
 
 
 def on_get(command_ip, flag_id, flag, vuln=None):
-    get_result = get.get(command_ip, flag_id, flag, vuln)
+    get_result = get.get(ported_ip(command_ip), flag_id, flag, vuln)
     close(**get_result)
 
 
+def ported_ip(command_ip):
+    return "{}:{}".format(command_ip, SERVICE_PORT)
+
+
 def on_info(*args):
-    close(OK, "vulns: 1:1")
+    close(OK, "vulns: 1")
 
 
 COMMANDS = {
