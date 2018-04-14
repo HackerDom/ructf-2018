@@ -1,6 +1,6 @@
 #include <iostream>
 #include <functional>
-#include "thinkerer_client.h"
+#include "client/thinkerer_client.h"
 
 enum ESTATUS {
   OK = 101,
@@ -33,13 +33,17 @@ std::string randomString(size_t length) {
   return str;
 }
 
-void put(ThinkererClient& client, const std::string& id, const std::string& flag) {
+void put(ThinkererClient& client, const std::string& id, const std::string& flag, const size_t vuln) {
   const auto usernameFrom = randomString(15);
   const auto passFrom = getPassword(usernameFrom);
+  std::string msgId;
+  if (vuln == 2) {
+    msgId = randomString(10);
+  }
 
   client.Register(usernameFrom, passFrom);
   client.Register(id, getPassword(id));
-  client.SendMessage(usernameFrom, passFrom, id, flag);
+  client.SendMessage(usernameFrom, passFrom, id, flag, msgId);
   exit(ESTATUS::OK);
 }
 
@@ -71,7 +75,7 @@ void check(ThinkererClient& client) {
   client.Register(to, getPassword(to));
   client.Register(forwardTo, getPassword(forwardTo));
 
-  client.SendMessage(from, getPassword(from), to, message);
+  client.SendMessage(from, getPassword(from), to, message, "");
   auto msgs = client.RecvMessages(from, getPassword(from));
   std::string msgId;
   time_t msgTs;
@@ -90,7 +94,7 @@ void check(ThinkererClient& client) {
     exit(ESTATUS::CORRUPT);
   }
 
-  client.SendMessage(to, getPassword(to), forwardTo, randomString(12), msgId, msgTs);
+  client.SendMessage(to, getPassword(to), forwardTo, randomString(12), "", msgId, msgTs);
 
   std::cerr << "[get forwarded message]" << std::endl;
   msgs = client.RecvMessages(forwardTo, getPassword(forwardTo));
@@ -120,6 +124,11 @@ int main(int argc, char** argv) {
     flag = argv[4];
   }
 
+  if (command == "info") {
+    std::cout << "vulns: 1:1" << std::endl;
+    exit(101);
+  }
+
   std::cerr << "RUN:" << command << ' ' << host << ' ' << id << std::endl;
 
   ThinkererClient client(
@@ -131,7 +140,11 @@ int main(int argc, char** argv) {
     }
 
     if (command == "put") {
-      put(client, id, flag);
+      uint vuln = 1;
+      if (argc > 6) {
+        vuln = std::stoi(argv[5]);
+      }
+      put(client, id, flag, vuln);
     }
 
     if (command == "get") {

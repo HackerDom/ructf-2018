@@ -15,13 +15,6 @@ cc_binary(
 )
 
 cc_library(
-    name = "clientlib",
-    srcs = ["thinkerer_client.cc"],
-    hdrs = ["thinkerer_client.h"],
-    deps = ["//proto:cpp"],
-)
-
-cc_library(
     name = "messagestor",
     srcs = ["thinkerer_stor.cc"],
     hdrs = ["thinkerer_stor.h"],

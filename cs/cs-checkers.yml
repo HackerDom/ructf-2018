@@ -19,7 +19,7 @@
       apt: name=python3-pip state=latest
 
     - name: python deps
-      pip: name= executable=pip3
+      pip: name={{item}} executable=pip3
       with_items:
         - requests
         - ws4py

@@ -14,7 +14,7 @@ load("@org_pubref_rules_protobuf//ruby:rules.bzl", "ruby_proto_compile")
 
 filegroup(
     name = "protos",
-    srcs = ["thinkerer.proto", "common.proto"],
+    srcs = ["thinkerer.proto"],
 )
 
 cc_proto_library(

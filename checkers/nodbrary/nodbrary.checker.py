@@ -14,13 +14,14 @@ from faker import Faker
 
 OK, CORRUPT, MUMBLE, DOWN, CHECKER_ERROR = 101, 102, 103, 104, 110
 SERVICENAME = "nodbrary"
+PORT = 3000
 
-SIGN_UP   = "http://{}/signup"
-ADD_BOOK  = "http://{}/add"
-ADD_TAG   = "http://{}/tag"
-SIGN_IN   = "http://{}/signin"
-READ_BOOK = "http://{}/book/"
-JOURNAL   = "http://{}/journal"
+SIGN_UP   = "http://{}:{}/signup"
+ADD_BOOK  = "http://{}:{}/add"
+ADD_TAG   = "http://{}:{}/tag"
+SIGN_IN   = "http://{}:{}/signin"
+READ_BOOK = "http://{}:{}/book/"
+JOURNAL   = "http://{}:{}/journal"
 
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 DIR = os.path.join(CUR_DIR, 'flags')
@@ -30,7 +31,7 @@ def generate_login():
 
 def make_request(method, addr, team_addr, data=None):
     try:
-        URL = addr.format(team_addr)
+        URL = addr.format(team_addr, PORT)
         r = method(URL, data=data) if data else method(URL)
         
         if r.status_code == 502:

@@ -32,7 +32,7 @@ public:
   ~ThinkererAuth();
   bool Register(const std::string username, const std::string& password);
   bool Check(const std::string username, const std::string& password);
-  
+
 private:
   void FlushData();
 
