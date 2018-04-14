@@ -19,10 +19,13 @@ message Msg {
   string from = 1;
   string to = 2;
   string message = 3;
+  uint64 ts = 4;
 }
 
 message MsgReq {
   string uid = 1;
+  uint64 start_ts = 2;
+  uint64 end_ts = 3;
 }
 
 message Msgs {
