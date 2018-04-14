@@ -37,5 +37,5 @@ RUN apt-get install mongodb-org=2.6.2 mongodb-org-server=2.6.2 mongodb-org-shell
 
 RUN mkdir -p /data/db
 
-CMD mongod --fork --logpath /var/log/mongodb.log && npm run initialize
+CMD mongod --fork --logpath /var/log/mongodb.log --smallfiles && npm run initialize
 
