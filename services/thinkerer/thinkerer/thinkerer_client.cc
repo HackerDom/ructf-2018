@@ -8,6 +8,7 @@ ThinkererClient::ThinkererClient(std::shared_ptr<Channel> channel)
 
 void ThinkererClient::SendMessage(const std::string& from, 
                                 const std::string& to,
+                                const std::string& password,
                                 const std::string& message) 
 {
   Msg msg;
@@ -20,7 +21,7 @@ void ThinkererClient::SendMessage(const std::string& from,
   Status status = stub_->SendMessage(&context, msg, &reply);
 }
 
-std::vector<Msg> ThinkererClient::RecvMessages(const std::string& uid) {
+std::vector<Msg> ThinkererClient::RecvMessages(const std::string& uid, const std::string& password) {
   std::vector<Msg> ret;
   MsgReq req;
   req.set_uid(uid);
