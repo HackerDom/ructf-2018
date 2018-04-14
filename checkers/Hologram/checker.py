@@ -2,7 +2,7 @@
 
 import sys
 from urllib.error import URLError
-from actions import put, get, OK, DOWN, CHECKER_ERROR
+from actions import put, get, check, OK, DOWN, CHECKER_ERROR
 import traceback
 
 
@@ -25,7 +25,7 @@ def close(code, public="", private="", flag_id=""):
 
 
 def on_check(command_ip):
-    check_result = put.check(command_ip)
+    check_result = check.check(command_ip)
     close(**check_result)
 
 
