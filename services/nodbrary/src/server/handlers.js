@@ -15,13 +15,6 @@ let ValidationError = require('../app/inputValidator').ValidationError;
 let curve = new superEC();
 
 router
-    .use('/book', async (ctx, next) => {
-        if (!ctx.query.id)
-            await ctx.render('./service/404');
-        await next();
-    });
-
-router
     .get(['/', '/home'], async (ctx, next) => {
         await ctx.redirect('./home/1');
         await next();
@@ -34,8 +27,10 @@ router
                     throw new ValidationError();
                 await next();
             } catch(e) {
-                if (e instanceof ValidationError)
-                    await ctx.redirect("/");
+                if (e instanceof ValidationError) {
+                    ctx.response.status = 404;
+                    ctx.redirect('/home/1')
+                }
                 else
                     throw e;
             }
@@ -45,7 +40,7 @@ router
             let bookCards = await catalog.catalog();
             let pagesCount = Math.ceil(bookCards.length / 9);
             if (pagesCount > 0 && pagesCount < currentPage)
-                await ctx.redirect("/");
+                await ctx.redirect("/home/" + pagesCount);
             let pages = Array.apply(null, {length: pagesCount}).map((n, i) => i + 1);
 
             await ctx.render('./books/catalog', {
@@ -66,7 +61,7 @@ router
                 await next();
             } catch(e) {
                 if (e instanceof ValidationError)
-                    await ctx.redirect("./service/404");
+                    ctx.response.status = 404;
                 else
                     throw e;
             }
@@ -79,16 +74,17 @@ router
                 tags = await book.tags(ctx.state.user.id, ctx.state.id);
                 auth = true;
             }
-            if (!result)
-                await ctx.redirect("./service/404");
-            let data = {book: result.book, tags: tags, auth: auth};
-            await ctx.render('./books/book', data);
+            if (!result) {
+                ctx.response.status = 404;
+                return
+            }
+            await ctx.render('./books/book', {book: result.book, tags: tags, auth: auth});
             await next();
         })
     .get('/create',
         async (ctx, next) => {
             if (!ctx.isAuthenticated())
-                await ctx.render("./service/404");
+                ctx.response.status = 403;
             else
                 await next()
         },
@@ -99,7 +95,7 @@ router
     .post('/add',
         async (ctx, next) => {
             if (!ctx.isAuthenticated())
-                await ctx.render("./service/404");
+                ctx.response.status = 403;
             else
                 await next()
         },
@@ -117,6 +113,7 @@ router
                 ctx.state.body = bookModel;
                 await next();
             } catch(e) {
+                ctx.response.status = 400;
                 if (e instanceof ValidationError)
                     await ctx.render("./books/create", {error: e.message, params: body});
                 else
@@ -139,11 +136,11 @@ router
             try {
                 let userSignInModel = {};
                 userSignInModel.login = validator.validateLogin(body.login);
-                userSignInModel.key = validator.validateHex(body.key);
+                userSignInModel.key = validator.validateHex(body.key, "password");
                 ctx.state.body = userSignInModel;
                 await next();
             } catch(e) {
-                ctx.status = 403;
+                ctx.status = 400;
                 if (e instanceof ValidationError)
                     await ctx.render("./users/signin", {error: e.message, params: ctx.request.body});
                 else
@@ -153,12 +150,14 @@ router
         async (ctx, next) => {
             await passport.authenticate('local', async(err, body) => {
                 if(!body){
+                    ctx.response.status = 403;
                     await ctx.render("./users/signin", { error: "Incorrect login or password", params: ctx.request.body });
                 } else {
                     var key = body.key;
                     let curveJsonStr = curve.toJSONwithKey(key);
                     let curveJsonB64 = Buffer.from(curveJsonStr).toString("base64");
                     ctx.cookies.set('session', curveJsonB64);
+                    await user.addVisit(body.user, body.note);
                     await ctx.login(body.user);
                     await ctx.redirect('/');
                     await next();
@@ -178,16 +177,20 @@ router
                 ctx.state.body = userSignUpModel;
                 await next();
             } catch(e) {
-                if (e instanceof ValidationError)
+                if (e instanceof ValidationError) {
+                    ctx.response.status = 400;
                     await ctx.render("./users/signup", {error: e.message, params: body});
+                }
                 else
                     throw e;
             }
         },
         async (ctx, next) => {
             let body = ctx.state.body;
-            if (await user.isExist(body.login))
+            if (await user.isExist(body.login)) {
+                ctx.response.status = 400;
                 await ctx.render("./users/signup", {error: "This user already exists", params: ctx.request.body});
+            }
             else
                 await next();
         },
@@ -225,7 +228,7 @@ router
                 await next();
             } catch(e) {
                 if (e instanceof ValidationError)
-                    ctx.response.status = 404;
+                    ctx.response.status = 400;
                 else
                     throw e;
             }
@@ -233,6 +236,19 @@ router
         async (ctx, next) => {
             book.addTag(ctx.state.user.id, ctx.state.body.bookId, ctx.state.body.tag);
             ctx.response.status = 200;
+            await next();
+        })
+    .get('/journal',
+        async (ctx, next) => {
+            if (!ctx.isAuthenticated())
+                ctx.response.status = 403;
+            else
+                await next();
+        },
+        async (ctx, next) => {
+            let visits = await user.getLastUsers();
+            visits = visits.map((e, i) => {return {login: e.login, note: e.note, date: e.date, index: i + 1}});
+            await ctx.render("./users/journal", {visits: visits});
             await next();
         });
 

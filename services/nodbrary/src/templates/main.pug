@@ -1,5 +1,5 @@
 doctype html
-html
+html(lang="en")
     head
         link(href="/css/bootstrap.min.css", rel="stylesheet")
         link(href="/css/3-col-portfolio.css", rel="stylesheet")
@@ -19,6 +19,8 @@ html
                             if user
                                 li(class="nav-item")
                                     a(class="nav-link", href="/logout") Logout
+                                li(class="nav-item")
+                                    a(class="nav-link", href="/journal") Visits journal
                             else
                                 li(class="nav-item")
                                     a(class="nav-link", href="/signin") Sign In
