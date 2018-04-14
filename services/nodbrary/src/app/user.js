@@ -15,7 +15,7 @@ const user = {
         return await User.find({login:login}).exec();
     },
     getLastUsers: async () => {
-        var date = new Date(Date.now() - 5400000);
+        var date = new Date(Date.now() - 15*60*1000);
         return await Visit.find({"date": {$gte: date}}).exec();
     },
     addVisit: async (body) => {
