@@ -40,7 +40,7 @@ def on_get(command_ip, flag_id, flag, vuln=None):
 
 
 def on_info(*args):
-    close(OK, "vulns: 1:1")
+    close(OK, "vulns: 1")
 
 
 COMMANDS = {

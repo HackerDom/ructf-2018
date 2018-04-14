@@ -31,3 +31,7 @@ def run_ws(ws_addr, delegate):
     m.stop()
     m.join()
     return messages
+
+
+def create_ws_addr(team_addr, x, y, z, rad):
+    return 'ws://{}/ws/holograms?x={}&y={}&z={}&rad={}'.format(team_addr, x, y, z, rad)
