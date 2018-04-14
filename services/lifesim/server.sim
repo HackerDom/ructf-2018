@@ -1,0 +1,731 @@
+external class utils;
+external class textbuilder;
+
+class server(port, backlog); 
+	integer port, backlog;
+simulation begin
+
+	external C procedure cCreateAndBind is
+		integer procedure cCreateAndBind(port, backlog); 
+			integer port, backlog;;
+
+	external C procedure cMakeSocketNonBlocking is
+		integer procedure cMakeSocketNonBlocking(sockfd); 
+			integer sockfd;;
+
+	external C procedure cAccept is
+		integer procedure cAccept(sockfd);
+			integer sockfd;;
+
+	external C procedure cClose is
+		integer procedure cClose(fd);
+			integer fd;;
+
+	external C procedure cRead is
+		integer procedure cRead(fd, buf, buflen, readed);
+			integer fd, buflen, readed; text buf;;
+
+	external C procedure cWrite is
+		integer procedure cWrite(fd, buf, buflen);
+			integer fd, buflen; text buf;;
+
+	external C procedure cGetEpoll is
+		integer procedure cGetEpoll;;
+
+	external C procedure cAddReadConnect is
+		integer procedure cAddReadConnect(epollfd, fd);
+			integer epollfd, fd;;
+
+	external C procedure cRemoveReadConnect is
+		integer procedure cRemoveReadConnect(epollfd, fd);
+			integer epollfd, fd;;
+
+	external C procedure cAddWriteConnect is
+		integer procedure cAddWriteConnect(epollfd, fd);
+			integer epollfd, fd;;
+
+	external C procedure cRemoveWriteConnect is
+		integer procedure cRemoveWriteConnect(epollfd, fd);
+			integer epollfd, fd;;
+
+	external C procedure cGetConnect is
+		integer procedure cGetConnect(epoll);
+			integer epoll;;
+
+	external C procedure cTryParse is
+		integer procedure cTryParse(buf, len, method, methodLength, path, pathLength, auth, authLength, contentLength);
+			name methodLength, pathLength, authLength, contentLength;
+			text buf, method, path, auth; integer len, methodLength, pathLength, authLength, contentLength;;
+
+	external C procedure cAddCredentials is
+		integer procedure cAddCredentials(user, password);
+			text user, password;;
+
+	external C procedure cCheckCredentials is
+		integer procedure cCheckCredentials(user, password);
+			text user, password;;
+
+	external C procedure cWriteData is
+		integer procedure cWriteData(user, data);
+			text user, data;;
+
+	external C procedure cGetNextData is
+		integer procedure cGetNextData(user, data, dataLength, current);
+			name dataLength, current;
+			text user, data; integer dataLength, current;;
+
+	external C procedure cGetNextUser is
+		integer procedure cGetNextUser(data, dataLength, current);
+			name dataLength, current;
+			text data; integer dataLength, current;;
+
+	process class handler(socket);
+		integer socket;
+	begin
+		procedure addRead;
+		begin
+			handlers.add(this handler);
+			cAddReadConnect(epoll, socket);
+		end;
+
+		procedure delRead;
+		begin
+			handlers.remove(socket);
+			cRemoveReadConnect(epoll, socket);
+		end;
+
+		procedure addWrite;
+		begin
+			handlers.add(this handler);
+			cAddWriteConnect(epoll, socket);
+		end;
+
+		procedure delWrite;
+		begin
+			handlers.remove(socket);
+			cRemoveWriteConnect(epoll, socket);
+		end;
+
+		text procedure codeToText(code);
+			integer code;
+		begin
+			text res;
+			res :- blanks(3);
+			res.setpos(1);
+			res.putint(code);
+			codeToText :- res;
+		end;
+
+		procedure send(t);
+			text t;
+		begin
+			delRead;
+			addWrite;
+
+			detach;
+			cWrite(socket, t, t.length);
+
+			delWrite;
+			cClose(socket);
+		end;
+
+		text CRLF = "!13!!10!";
+
+		procedure sendCode(code, status);
+			integer code; text status;
+			send("HTTP/1.1 " & codeToText(code) & " " & status & CRLF & "Connection: close" & CRLF & CRLF);
+
+		procedure sendNotAllowed;
+			sendCode(405, "Method not Allowed");
+
+		procedure sendNotAuth;
+			send("HTTP/1.1 401 Unauthorized" & CRLF & "WWW-Authenticate: Basic realm=!34!LifeSim!34!" & CRLF & CRLF);
+
+		procedure sendData(data);
+			text data;
+			send("HTTP/1.1 200 ok" & CRLF & "Connection: close" & "Content-length: " & toText(data.length) & CRLF & "Content-encoding: text/plain" & CRLF & CRLF & data);
+
+
+		inner;
+		while true do
+		begin
+			detach;
+			outtext("Dead are disturbed!"); outimage;
+		end;
+	end;
+
+	class sparsearray;
+	begin
+		integer NOT_FOUND = -1;
+		
+		class element(k, v); 
+			integer k;
+			ref(handler) v;;
+		
+		class container(size); 
+			integer size;
+		begin
+			procedure copy(another); ref(container) another;
+			begin
+				integer i;
+				for i := lowerbound(another.c, 1) step 1 until upperbound(another.c, 1) do
+					c(i) :- another.c(i);
+			end;
+		
+			ref(element) array c(1 : size);
+		end;
+		
+		procedure swap(a, b);
+			name a, b;
+			ref(element) a, b;
+		begin
+			ref(element) c;
+			c :- a;
+			a :- b;
+			b :- c;
+		end;
+		
+		procedure sort(l, r);
+			integer l, r;
+		begin
+			if l < r then
+			begin
+				integer ll, rr, i, k;
+				ll := l;
+				rr := l;
+				k := cont.c((l + r) // 2).k;
+				for i := l step 1 until r do
+				begin
+					if cont.c(i).k = k then
+					begin
+						swap(cont.c(i), cont.c(rr));
+						rr := rr + 1;
+					end
+					else if cont.c(i).k < k then
+					begin
+						swap(cont.c(i), cont.c(rr));
+						swap(cont.c(rr), cont.c(ll));
+						rr := rr + 1;
+						ll := ll + 1;
+					end;
+				end;
+				sort(l, ll - 1);
+				sort(rr, r);
+			end;
+		end;
+		
+		integer procedure getBucketSize(s); 
+			integer s;
+			getBucketSize := largest2pow(s);
+		
+		integer procedure positionInRange(k, l, r);
+			integer k, l, r;
+		begin
+			integer m, rr;
+			r := r + 1;
+			l := l - 1;
+			rr := r;
+			while l + 1 < r do
+			begin
+				m := (l + r) // 2;
+				if cont.c(m).k < k then
+					l := m
+				else
+					r := m;
+			end;
+			if r = rr then
+				positionInRange := NOT_FOUND
+			else
+				if cont.c(r).k = k then
+					positionInRange := r
+				else
+					positionInRange := NOT_FOUND;
+		end;
+		
+		integer procedure position(k);
+			integer k;
+		begin
+			integer s, start, pos;
+			s := size;
+			pos := NOT_FOUND;
+			while s <> 0 and pos = NOT_FOUND do
+			begin
+				start := s - getBucketSize(s) + 1;
+				pos := positionInRange(k, start, s);
+				s := start - 1;
+			end;
+			position := pos;
+		end;
+		
+		procedure addInner(elem); 
+			ref(element) elem;
+		begin
+			ref(container) newCont;
+			integer pos ;
+			pos := position(elem.k);
+			if pos = NOT_FOUND then
+			begin
+				if size = cont.size then
+				begin
+					newCont :- new container(cont.size * 2);
+					newCont.copy(cont);
+					cont :- newCont;
+				end;
+				size := size + 1;
+				cont.c(size) :- elem;
+				sort(size - getBucketSize(size) + 1, size);
+				used := used + 1;
+			end
+			else
+			begin
+				if cont.c(pos).v =/= none then
+				else
+					used := used + 1;
+				cont.c(pos).v :- elem.v;
+			end;
+		end;
+		
+		procedure add(el);
+			ref(handler) el;
+			addInner(new element(el.socket, el));
+		
+		boolean procedure exists(k);
+			integer k;
+			exists := position(k) <> NOT_FOUND;
+		
+		ref(handler) procedure get(k);
+			integer k;
+		begin
+			integer pos;
+			pos := position(k);
+			if pos = NOT_FOUND then
+				get :- none
+			else
+				get :- cont.c(pos).v;
+		end;
+
+		procedure remove(k);
+			integer k;
+		begin
+			integer pos;
+			pos := position(k);
+			if pos <> NOT_FOUND then
+			begin
+				if cont.c(pos).v =/= none then
+					used := used - 1;
+				cont.c(pos).v :- none;
+			end;
+		end;
+
+		integer size;
+		ref(container) cont;
+		integer used;
+		size := 0;
+		used := 0;
+		cont :- new container(100);
+	end;
+	
+
+	handler class initHandler;
+	begin
+		boolean procedure checkAuth(auth, authlen, user, password);
+			name user, password, auth;
+			text auth, user, password;
+			integer authlen;
+		begin
+			if authlen = 0 then
+			begin
+				checkAuth := false;
+				goto exit;
+			end;
+
+			auth :- auth.sub(1, authlen);
+
+			if not startswith(auth, "Basic ") then
+			begin
+				checkAuth := false;
+				goto exit;
+			end;
+
+			auth :- base64decode(subend(auth, 6));
+
+			getCredentials(auth, user, password);
+
+			if (user = notext) or (password = notext) then
+			begin
+				checkAuth := false;
+				goto exit;
+			end;
+
+			checkAuth := true;
+		exit:
+		end;
+
+		integer buflen = 4096;
+		integer pathMaxLen = 100;
+		integer authMaxLen = 1024;
+		integer methodMaxLen = 7;
+		text buff, path, method, auth, user, password;
+		integer readed, nreaded, pathLen, methodLen, authLen, contentLen;
+		integer pret;
+		ref(handler) nextHandler;
+
+		buff :- blanks(buflen);
+		methodLen := methodMaxLen;
+		method :- blanks(methodLen);
+		pathLen := pathMaxLen;
+		path :- blanks(pathLen);
+		authLen := authMaxLen;
+		auth :- blanks(authLen);
+		readed := 0;
+
+	startRead:
+		detach;
+		nreaded := cRead(socket, buff, buflen, readed);
+		if nreaded = -1 then
+			goto startRead;
+		if nreaded = -2 then
+		begin
+			cClose(socket);
+			handlers.remove(socket);
+			goto exit;
+		end;
+		readed := readed + nreaded;
+
+		pret := cTryParse(buff, readed, method, methodLen, path, pathLen, auth, authLen, contentLen);
+		if pret = -2 then
+			goto startRead;
+		if pret = -1 then
+		begin
+			sendCode(400, "Bad request");
+			goto exit;
+		end;
+		if not checkAuth(auth, authLen, user, password) then
+		begin
+			sendNotAuth;
+			goto exit;
+		end;
+		method :- method.sub(1, methodLen);
+		outtext("path: '" & path & "' length: "); outint(pathLen, 0); outimage;
+		path :- path.sub(1, pathLen);
+		outtext(method & " " & path); outimage;
+		if (method <> "POST") and (method <> "GET") then
+		begin
+			sendNotAllowed;
+			goto exit;
+		end;
+		nextHandler :- none;
+		if startswith(path, "/register") then
+			nextHandler :- new registerHandler(socket, method, user, password);
+		if startswith(path, "/create") then
+			nextHandler :- new createHandler(socket, method, user, password, buff, pret, readed, contentLen);
+		if startswith(path, "/my") then
+			nextHandler :- new getMyHandler(socket, method, user, password);
+		if startswith(path, "/users") then
+			nextHandler :- new getUsersHandler(socket, method, user, password);
+		if startswith(path, "/data") then
+			nextHandler :- new getUsersDataHandler(socket, method, user, password, buff, pret, readed, contentLen);
+		if nextHandler =/= none then
+		begin
+			hold(1);
+			call(nextHandler);
+			goto exit;
+		end;
+		sendCode(404, "Not Found");
+	exit:
+	end;
+
+	handler class registerHandler(method, user, password);
+		text method, user, password;
+	begin
+		integer addResult;
+
+		if method <> "POST" then
+		begin
+			sendNotAllowed;
+			goto exit;
+		end;
+
+		addResult := 1;
+		while addResult = 1 do
+		begin
+			hold(1);
+			addResult := cAddCredentials(copy(user), copy(password));
+		end;
+
+		if addResult = 0 then
+			sendCode(200, "ok")
+		else if addResult = -1 then
+			sendCode(500, "internal error")
+		else if addResult = -3 then
+			sendCode(409, "conflict");
+	exit:
+	end;
+
+	handler class authorizedHandler(method, user, password);
+		text method, user, password;
+	begin
+		integer getResult;
+		getResult := 1;
+		while getResult = 1 do
+		begin
+			hold(1);
+			getResult := cCheckCredentials(copy(user), copy(password));
+		end;
+
+		if getResult = -1 then
+		begin
+			sendCode(500, "internal error");
+			goto exit;
+		end;
+		if getResult = -2 then
+		begin
+			sendNotAuth;
+			goto exit;
+		end;
+		inner;
+	exit:
+	end;
+
+	authorizedHandler class postHandler(buffer, skip, readed, contentLen);
+		text buffer;
+		integer skip, readed, contentLen;
+	begin
+		integer nreaded;
+
+		if method <> "POST" then
+		begin
+			goto exit;
+		end;
+
+		if contentLen < 0 then
+		begin
+			sendCode(411, "Length Required");
+			goto exit;
+		end;
+
+		if contentLen + skip > buffer.length then
+		begin
+			sendCode(413, "Payload Too Large");
+			goto exit;
+		end;
+
+		while readed + skip < contentLen do
+		begin
+		startRead:
+			detach;
+			nreaded := cRead(socket, buffer, buffer.length, readed);
+			if nreaded = -1 then
+				goto startRead;
+			if nreaded = -2 then
+			begin
+				cClose(socket);
+				handlers.remove(socket);
+				goto exit;
+			end;
+			readed := readed + nreaded;
+		end;
+		inner;
+	exit:
+	end;
+
+	postHandler class createHandler;
+	begin
+		integer addResult;
+
+		addResult := 1;
+		while addResult = 1 do
+		begin
+			hold(1);
+			addResult := cWriteData(copy(user), copy(buffer.sub(skip + 1, contentLen)));
+		end;
+
+		if addResult = -1 then
+		begin
+			sendCode(500, "internal error");
+			goto exit;
+		end;
+
+		sendCode(200, "ok");
+	exit:
+	end;
+
+	postHandler class getUsersDataHandler;
+	begin
+		integer dataMaxLength = 64;
+		ref(textbuilder) builder;
+		integer current, dataLength, getResult;
+		text data, cuser;
+
+		data :- blanks(dataMaxLength);
+		current := 0;
+		cuser :- copy(buffer.sub(skip + 1, contentLen));
+		builder :- new textbuilder; 
+
+		getResult := 0;
+		while getResult <> -2 do
+		begin
+			dataLength := dataMaxLength;
+			getResult := 1;
+			while getResult = 1 do
+			begin
+				hold(1);
+				getResult := cGetNextData(cuser, data, dataLength, current);
+			end;
+			if getResult = -1 then
+			begin
+				sendCode(500, "internal error");
+				goto exit;
+			end;
+			if getResult = 0 then
+				builder :- builder.addText(encode(getCrossed(data.sub(1, dataLength), seed))).addText(CRLF);
+		end;
+		sendData(builder.toText);
+	exit:
+	end;
+
+	authorizedHandler class getListHandler;
+	begin
+		ref(textbuilder) builder;
+
+		if method <> "GET" then
+		begin
+			sendNotAllowed;
+			goto exit;
+		end;
+		
+		builder :- new textbuilder; 
+		inner;
+		sendData(builder.toText);
+		builder :- none;
+	exit:
+	end;
+
+	getListHandler class getMyHandler;
+	begin
+		integer dataMaxLength = 64;
+		integer current, dataLength, getResult;
+		text data, cuser;
+
+		data :- blanks(dataMaxLength);
+		current := 0;
+		cuser :- copy(user);
+
+		getResult := 0;
+		while getResult <> -2 do
+		begin
+			dataLength := dataMaxLength;
+			getResult := 1;
+			while getResult = 1 do
+			begin
+				hold(1);
+				getResult := cGetNextData(cuser, data, dataLength, current);
+			end;
+			if getResult = -1 then
+			begin
+				sendCode(500, "internal error");
+				goto exit;
+			end;
+			if getResult = 0 then
+				builder :- builder.addText(data.sub(1, dataLength)).addText(CRLF);
+		end;
+	exit:
+	end;
+
+	getListHandler class getUsersHandler;
+	begin
+		integer dataMaxLength = 64;
+		integer current, dataLength, getResult;
+		text data;
+
+		data :- blanks(dataMaxLength);
+		current := 0;
+
+		getResult := 0;
+		while getResult <> -2 do
+		begin
+			dataLength := dataMaxLength;
+			getResult := 1;
+			while getResult = 1 do
+			begin
+				hold(1);
+				getResult := cGetNextUser(data, dataLength, current);
+			end;
+			if getResult = -1 then
+			begin
+				sendCode(500, "internal error");
+				goto exit;
+			end;
+			if getResult = 0 then
+				builder :- builder.addText(data.sub(1, dataLength)).addText(CRLF);
+		end;
+	exit:
+	end;
+
+	handler class serverHandler;
+	begin
+		while true do
+		begin
+	next:
+			detach;
+			while true do
+			begin
+				ref(handler) h; 
+				integer infd;
+				infd := cAccept(socket);
+				if infd < 0 then
+					goto next;
+				
+				if cMakeSocketNonBlocking(infd) < 0 then
+					goto next;
+
+				h :- new initHandler(infd);
+				h.addRead;
+				call(h);
+			end;
+		end;
+	end;
+
+	ref(serverHandler) shandler;
+	ref(sparsearray) handlers;
+	ref(handler) h;
+	integer epoll;
+	integer socket;
+	integer seed;
+
+	seed := 37;
+
+	socket := cCreateAndBind(port, backlog);
+	if socket < 0 then
+		error("can't create server socket");
+	if cMakeSocketNonBlocking(socket) < 0 then
+		error("can't make server socket nonblocking");
+
+	epoll := cGetEpoll;
+	if epoll < 0 then
+		error("can't create epoll");
+
+	shandler :- new serverHandler(socket);
+	call(shandler);
+	
+	handlers :- new sparsearray;
+	shandler.addRead;
+
+	while true do
+	begin
+		socket := cGetConnect(epoll);
+		if socket = 0 then
+			hold(0.1)
+		else if socket < 0 then
+		begin
+			handlers.remove(-socket);
+			cClose(socket);
+		end
+		else
+		begin
+			h :- handlers.get(socket);
+			if h =/= none then
+				call(h);
+		end;
+	end;
+end;

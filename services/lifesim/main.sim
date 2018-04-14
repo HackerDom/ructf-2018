@@ -1,0 +1,37 @@
+external class server;
+external class args;
+external class utils;
+
+simulation begin
+	external C procedure cInitDB is
+		integer procedure cInitDB(credentialsDbName, credentialsSize, dataDbName, dataSize);
+			text credentialsDbName, dataDbName; integer credentialsSize, dataSize;;
+
+	text procedure getArgv(ind, len);
+		integer ind, len;
+	begin
+	    text buf;
+	    buf :- blanks(len);
+	    cGetArgv(ind, buf, len);
+	    getArgv :- buf.sub(1, len);
+	end;	
+	
+	integer dbnameMaxLen = 10;
+	integer portMaxLen = 5;
+	ref(server) serv;
+	text credentialsDbName, port, dataDbName;
+
+	if argc < 4 then
+		error("usage: ./lifesim [port] [credentials dbname] [data dbname]");
+
+	port :- getArgv(1, portMaxLen);
+	credentialsDbName :- getArgv(2, dbnameMaxLen);
+	dataDbName :- getArgv(3, dbnameMaxLen);
+
+	if cInitDB(copy(credentialsDbName), 128 * 1024 * 1024, copy(dataDbName), 512 * 1024 * 1024) < 0 then
+		error("can't init db");
+
+%	method of fast and painfull death
+%	serv :- new server(port.getint, 1024);
+	serv :- new server(parseInt(port), 1024);
+end;
