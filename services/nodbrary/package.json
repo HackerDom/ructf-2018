@@ -26,8 +26,10 @@
     "rimraf": "2.5.2"
   },
   "scripts": {
-    "start": "cross-env NODE_ENV=production node src/server/index.js",
+    "get-mongo": "sudo apt-get install -y mongodb",
+    "start-mongo": "mongod",
     "clean": "rimraf node_modules/",
+    "start": "npm run get-mongo && npm run start-mongo $$ cross-env NODE_ENV=production node src/server/index.js",
     "DROP": "mongo test --eval \"db.dropDatabase()\""
   }
 }
