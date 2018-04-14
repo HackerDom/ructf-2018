@@ -1,8 +1,8 @@
 import random
 import mimesis
 
-top = 20000000
-down = -20000000
+top = 200000000
+down = -200000000
 
 
 def get_random_cords():
