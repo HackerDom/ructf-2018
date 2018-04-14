@@ -13,6 +13,7 @@ package thinkerer;
 service Thinkerer {
   rpc SendMessage (Msg) returns (MsgReply) {}
   rpc RecvMessages (MsgReq) returns (Msgs) {}
+  rpc Register (UserRegister) returns (MsgReply) {}
 }
 
 message MsgForward {
@@ -27,18 +28,31 @@ message Msg {
   uint64 ts = 4;
   string id = 5;
   MsgForward msg_forward = 6;
+  string password = 7;
 }
 
 message MsgReq {
   string uid = 1;
   uint64 start_ts = 2;
   uint64 end_ts = 3;
+  string password = 4;
 }
 
 message Msgs {
   repeated Msg messages = 1;
+  string error = 2;
 }
 
 message MsgReply {
   int32 status = 1;
+  string error = 2;
+}
+
+message UserRegister {
+  string username = 1;
+  string password = 2;
+}
+
+message UserAuth {
+  map<string, string> user_password = 1;
 }
