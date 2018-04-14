@@ -4,6 +4,7 @@ from EC import EC
 from csv import DictReader
 from random import randint
 
+import os
 import re
 
 def decode_cookie(cookie):
@@ -21,7 +22,7 @@ def check_curve(cookie):
     return ec.order(g, curve['n'])
 
 def check_journal(bs, cookie):
-    pattern = re.compile("\d+\) ([a-z0-9]+).+\.\( ([a-f0-9]{4,}), ([a-f0-9]{4,}) \) Librarian's note: \w+ \w+ \w+ \w+ \w+ \( ([a-f0-9]{4,}),? ?([a-f0-9]{4,})? \)")
+    pattern = re.compile("\d+\) ([a-zA-Z0-9]+).+\.\( ([a-f0-9]{4,}), ([a-f0-9]{4,}) \) Librarian's note: [a-zA-Z0-9]+ [a-z]{12} \w+ \S+ \S+ \( ([a-f0-9]{4,}),? ?([a-f0-9]{4,})? \)")
     curve = decode_cookie(cookie)
     ec = EC(*tuple(map(curve.get, 'abp')))
 
@@ -42,9 +43,9 @@ def check_journal(bs, cookie):
     return any(arr)
 
     
-def get_book():
+def get_book(cur_dir):
     r = randint(0, 1000)
-    with open('result.csv', 'r') as f:
+    with open(os.path.join(cur_dir, 'result.csv'), 'r') as f:
         for i, book in enumerate(DictReader(f)):
             if i == r:
                 return book

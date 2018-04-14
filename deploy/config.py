@@ -5,7 +5,9 @@ CONFIG = {
     'thinkerer': {
         'nonginx': True
     }
+    'nodbrary': {}
 }
 
 SERVICES_PATH = '/home'
 NGINX_CONF_PATH = '/etc/nginx'
+
