@@ -14,15 +14,14 @@ let validator = {
     validateLogin: str => {
         if (!str)
             throw new ValidationError("Field login couldn't be empty");
-        str = str.toLowerCase();
-        if (!str.match(/^[a-z0-9]*$/i))
+        if (!str.match(/^[a-zA-Z0-9]*$/i))
             throw new ValidationError("Field login should contain only letters, digits");
         return str;
     },
     validateString: (str, obj) => {
         if (!str)
             throw new ValidationError("Field " + obj + " couldn't be empty");
-        if (!str.match(/^[a-z0-9,.()\-"!?;:'= ]*$/i))
+        if (!str.match(/^[a-zA-Z0-9,.()\-"!?;:'= ]*$/i))
             throw new ValidationError("Field  " + obj + " should contain only letters, digits or symbols: ',', '.', '(', ')', '-', '\"', '!', '?', ';', ':', ''', '='");
         return str;
     },

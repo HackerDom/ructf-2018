@@ -1,11 +1,9 @@
 version: '2.2'
 services:
-  thinkerer:
+  nodbrary:
     build: .
     ports:
-      - "50051:50050"
-    volumes:
-      - ./data:/home/thinkerer/data
+      - "3001:3000"
     restart: on-failure
     mem_limit: 512m
     mem_reservation: 128m
