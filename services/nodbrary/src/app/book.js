@@ -40,7 +40,6 @@ const book = {
     },
     tags: async (userId, bookId) => {
         let tags = await Tag.findOne({"userId": userId, "bookId": bookId}).exec();
-        console.log(tags);
         if(tags)
             return tags.tags;
     },

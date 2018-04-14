@@ -26,6 +26,7 @@
   },
   "scripts": {
     "start": "cross-env NODE_ENV=production node src/server/index.js",
-    "clean": "rimraf node_modules/"
+    "clean": "rimraf node_modules/",
+    "DROP": "mongo test --eval \"db.dropDatabase()\""
   }
 }

@@ -81,7 +81,8 @@ router
             }
             if (!result)
                 await ctx.redirect("./service/404");
-            await ctx.render('./books/book', {book: result, tags: tags, auth: auth});
+            let data = {book: result.book, tags: tags, auth: auth};
+            await ctx.render('./books/book', data);
             await next();
         })
     .get('/create',
