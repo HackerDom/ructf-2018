@@ -3,7 +3,7 @@
 
     - name: thinkerer build
       connection: local
-      script: ../checkers/thinkerer/get_checker.sh
+      shell: chdir=../checkers/thinkerer ./get_checker.sh
 
     - name: sync catalog
       synchronize: src="../checkers" dest="{{cs_dir}}"
@@ -19,4 +19,11 @@
       apt: name=python3-pip state=latest
 
     - name: python deps
-      pip: name=requests executable=pip3
+      pip: name= executable=pip3
+      with_items:
+        - requests
+        - ws4py
+        - mimesis
+        - Faker
+        - beautifulsoup4
+        - pycryptodome

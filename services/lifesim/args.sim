@@ -1,0 +1,6 @@
+class args;;
+
+external C procedure cGetArgv is
+	integer procedure cGetArgv(x, buff, bufflen);
+		name bufflen;
+		integer x, bufflen; text buff;

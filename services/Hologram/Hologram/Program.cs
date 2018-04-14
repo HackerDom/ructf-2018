@@ -17,6 +17,8 @@ namespace Hologram
 			XmlConfigurator.Configure();
 			try
 			{
+				var coresAmount = Environment.ProcessorCount;
+				ThreadPool.SetMinThreads(128 * coresAmount, 128 * coresAmount);
 				var server = PrepareHttpServer();
 				var wsServer = PrepareWsServer();
 				

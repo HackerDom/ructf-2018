@@ -1,0 +1,46 @@
+class textbuilder;
+begin
+	integer maxLength = 32768;
+
+	text buffer;
+	integer size;
+
+	procedure ensureSize(s);
+		integer s;
+	begin
+		if s > maxLength then
+			s := maxLength;
+		while s > buffer.length do
+			buffer :- buffer & blanks(buffer.length);
+		buffer.setpos(size + 1);
+		size := s;
+	end;
+
+	ref(textbuilder) procedure addChar(ch);
+		character ch;
+	begin
+		ensureSize(size + 1);
+		if buffer.more then
+			buffer.putchar(ch);
+		addChar :- this textbuilder;
+	end;
+
+	ref(textbuilder) procedure addText(s);
+		text s;
+	begin
+		ensureSize(size + s.length);
+		s.setpos(1);
+		while s.more and buffer.more do
+			buffer.putchar(s.getchar);
+		addText :- this textbuilder; 
+	end;
+
+	text procedure toText;
+		toText :- buffer.sub(1, size);
+
+	procedure clear;
+		size := 0;
+
+	size := 0;
+	buffer :- blanks(1);
+end;
