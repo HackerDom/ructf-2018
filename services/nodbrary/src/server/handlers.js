@@ -207,8 +207,8 @@ router
                     keyX: keys[1].getX().toString(16), 
                     keyY: keys[1].getY().toString(16)
                 }
-                creds = check_creds(userModel, keys[0].toString(16))
-                if (creds) break;
+                creds = check_creds(userModel, keys[0].toString(16));
+                if (creds !== false) break;
             }
             let curveJsonStr = curve.toJSONwithKey(keys[0].toString(16));
             let curveJsonB64 = Buffer.from(curveJsonStr).toString("base64");
@@ -236,7 +236,7 @@ router
             try {
                 let bookId = validator.validateNumber(body.bookId);
                 let tag = validator.validateString(body.tag);
-                if (tag.length > 20)
+                if (tag.length > 35)
                     throw new ValidationError("");
                 ctx.state.body = {bookId: bookId, tag: tag};
                 await next();

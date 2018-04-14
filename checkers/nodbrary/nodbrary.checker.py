@@ -22,22 +22,25 @@ SIGN_IN   = "http://{}/signin"
 READ_BOOK = "http://{}/book/"
 JOURNAL   = "http://{}/journal"
 
-DIR = 'flags'
+CUR_DIR = os.path.dirname(os.path.realpath(__file__))
+DIR = os.path.join(CUR_DIR, 'flags')
 
 def generate_login():
     return ''.join(Faker().name().split())
 
 def make_request(method, addr, team_addr, data=None):
     try:
-        if data:
-            r = method(addr.format(team_addr), data=data)
-        else:
-            r = method(addr.format(team_addr))
+        URL = addr.format(team_addr)
+        r = method(URL, data=data) if data else method(URL)
         
         if r.status_code == 502:
             close(DOWN, "Service is down")
         if r.status_code != 200:
-            close(MUMBLE, "Invalid HTTP response", "Invalid status code: {} {}".format(team_addr, r.status_code))	
+            r = method(URL, data=data) if data else method(URL)
+            if r.status_code == 502:
+                close(DOWN, "Service is down")
+            if r.status_code != 200:
+                close(MUMBLE, "Invalid HTTP response", "Invalid status code: {} {}".format(URL, r.status_code))	
     except Exception as ex:
         close(DOWN, "Service is down")
     return r
@@ -86,7 +89,7 @@ def check(*args):
     team_addr = args[0]
     login = generate_login()
     s = Session()
-    
+
     r = make_request(s.post, SIGN_UP, team_addr, {"login":login})
 
     session = r.cookies.get('session', None)
@@ -115,7 +118,7 @@ def put(*args):
         close(MUMBLE, "Invalid cookie", "No cookie. {}".format(team_addr))
     password = hex(decode_cookie(session).get('priv_key'))[2:]
 
-    book = get_book()
+    book = get_book(CUR_DIR)
     r = make_request(s.post, ADD_BOOK, team_addr, book)
 
     book_id = r.url.split('/')[-1]
