@@ -7,6 +7,7 @@
 
 #include "proto/thinkerer.pb.h"
 #include "proto/thinkerer.grpc.pb.h"
+#include "thinkerer_stor.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -19,32 +20,53 @@ using thinkerer::MsgReply;
 using thinkerer::Thinkerer;
 
 class MessangerImlp final : public Thinkerer::Service {
+public:
+  MessangerImlp()
+    : Stor("data")
+  {}
+
   Status SendMessage(ServerContext* context, const Msg* request,
                      MsgReply* reply) override 
   {
     messages_[request->to()].push_back(*request);
+
+    time_t now;
+    time(&now);
+    messages_[request->to()].back().set_ts(now);
+    Stor.AddMessage(messages_[request->to()].back());
+    Stor.FlushData(true);
     return Status::OK;
   }
 
   Status RecvMessages(ServerContext* context, const MsgReq* request,
                       Msgs* reply) override
   {
-    std::cerr << "RecvMessages!" << std::endl;
-    const auto messages_it = messages_.find(request->uid());
-    if (messages_it == messages_.end()) {
-      std::cerr << "RecvMessages:" << request->uid() << " 0 messages" << std::endl; 
-      return Status::OK;
+    time_t now;
+    time(&now);
+
+    time_t startTs = now - 5 * 60;
+    time_t endTs = now;
+
+    if (request->start_ts()) {
+      startTs = request->start_ts();
     }
 
-    std::cerr << "RecvMessages:" << request->uid() << "  " << messages_it->second.size() << " messages" << std::endl;
-    for (const auto& message : messages_it->second) {
-      auto m = reply->add_messages();
-      m->MergeFrom(message);
+    if (request->end_ts()) {
+      endTs = request->end_ts();
     }
+
+    for (const auto& msg : Stor.GetUserMessages(request->uid(), startTs, endTs)) {
+      std::cerr << msg.message() << std::endl;
+      auto m = reply->add_messages();
+      m->MergeFrom(msg);
+    }
+
     return Status::OK;
   }
 private:
   std::unordered_map<std::string, std::vector<Msg>> messages_;
+  ThinkererStor Stor;
+
 };
 
 void RunServer() {
