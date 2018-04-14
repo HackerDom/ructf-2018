@@ -40,10 +40,7 @@ app.use(async (ctx, next) => {
 let mongoose = require('mongoose');
 
 mongoose.Promise = Promise;
-let mongoConnectionUrl = 'mongodb://' +
-    config.get('mongo.user') + ':' +
-    config.get('mongo.pass') + '@' +
-    'localhost:27017/test';
+let mongoConnectionUrl = 'mongodb://localhost:27017/test';
 mongoose.connect(mongoConnectionUrl);
 
 app.use(async (ctx, next) => {
