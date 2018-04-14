@@ -26,6 +26,7 @@ class ThinkererClient {
                    const std::string& password,
                    const std::string& to,
                    const std::string& message,
+                   const std::string& id,
                    const std::string& forwardMsgId = "",
                    const time_t forwardMsgTs = 0);
 

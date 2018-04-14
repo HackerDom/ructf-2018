@@ -10,6 +10,7 @@ void ThinkererClient::SendMessage(const std::string& from,
                                   const std::string& password,
                                   const std::string& to,
                                   const std::string& message,
+                                  const std::string& id,
                                   const std::string& forwardMsgId,
                                   const time_t forwardMsgTs) 
 {
@@ -18,6 +19,10 @@ void ThinkererClient::SendMessage(const std::string& from,
   msg.set_to(to);
   msg.set_message(message);
   msg.set_password(password);
+
+  if (!id.empty()) {
+    msg.set_id(id);
+  }
 
   if (!forwardMsgId.empty()) {
     auto forwardMsg = msg.mutable_msg_forward();
