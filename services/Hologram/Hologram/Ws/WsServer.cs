@@ -166,7 +166,7 @@ namespace Hologram.Ws
 			)
 				return Database.HologramsField
 					.SearchHologramsAtPoint(point, rad)
-					.OrderByDescending(x => x.CreationDate).Take(20)
+					.OrderByDescending(x => x.CreationDate).Take(100)
 					.Select(HologramJsonSchema.FromHolo).ToList();
 			return null;
 		}
