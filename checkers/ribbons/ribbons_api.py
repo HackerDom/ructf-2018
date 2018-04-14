@@ -75,7 +75,7 @@ class Ribbons:
 
 	def _assert_status(self, response, status):
 		if response.status_code != status:
-			raise UnexpectedStatusException("{} {}".format(response.status_code, response.reason))
+			raise UnexpectedStatusError("{} {}".format(response.status_code, response.reason))
 
 	def add_channel(self, name, password):
 		response = self._call("POST", "add_channel", data={ "name": name, "password": password })
