@@ -2,7 +2,6 @@
 
 #include "thinkerer_client.h"
 
-// Constructor with "initialization list"
 ThinkererClient::ThinkererClient(std::shared_ptr<Channel> channel)
   : stub_(Thinkerer::NewStub(channel)) {}
 
