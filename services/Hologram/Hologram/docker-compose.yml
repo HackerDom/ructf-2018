@@ -1,0 +1,22 @@
+version: '2.3'
+services:
+  hologram:
+    build: .
+    volumes:
+      - .:/home/Hologram
+    restart: on-failure
+    mem_limit: 512m
+    mem_reservation: 128m
+  nginx:
+    image: nginx:1.13.7-alpine
+    ports:
+      - "7483:80"
+    volumes:
+      - ./Deploy/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./Deploy/nginx/default:/etc/nginx/sites-enabled/default
+      - .:/home/Hologram
+    depends_on:
+      - hologram
+    restart: on-failure
+    mem_limit: 256m
+    mem_reservation: 64m
