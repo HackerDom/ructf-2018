@@ -7,7 +7,7 @@ import json
 import requests
 import base64
 import string
-from ribbons_api import Ribbons, UnexpectedStatusError, BadResponseError
+from ribbons_api import Ribbons, ApiError
 
 MAX_POSTS = 3
 
@@ -68,6 +68,7 @@ def handle_put(hostname, id, flag):
 
 	credentials = {
 		"channel_id": cid,
+		"password": password,
 		"key": key.decode("latin-1")
 	}
 
@@ -90,10 +91,8 @@ def main():
 	checker = checker_api.Checker(handle_check, [(handle_put, handle_get)])
 	try:
 		checker.process(sys.argv)
-	except UnexpectedStatusError as e:
-		checker_api.mumble(message=str(e))
-	except BadResponseError as e:
-		checker_api.mumble(error=str(e))
+	except ApiError as e:
+		checker_api.mumble(error=str(e), exception=e.__context__)
 	except requests.RequestException as e:
 		checker_api.down(exception=e)
 

@@ -9,12 +9,15 @@ import user_agents
 
 KEY_SIZE = 128
 
-class UnexpectedStatusError(Exception):
+class ApiError(Exception):
+	def __init__(self, message, method):
+		super().__init__("{} failed. {}".format(method, message))
+
+class UnexpectedStatusError(ApiError):
 	pass
 
-class BadResponseError(Exception):
-	pass
-		
+class BadResponseError(ApiError):
+	pass		
 		
 class Channel:
 	def __init__(self, name, posts):
@@ -73,40 +76,43 @@ class Ribbons:
 			self._session = None
 		return result
 
-	def _assert_status(self, response, status):
+	def _assert_status(self, response, status, api_method):
 		if response.status_code != status:
-			raise UnexpectedStatusError("{} {}".format(response.status_code, response.reason))
+			raise ApiError("Unexpected status: {}".format(response.status_code), api_method)
 
 	def add_channel(self, name, password):
-		response = self._call("POST", "add_channel", data={ "name": name, "password": password })
-		self._assert_status(response, 201)
+		method = "add_channel"
+		response = self._call("POST", method, data={ "name": name, "password": password })
+		self._assert_status(response, 201, method)
 		match = re.fullmatch("id:(\d+)", response.text)
 		if not match:
-			raise BadResponseError("Id not found.")
+			raise BadResponseError("Id not found. Received: '{}'".format(response.text), method)
 		return match.group(1)
 
 	def add_post(self, channel_id, password, text):
 		response = self._call("POST", "add_post", channel_id, { "password": password, "text": text })
-		self._assert_status(response, 201)
+		self._assert_status(response, 201, "add_post")
 		return True
 
 	def get_key(self, channel_id, password):
 		response = self._call("POST", "key", channel_id, data={ "password": password })
-		self._assert_status(response, 200)
-		if len(response.content) != KEY_SIZE:
-			raise BadResponseError("Key size do not match expected size.")
+		method = "get_key"
+		self._assert_status(response, 200, method)
+		received_key_size = len(response.content)
+		if received_key_size != KEY_SIZE:
+			raise BadResponseError("Key size ({}) do not match expected size ({}). Received key: '{}'".format(received_key_size, KEY_SIZE, response.content), method)
 		return response.content
 
 	def change_password(self, channel_id, password, new_password):
 		response = self._call("POST", "change_password", channel_id, data={ "password": password, "new_password": new_password })
-		self._assert_status(response, 200)
+		self._assert_status(response, 200, "change_password")
 		return True
 
 	def view(self, channel_id):
 		response = self._call("GET", "view", channel_id)
-		self._assert_status(response, 200)
+		self._assert_status(response, 200, "view")
 		try:
 			channel = Channel.parse(response.content)
-		except EOFError:
-			raise BadResponseError("Channel parsing failed.")
+		except EOFError as e:
+			raise BadResponseError("Channel parsing failed. Received: '{}'".format(response.content), "view") from e
 		return channel
