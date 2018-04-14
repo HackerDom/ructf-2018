@@ -3,7 +3,7 @@ services:
   thinkerer:
     build: .
     ports:
-      - "50051:50050"
+      - "50051:50051"
     volumes:
       - ./data:/home/thinkerer/data
     restart: on-failure
