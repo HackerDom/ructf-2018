@@ -69,7 +69,7 @@ teams: |
   {name => 'SwissMadeSecurity',                network => '10.60.26.0/24', host => '10.60.26.1', token => 'dbff3af0-f642-40ac-af45-901b36d42c27', logo => '/logos/2.jpeg'},
 
 services: |
-  {name => 'Hologram',  path => 'checkers/checker.py', timeout => 10},
+  {name => 'Hologram',  path => 'checkers/Hologram/checker.py', timeout => 10},
   {name => 'Eloquent',  path => 'checkers/eloquent/main.py', timeout => 10, tcp_port => 8080},
   {name => 'Ribbons',   path => 'checkers/ribbons/ribbons.checker.py', timeout => 10, tcp_port => 4243},
   {name => 'Nodbrary',  path => 'checkers/nodbrary/nodbrary.checker.py', timeout => 10, tcp_port => 3000},
