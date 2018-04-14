@@ -10,152 +10,123 @@ import time
 import asyncio
 import string
 
-PORT = 7483
+PORT = 8084
 
-def check_points_list(l, expected=[]):
-	if not type(l) is list:
-		checker.mumble(error='list of points not a list, {}'.format(type(l)))
-	error = []
-	for i in range(len(l)):
-		if not type(l[i]) is dict:
-			checker.mumble(error='point #{} is not a dict, {}'.format(i, type(l[i])))
-		for field in expected:
-			if field not in l[i]:
-				error.append(field)
-		if len(error) > 0:
-			checker.mumble(error='not all expected fields have founded in point #{}. {}'.format(i, str(errors)))
+async def register_and_put(state):
+	username, _ = await state.register()
+	data = checker.get_rand_string(32)
+	await state.put_data(data)
+	return username, data
 
-def get_point(points, id):
-	for p in points:
-		if p['id'] == id:
-			return p
+async def check_in_self_list(state, data):
+	datas = await state.get_my()
+	return data in datas
 
-def compare(p1, p2, fields):
-	error = []
-	for f in fields:
-		if p1[f] != p2[f]:
-			error.append(f)
-	if len(error) > 0:
-		checker.mumble(error='points are different in fields {}: {} vs {}'.format(error, p1, p2))
+def splitBits(data):
+	if len(data) % 2 == 1:
+		data += '\0'
+	l = ''
+	r = ''
+	for k in range(0, len(data), 2):
+		for j in [0, 1]:
+			ch = ord(data[k + j])
+			for i in range(0, 8, 2):
+				l += '0' if ch % 2 == 0 else '1'
+				ch //= 2
+				r += '0' if ch % 2 == 0 else '1'
+				ch //= 2
+	return l, r
+			
+def unpack(d):
+	res = ''
+	for c in d.encode(encoding='cp1251'):
+		m = 256
+		for i in range(7, -1, -1):
+			m //= 2
+			res += '0' if (c & m) == 0 else '1'
+	return res
 
-async def get_point_with_flag(hostname, username, password, id):
-	state = State(hostname, PORT)
-	await state.login(username, password)
-	listener = state.get_points_listener()
-	point = await listener.find(id)
-	return point
-		
-FIELDS = ['id', 'x', 'y', 'message', 'public', 'user']
+def splitsCount(d, l, r):
+	if len(d) == 0:
+		return 0;
+	inf = int(1e9)
 
-async def check_one(username, sender, viewer, is_public):
-	point = await sender.put_point(is_public=True, user=username)
-	p = await viewer.find(point['id'])
-	compare(point, p, FIELDS)
+	dp = [[inf, inf] for i in range(len(d))]
+	if d[0] == l[0]:
+		dp[0][0] = 0
+	if d[0] == r[0]:
+		dp[0][1] = 0
 
-def get_rand_point():
-	return {
-			'x' : checker.get_rand_string(13, checker.printable),
-			'y' : checker.get_rand_string(13, checker.printable)
-	}
+	for i in range(1, len(d)):
+		if d[i] == l[i]:
+			dp[i][0] = min(dp[i - 1][0], dp[i - 1][1] + 1)
+		if d[i] == r[i]:
+			dp[i][1] = min(dp[i - 1][0] + 1, dp[i - 1][1])
 
-def equal_points(p1, p2):
-	return p1['x'] == p2['x'] and p1['y'] == p2['y']
+	return min(dp[-1])
 
-def is_between_str(l, r, p):
-	return l <= p <= r or l >= p >= r
+async def check_in_anothers_list(state, user, data):
+	datasTask =  state.get_data(user)
+	l, r = splitBits(data)
+	datas = await datasTask
 
-def is_between(l, r, p):
-	return l['x'] == p['x'] == r['x'] and is_between_str(l['y'], r['y'], p['y']) or l['y'] == p['y'] == r['y'] and is_between_str(l['x'], r['x'], p['x'])
+	for d in datas:
+		dd = unpack(d)
+		if len(l) == len(dd) and splitsCount(dd, l, r) <= 2:
+			return True
+	return False
 
-async def check_path(username, sender, another, aname):
-	responses = []
-	for i in range(random.randint(1, 3)):
-		responses.append(await sender.put_point(user=username))
-	for i in range(random.randint(1, 3)):
-		responses.append(await another.put_point(is_public=True, user=aname))
-
-	start = get_rand_point()
-	finish = get_rand_point()
-
-	ids = [point['id'] for point in responses]
-
-	path = await sender.get_path(start, finish, ids)
-	check_points_list(path, ['x', 'y'])
-	if len(path) == 0:
-		checker.mumble(error='path must contains at least one point')
-	if not equal_points(path[0], start):
-		checker.mumble(error='start point is bad: {} vs {}'.format(start, path[0]))
-	if not equal_points(path[-1], finish):
-		checker.mumble(error='finish point is bad: {} vs {}'.format(finish, path[-1]))
-
-	for p in responses:
-		for i in range(1, len(path)):
-			if is_between(path[i - 1], path[i], p):
-				break
-		else:
-			checker.mumble(error='point {} not in path {}'.format(p, path))
-
+async def check_in_user_list(state, username):
+	users = await state.get_users()
+	return username in users
 
 async def handler_check(hostname):
 
 	first = State(hostname, PORT, 'first')
-	fusername, fpassword = await first.register()
-	point_listener = first.get_points_listener()
+	fregister_and_put = register_and_put(first)
 
 	second = State(hostname, PORT, 'second')
-	suser, spass = await second.register()
-	public_listener = second.get_public_listener()
+	sregister = second.register()
 
-	tasks = []
+	fregister_and_put_result, _ = await asyncio.gather(asyncio.ensure_future(fregister_and_put), asyncio.ensure_future(sregister))
 
-	tasks.append(asyncio.ensure_future(check_one(fusername, first, public_listener, True)))
-	tasks.append(asyncio.ensure_future(check_one(fusername, first, point_listener, False)))
-	tasks.append(asyncio.ensure_future(check_path(fusername, first, second, suser)))
-	await asyncio.gather(*tasks)
+	fusername, fdata = fregister_and_put_result
+
+	while True:
+		fcheckTask = check_in_self_list(first, fdata)
+		scheckTask = check_in_anothers_list(second, fusername, fdata)
+		suser_check_task = check_in_user_list(second, fusername)
+		
+		(fcheck, scheck, suser_check) = await asyncio.gather(asyncio.ensure_future(fcheckTask), asyncio.ensure_future(scheckTask), asyncio.ensure_future(suser_check_task))
+		
+		if not scheck:
+			checker.log("no suitable data in another user's list")
+			continue
+		
+		if not fcheck:
+			checker.log("posted data not present in list of owner")
+			continue
+		
+		if not suser_check:
+			checker.log("no user in list")
+			continue
+
+		break
 
 	checker.ok()
 
 async def handler_get(hostname, id, flag):
 	id = json.loads(id)
-	if 'type' not in id or id['type'] == 1:
-		await handler_get_1(hostname, id, flag)
-	else:
-		await handler_get_2(hostname, id, flag)
-
-async def handler_get_1(hostname, id, flag):
-	p = await get_point_with_flag(hostname, id['username'], id['password'], id['id'])
-	if p['message'] != flag:
-		checker.corrupt(message="Bad flag: expected {}, found {}".format(flag, p['message']))
+	getter = State(hostname, PORT, 'get', id['user'], id['pass'])
+	if not await check_in_self_list(getter, flag):
+		checker.corrupt()
 	checker.ok()
 
 async def handler_put(hostname, id, flag):
-	t = random.randint(1, 2)
-	if t == 1:
-		id = await handler_put_1(hostname, id, flag)
-	else:
-		id = await handler_put_2(hostname, id, flag)
-	id['type'] = t
-	checker.ok(message=json.dumps(id))
-
-async def handler_put_1(hostname, id, flag):
-	state = State(hostname, PORT)
-	username, password = await state.register()
-	point = await state.put_point(message=flag, is_public=False)
-	await state.put_point(is_public=True)
-	return {'username': username, 'password': password, 'id': point['id']}
-
-async def handler_get_2(hostname, id, flag):
-	p = await get_point_with_flag(hostname, id['username'], id['password'], id['id'])
-	if p['x'] + p['y'] != flag:
-		checker.corrupt(message="Bad flag: expected {}, found {}".format(flag, p['message']))
-	checker.ok()
-
-async def handler_put_2(hostname, id, flag):
-	state = State(hostname, PORT)
-	username, password = await state.register()
-	point = await state.put_point(x = flag[:len(flag) // 2], y = flag[len(flag) // 2:], is_public=False)
-	await state.put_point(is_public=True)
-	return {'username': username, 'password': password, 'id': point['id']}
+	putter = State(hostname, PORT, 'put')
+	username, password = await putter.register()
+	await putter.put_data(flag)
+	checker.ok(message=json.dumps({'user': username, 'pass': password}))
 
 def main():
 	checker = Checker(handler_check, [(handler_put, handler_get)])
