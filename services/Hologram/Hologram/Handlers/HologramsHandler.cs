@@ -15,7 +15,6 @@ namespace Hologram.Handlers
     public class HologramsHandler: BaseHandler
     {
         public static readonly BaseHandler Instance = new HologramsHandler();
-        private const int searchRadiusLimit = 20;
         public override Dictionary<HttpMethod, Func<HttpListenerContext, Task>> Methods { get; }
         public override string Path => "/api/holograms";
 
@@ -24,27 +23,17 @@ namespace Hologram.Handlers
             {
                 [HttpMethod.Get] = GetHologramAsync,
                 [HttpMethod.Post] = PostHologramAsync,
-                [HttpMethod.Put] = PutHologramLookuper
             };
-
-        private async Task PutHologramLookuper(HttpListenerContext context) // todo logic + ws alternative
-        {
-            var query = context.Request.Query();
-            if (!int.TryParse(query.Find(x => x.key == "rad").value, out var rad) || rad > searchRadiusLimit)
-                throw new HttpException(400, $"Radius should be lower than {searchRadiusLimit}");
-            await context.WriteStringAsync($"{string.Join(",", query)} and dict: {string.Join(",", query.ToDictionary(x => (x.key, x.value)))}")
-                .ConfigureAwait(false);
-        }
 
         private async Task PostHologramAsync(HttpListenerContext context)
         {
-            var parsedHologram = await JsonHelper.TryParseJsonAsync<NewHologram>(context.Request.InputStream)
+            var parsedHologram = await JsonHelper.TryParseJsonAsync<HologramJsonSchema>(context.Request.InputStream)
                 .ConfigureAwait(false);
             
             if (parsedHologram is null)
                 throw new HttpException(400, "Request should contain json object!");
             
-            var newHologramId = HologramField.AddHologram(
+            var newHologramId = HologramsField.AddHologram(
                 new Holo(new Point((parsedHologram.X, parsedHologram.Y, parsedHologram.Z)))
                     .UpdateContent(parsedHologram.Name, parsedHologram.Body));
             await context.Response.WriteObjectAsync(new Dictionary<string, Guid> {["id"] = newHologramId});
@@ -56,11 +45,11 @@ namespace Hologram.Handlers
             if (!Guid.TryParse(query.Find(x => x.key == "id").value, out var guid))
                 throw new HttpException(400, "Incorrect id has been sent!");
 
-            if (!HologramField.TryGetHologram(guid, out var hologram))
+            if (!HologramsField.TryGetHologram(guid, out var hologram))
                 await context.Response.WriteObjectAsync(
                     new Dictionary<string, string> {["error"] = "This id doesn't exist!"});
             else
-                await context.Response.WriteObjectAsync(NewHologram.FromHolo(hologram));
+                await context.Response.WriteObjectAsync(HologramJsonSchema.FromHolo(hologram));
         }
     }
 }

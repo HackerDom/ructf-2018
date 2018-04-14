@@ -1,0 +1,10 @@
+extends ../main.pug
+
+block content
+    if error != undefined
+        div(class="alert alert-danger", role="alert") #{error}
+    div(class="text-center")
+        form(method="post", action="/signup", class="form-signin")
+            h1(class="h3 mb-3 font-weight-normal") Please sign up
+            input(type="text", placeholder="Login", name="login", class="form-control", value="" + params.login, id="login", required, autofocus)
+            input(type="submit", class="btn btn-lg btn-primary btn-block btn-h", id="button", value="Go")

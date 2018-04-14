@@ -3,21 +3,33 @@
   "dependencies": {
     "config": "^1.30.0",
     "cross-env": "^5.1.4",
+    "elliptic": "^6.4.0",
     "koa": "2.5.0",
     "koa-body": "^2.5.0",
     "koa-compose": "^4.0.0",
     "koa-convert": "^1.2.0",
+    "koa-locals": "^0.3.0",
+    "koa-passport": "^4.0.1",
     "koa-pug": "^3.0.0-2",
     "koa-router": "^7.4.0",
+    "koa-session": "^5.8.1",
+    "koa-static": "^4.0.2",
     "mongoose": "^5.0.14",
     "mongoose-auto-increment": "^5.0.1",
-    "path": "^0.12.7"
+    "passport-local": "^1.0.0",
+    "path": "^0.12.7",
+    "randomstring": "^1.1.5",
+    "sentencer": "^0.1.5",
+    "sha1": "^1.1.1"
   },
   "devDependencies": {
     "rimraf": "2.5.2"
   },
   "scripts": {
+    "get-mongo": "sudo apt-get install -y mongodb",
+    "clean": "rimraf node_modules/",
+    "initialize": "npm i && npm run get-mongo && cross-env NODE_ENV=production node src/server/index.js",
     "start": "cross-env NODE_ENV=production node src/server/index.js",
-    "clean": "rimraf node_modules/"
+    "DROP": "mongo test --eval \"db.dropDatabase()\""
   }
 }

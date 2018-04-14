@@ -1,0 +1,19 @@
+server {
+	listen 80 default_server;
+
+	location / {
+		index index.html;
+		root /home/Hologram/Deploy/Static;
+	}
+
+	location /api/ {
+		proxy_pass http://hologram:8080/api/;
+	}
+
+	location /ws/ {
+		proxy_pass http://hologram:8081/ws/;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "upgrade";
+	}
+}

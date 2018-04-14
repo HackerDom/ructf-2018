@@ -41,20 +41,26 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.6.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\packages\System.Threading.Tasks.Dataflow.4.8.0\lib\netstandard2.0\System.Threading.Tasks.Dataflow.dll</HintPath>
+    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
-    <Reference Include="vtortola.WebSockets, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\vtortola.WebSocketListener.3.0.0\lib\netstandard2.0\vtortola.WebSockets.dll</HintPath>
+    <Reference Include="vtortola.WebSockets, Version=2.2.4.0, Culture=neutral, PublicKeyToken=7f78616efb4a208d">
+      <HintPath>..\packages\vtortola.WebSocketListener.2.2.4.0\lib\net45\vtortola.WebSockets.dll</HintPath>
+    </Reference>
+    <Reference Include="vtortola.WebSockets.Deflate, Version=2.2.4.0, Culture=neutral, PublicKeyToken=7f78616efb4a208d">
+      <HintPath>..\packages\vtortola.WebSocketListener.2.2.4.0\lib\net45\vtortola.WebSockets.Deflate.dll</HintPath>
+    </Reference>
+    <Reference Include="vtortola.WebSockets.Rfc6455, Version=2.2.4.0, Culture=neutral, PublicKeyToken=7f78616efb4a208d">
+      <HintPath>..\packages\vtortola.WebSocketListener.2.2.4.0\lib\net45\vtortola.WebSockets.Rfc6455.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Database\HologramField.cs" />
+    <Compile Include="Database\HologramsField.cs" />
     <Compile Include="Database\Loaders\Dumper.cs" />
     <Compile Include="Handlers\HologramsHandler.cs" />
     <Compile Include="Handlers\Helpers\BaseHandler.cs" />
-    <Compile Include="Handlers\Schemas\NewHologram.cs" />
+    <Compile Include="Handlers\Schemas\HologramJsonSchema.cs" />
     <Compile Include="Http\HttpContextHelper.cs" />
     <Compile Include="Http\HttpListenerRequestExtentions.cs" />
     <Compile Include="Http\HttpServer.cs" />
@@ -73,6 +79,8 @@
     <Compile Include="Utils\RuntimeHelper.cs" />
     <Compile Include="Utils\StringUtils.cs" />
     <Compile Include="Utils\TaskUtils.cs" />
+    <Compile Include="Ws\WsServer.cs" />
+    <Compile Include="Ws\WsServerExtentions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />

@@ -16,6 +16,13 @@ namespace Hologram.Models
             Z = z;
         }
 
+        public static bool TryParse(string x, string y, string z, out Point point)
+        {
+            var result = int.TryParse(x, out var X) & int.TryParse(y, out var Y) & int.TryParse(z, out var Z);
+            point = result ? new Point(X, Y, Z) : null;
+            return result;
+        }
+
         public Point((int x, int y, int z) cords): this(cords.x, cords.y, cords.z)
         {
         }

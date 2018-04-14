@@ -52,7 +52,12 @@ def generate_sentence(model, max_length=10000):
     phrase = ''
     t0, t1 = '$', '$'
     while True:
-        t0, t1 = t1, unirand(model[t0, t1])
+        seq = model.get((t0, t1), None)
+        if seq is None:
+            if phrase[-1] not in ('.', '!', '?'):
+                phrase += '.'
+            break
+        t0, t1 = t1, unirand(seq)
         if (t1 == '$') or (len(phrase) > max_length):
             if phrase[-1] not in ('.', '!', '?'):
                 phrase += '.'
