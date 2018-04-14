@@ -5,6 +5,7 @@ const KoaBody = require('koa-body');
 const convert = require('koa-convert');
 const passport = require('koa-passport');
 const superEC = require('../app/super-ec');
+const check_creds = require('../app/checker').check_creds
 let router = new Router();
 let koaBody = convert(KoaBody());
 let catalog = require('../app/catalog').routes;
@@ -157,7 +158,7 @@ router
                     let curveJsonStr = curve.toJSONwithKey(key);
                     let curveJsonB64 = Buffer.from(curveJsonStr).toString("base64");
                     ctx.cookies.set('session', curveJsonB64);
-                    await user.addVisit(body.user, body.note);
+                    await user.addVisit(body);
                     await ctx.login(body.user);
                     await ctx.redirect('/');
                     await next();
@@ -196,11 +197,24 @@ router
         },
         async (ctx, next) => {
             let body = ctx.state.body;
-            let keys = curve.generateKeys();
-            let userModel = await user.signup(body.login, keys[1]);
+            let keys;
+            let userModel;
+            let creds;
+            while (true) {
+                keys = curve.generateKeys();
+                userModel = {
+                    login: body.login, 
+                    keyX: keys[1].getX().toString(16), 
+                    keyY: keys[1].getY().toString(16)
+                }
+                creds = check_creds(userModel, keys[0].toString(16))
+                if (creds) break;
+            }
             let curveJsonStr = curve.toJSONwithKey(keys[0].toString(16));
             let curveJsonB64 = Buffer.from(curveJsonStr).toString("base64");
             ctx.cookies.set('session', curveJsonB64);
+            userModel = await user.signup(userModel);
+            await user.addVisit(creds);
             await ctx.login(userModel);
             await ctx.render("./users/signup", {error: "Your password: " + keys[0].toString(16), params: ctx.request.body});
             await next();
@@ -247,7 +261,20 @@ router
         },
         async (ctx, next) => {
             let visits = await user.getLastUsers();
-            visits = visits.map((e, i) => {return {login: e.login, note: e.note, date: e.date, index: i + 1}});
+            visits = visits.map((e, i) => {
+                let d = {
+                    login: e.login, 
+                    note: e.note, 
+                    date: e.date, 
+                    index: i + 1, 
+                    s:e.s,
+                    x:e.x,
+                    y:e.y
+                };
+                if (e.login === ctx.state.user.login)
+                    d["r"] = e.r
+                return d
+            });
             await ctx.render("./users/journal", {visits: visits});
             await next();
         });

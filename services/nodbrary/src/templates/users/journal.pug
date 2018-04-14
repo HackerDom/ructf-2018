@@ -9,4 +9,5 @@ block content
                     div(class="card h-100")
                         div(class="card-body")
                             p(class="card-text") #{visit.index}) #{visit.login} at #{visit.date}.
-                                small(class="card-text font-italic")  Librarian's note: #{visit.note}
+                                br
+                                small(class="card-text font-italic") ( #{visit.x}, #{visit.y} ) Librarian's note: #{visit.note} ( #{visit.s}#{(visit.r) ? ', ' + visit.r : ""} )

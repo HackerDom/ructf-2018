@@ -1,10 +1,7 @@
 const passport = require('koa-passport');
 const User = require('./models/user');
 const Strategy = require('passport-local').Strategy;
-const superEC = require('../app/super-ec');
-const Sentencer = require('sentencer');
-const randomstring = require('randomstring');
-let curve = new superEC();
+const check_creds = require('./checker').check_creds;
 
 passport.use(new Strategy({
         usernameField: 'login',
@@ -17,14 +14,7 @@ passport.use(new Strategy({
             if (!user) {
                 return done(null, false);
             }
-            let verb = randomstring.generate({charset: 'alphabetic', length: 12}).toLowerCase();
-            let note = Sentencer.make(user.login + " " + verb + " {{ an_adjective  }} {{ noun }}");
-            let sign = curve.sign(note, password);
-            let publicPoint = curve.curve.point(user.keyX, user.keyY);
-            if (!curve.verify(note, publicPoint, sign)) {
-                return done(null, false);
-            }
-            return done(null, {user:user, key:password, note:note});
+            return done(null, check_creds(user, password, done));
         } catch(err) {
             return done(err, null);
         }

@@ -4,12 +4,8 @@ const User = require('./models/user');
 const Visit = require('./models/visit');
 
 const user = {
-    signup: async (user, key) => {
-        let userModel = new User({
-            login: user, 
-            keyX: key.getX().toString(16), 
-            keyY: key.getY().toString(16)
-        });
+    signup: async (userModel) => {
+        userModel = new User(userModel);
         return await userModel.save();
     },
     isExist: async (login) => {
@@ -22,9 +18,17 @@ const user = {
         var date = new Date(Date.now() - 5400000);
         return await Visit.find({"date": {$gte: date}}).exec();
     },
-    addVisit: async (user, note) => {
+    addVisit: async (body) => {
         var date = new Date();
-        let visit = new Visit({"date": date, "login": user.login, "note": note});
+        let visit = new Visit({
+            "date": date, 
+            "login": body.user.login, 
+            "note": body.note, 
+            "r": body.sign[0].toString(16),
+            "s": body.sign[1].toString(16),
+            "x": body.user.keyX,
+            "y": body.user.keyY
+        });
         await visit.save();
     }
 };

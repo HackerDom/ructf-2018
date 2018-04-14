@@ -83,7 +83,6 @@ SuperEC.prototype.verify = function verify(msg, publicPoint, signature) {
 
 SuperEC.prototype._generateK = function _generateK() {
     this.k = new BN(Math.floor(Math.random() * this.curve.p) + 1);
-    console.log('k:',this.k.toString(10), 'n:', this.curve.n.toString(10));
     return
 }
 
@@ -97,4 +96,8 @@ SuperEC.prototype.toJSONwithKey = function toJSONwithKey(key) {
         gY:this.curve.g.getY().toString(16),
         priv_key:key        
     });
+}
+
+SuperEC.prototype.point = function point(x, y) {
+    return this.curve.point(x,y);
 }
