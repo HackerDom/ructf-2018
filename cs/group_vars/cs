@@ -70,7 +70,7 @@ teams: |
   {name => 'Invisible',                        network => '10.60.27.0/24', host => '10.60.27.1', token => '', logo => '/data/logos/dummy.png'},
 
 services: |
-  {name => 'Hologram',  path => 'checkers/checker.py', timeout => 10},
+  {name => 'Hologram',  path => 'checkers/Hologram/checker.py', timeout => 10},
   {name => 'Eloquent',  path => 'checkers/eloquent/main.py', timeout => 10, tcp_port => 8080},
   {name => 'Ribbons',   path => 'checkers/ribbons/ribbons.checker.py', timeout => 10, tcp_port => 4243},
   {name => 'Nodbrary',  path => 'checkers/nodbrary/nodbrary.checker.py', timeout => 10, tcp_port => 3000},
