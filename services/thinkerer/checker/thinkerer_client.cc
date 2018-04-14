@@ -8,12 +8,20 @@ ThinkererClient::ThinkererClient(std::shared_ptr<Channel> channel)
 
 void ThinkererClient::SendMessage(const std::string& from, 
                                 const std::string& to,
-                                const std::string& message) 
+                                const std::string& message,
+                                const std::string& forwardMsgId,
+                                const time_t forwardMsgTs) 
 {
   Msg msg;
   msg.set_from(from);
   msg.set_to(to);
   msg.set_message(message);
+
+  if (!forwardMsgId.empty()) {
+    auto forwardMsg = msg.mutable_msg_forward();
+    forwardMsg->set_id(forwardMsgId);
+    forwardMsg->set_ts(forwardMsgTs);
+  }
 
   MsgReply reply;
   ClientContext context;

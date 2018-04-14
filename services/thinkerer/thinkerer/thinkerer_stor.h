@@ -22,8 +22,9 @@ class ThinkererStor {
 public:
   ThinkererStor(const std::string& dataDir);
   ~ThinkererStor();
-  uint64_t AddMessage(const Msg& msg);
+  std::string AddMessage(const Msg& msg);
   std::vector<Msg> GetUserMessages(const std::string& uid, time_t startTs, time_t endTs);
+  bool GetMessageById(const std::string& id, time_t ts, Msg& msg);
   void FlushData(bool force = false);
   
 private:
