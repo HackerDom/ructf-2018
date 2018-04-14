@@ -6,6 +6,8 @@ const compose = require('koa-compose');
 const config = require('config');
 const path = require('path');
 
+const handlers = require('./handlers');
+
 const app = new koa();
 
 const pug = new Pug({
@@ -21,12 +23,17 @@ require('koa-locals')(app);
 app.use(async (ctx, next) => {
     try {
         await next();
+        if (ctx.status == 404)
+            await ctx.render('service/404');
     } catch (err) {
         console.log(err);
-        await ctx.render('service/error', {
-            message: err.message,
-            error: err
-        });
+        if (err.status == 404)
+            await ctx.render('service/404');
+        else
+            await ctx.render('service/error', {
+                message: err.message,
+                error: err
+            });
     }}
 );
 
@@ -48,9 +55,11 @@ app.use(async (ctx, next) => {
 
 pug.use(app);
 
-var projectRoot = __dirname;
-var staticRoot = path.join(projectRoot, '../public');
+let projectRoot = __dirname;
+let staticRoot = path.join(projectRoot, '../public');
 console.log(staticRoot);
+
+app.keys = config.get('session.keys');
 
 var middlewareStack = [
     require('koa-session')(app),
@@ -58,6 +67,13 @@ var middlewareStack = [
 ];
 
 app.use(compose(middlewareStack));
-app.use(require('./handlers').routes());
+
+require('../app/auth');
+const passport = require('koa-passport');
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(handlers.routes());
+app.use(handlers.allowedMethods());
 
 app.listen(config.get('server.port'));

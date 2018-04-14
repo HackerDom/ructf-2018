@@ -5,5 +5,8 @@
   "mongo": {
     "user": "admin",
     "pass": "password"
+  },
+  "session": {
+    "keys": ["super-secret-key"]
   }
 }

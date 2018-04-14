@@ -20,7 +20,11 @@ using thinkerer::MsgReply;
 class ThinkererClient {
  public:
   ThinkererClient(std::shared_ptr<Channel> channel);
-  void SendMessage(const std::string& from, const std::string& to, const std::string& message);
+  void SendMessage(const std::string& from, const std::string& to,
+                   const std::string& message,
+                   const std::string& forwardMsgId = "",
+                   const time_t forwardMsgTs = 0);
+
   std::vector<Msg> RecvMessages(const std::string& uid);
 
  private:

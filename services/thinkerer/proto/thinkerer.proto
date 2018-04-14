@@ -15,11 +15,18 @@ service Thinkerer {
   rpc RecvMessages (MsgReq) returns (Msgs) {}
 }
 
+message MsgForward {
+  string id = 1;
+  uint64 ts = 2;
+}
+
 message Msg {
   string from = 1;
   string to = 2;
   string message = 3;
   uint64 ts = 4;
+  string id = 5;
+  MsgForward msg_forward = 6;
 }
 
 message MsgReq {

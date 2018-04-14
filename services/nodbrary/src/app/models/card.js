@@ -4,9 +4,16 @@ const mongoose = require('mongoose');
 
 let Schema = mongoose.Schema;
 let cardSchema = new Schema({
-    bookName: String,
     bookId: Number,
-    bookDescription: String
+    bookName: String,
+    author: String,
+    year: Number,
+    publisher: String,
+    bookDescription: String,
+    ownerId: Number,
+    createDate: Date
 });
+
+cardSchema.index({ bookId: 1 }, { unique: true });
 
 module.exports = mongoose.model('Card', cardSchema);
