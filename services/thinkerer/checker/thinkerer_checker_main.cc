@@ -62,10 +62,12 @@ void check(ThinkererClient& client) {
   time_t msgTs;
   std::cerr << "[getID]" << std::endl;
   for (const auto& m : msgs) {
-    std::cerr << m.id() << "\t" << m.from() << "\t" << m.to() << "\t" << m.message() << std::endl;
+    std::cerr << m.id() << "\t" << m.from() << "\t" << m.to() << "\t" << m.message() << "\t" << m.ts() << std::endl;
     if (m.message() == message) {
       msgId = m.id();
       msgTs = m.ts();
+      std::cerr << "Found: " << msgId << " " << msgTs << std::endl;
+      break;
     }
   }
 

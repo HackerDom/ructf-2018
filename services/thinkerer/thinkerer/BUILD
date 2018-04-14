@@ -25,5 +25,5 @@ cc_library(
     name = "messagestor",
     srcs = ["thinkerer_stor.cc"],
     hdrs = ["thinkerer_stor.h"],
-    deps = ["//proto:cpp"],
+    deps = ["//proto:cpp", "@boost//:thread"],
 )

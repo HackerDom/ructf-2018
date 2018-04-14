@@ -2,6 +2,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <csignal>
 
 #include <grpc++/grpc++.h>
 
@@ -19,6 +20,8 @@ using thinkerer::Msgs;
 using thinkerer::MsgReply;
 using thinkerer::Thinkerer;
 
+Server* CurrentServer = nullptr;
+
 class MessangerImlp final : public Thinkerer::Service {
 public:
   MessangerImlp()
@@ -28,13 +31,14 @@ public:
   Status SendMessage(ServerContext* context, const Msg* request,
                      MsgReply* reply) override 
   {
-    messages_[request->to()].push_back(*request);
+    // messages_[request->to()].push_back(*request);
+    Msg msg(*request);
 
     time_t now;
     time(&now);
-    messages_[request->to()].back().set_ts(now);
-    Stor.AddMessage(messages_[request->to()].back());
-    Stor.FlushData(true);
+    // messages_[request->to()].back().set_ts(now);
+    msg.set_ts(now);
+    Stor.AddMessage(msg);
     return Status::OK;
   }
 
@@ -84,10 +88,19 @@ void RunServer() {
   std::unique_ptr<Server> server(builder.BuildAndStart());
   std::cout << "Server listening on " << server_address << std::endl;
 
+  std::signal(SIGINT, [](int signal) {
+    std::cerr << "Server shutdown now!" << std::endl;
+    if (CurrentServer) {
+      CurrentServer->Shutdown();
+    }
+    std::cerr << "Server shutdown done!" << std::endl;
+  });
+  CurrentServer = server.get();
 
   // Wait for the server to shutdown. Note that some other thread must be
   // responsible for shutting down the server for this call to ever return.
   server->Wait();
+  CurrentServer = nullptr;
 }
 
 int main(int argc, char** argv) {

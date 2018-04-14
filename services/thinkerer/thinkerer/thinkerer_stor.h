@@ -5,6 +5,9 @@
 #include <mutex> 
 #include <grpc++/grpc++.h>
 
+#include <boost/thread/locks.hpp>
+#include <boost/thread/shared_mutex.hpp>
+
 #include "proto/thinkerer.pb.h"
 #include "proto/thinkerer.grpc.pb.h"
 
@@ -17,6 +20,9 @@ using thinkerer::MsgReq;
 using thinkerer::Msgs;
 using thinkerer::MsgReply;
 
+typedef boost::shared_mutex Lock;
+typedef boost::unique_lock< Lock > WriteLock;
+typedef boost::shared_lock< Lock > ReadLock;
 
 class ThinkererStor {
 public:
@@ -31,6 +37,7 @@ private:
   time_t IntervalStartTime(time_t time) const;
   std::string Filename(time_t time) const;
   bool AcceptMessage(const Msg& msg, const std::string& uid, time_t startTs, time_t endTs) const;
+  void UpdateTs();
 
 private:
   std::string DataDir;
@@ -38,6 +45,6 @@ private:
   time_t TimestampMin = 0;
   time_t TimestampMax = 0;
   std::atomic_ullong LastId;
-  std::mutex Lock;
+  Lock Lock_;
 
 };

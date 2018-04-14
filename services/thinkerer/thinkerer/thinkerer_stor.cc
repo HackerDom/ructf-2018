@@ -8,6 +8,7 @@
 #include <time.h>
 
 const int TIME_INTERVAL = 5 * 60; // 5 min
+const int MAX_MESSAGES_IN_MEMORY = 1000;
 
 bool writeDelimitedTo(
     const google::protobuf::MessageLite& message,
@@ -64,8 +65,19 @@ ThinkererStor::~ThinkererStor() {
   FlushData(/*force =*/ true);
 }
 
+void ThinkererStor::UpdateTs() {
+  if (LastMessages.size()) {
+    TimestampMin = LastMessages.front().ts();
+    TimestampMax = LastMessages.back().ts();
+  } else {
+    TimestampMin = 0;
+    TimestampMax = 0;
+  }
+
+}
+
 std::string ThinkererStor::AddMessage(const Msg& msg) {
-  std::lock_guard<std::mutex> guard(Lock);
+  WriteLock guard(Lock_);
 
   if (TimestampMin == 0) {
     TimestampMin = msg.ts();
@@ -82,6 +94,7 @@ std::string ThinkererStor::AddMessage(const Msg& msg) {
     id = std::to_string(LastId++);
     LastMessages.back().set_id(id);
   }
+  UpdateTs();
 
   FlushData();
   return id;
@@ -97,6 +110,7 @@ std::string ThinkererStor::Filename(time_t time) const {
 
 bool ThinkererStor::GetMessageById(const std::string& id, time_t ts, Msg& msg) {
   // std::lock_guard<std::mutex> guard(Lock);
+  std::cerr << "GetMessageById: " << TimestampMin << " " << ts << "  " << TimestampMax << std::endl;
   if ((ts >= TimestampMin && ts <= TimestampMax)) {
     for (const auto& m : LastMessages) {
       if (m.id() == id) {
@@ -130,10 +144,15 @@ void ThinkererStor::FlushData(bool force) {
   time_t now;
   time(&now);
 
-  std::cerr << "FlushData:" << force << " " << now << std::endl;
+  if (LastMessages.size() > MAX_MESSAGES_IN_MEMORY) {
+    force = true;
+  }
+
   auto nowIntervalStartTime = IntervalStartTime(now);
   auto currentIntervalStartTime = IntervalStartTime(TimestampMin);
+  std::cerr << "FlushData:" << force << " " << now << " " << nowIntervalStartTime << " " << currentIntervalStartTime << std::endl;
   if (!force && (currentIntervalStartTime == nowIntervalStartTime)) {
+    std::cerr << "NoFlush" << std::endl;
     return;
   }
 
@@ -149,22 +168,32 @@ void ThinkererStor::FlushData(bool force) {
     const auto& myInterval = IntervalStartTime(ts);
 
     if (!force && ts >= currentIntervalStartTime) {
-      newMessages.emplace_back(msg);
+      newMessages.push_back(msg);
       continue;
     }
 
     if (!fileIntervalStartTime || (fileIntervalStartTime != myInterval)) {
       fileIntervalStartTime = myInterval;
-      filename = Filename(currentIntervalStartTime);
+      filename = Filename(myInterval);
       std::cerr << "filename:" << filename << std::endl;
+
+      outStream.reset();
+      out.reset();
+
       out.reset(new std::ofstream(filename, std::ios::binary | std::ios_base::app));
       outStream.reset(new google::protobuf::io::OstreamOutputStream(out.get()));
+      std::cerr << "msg write done" << std::endl;
     }
 
     writeDelimitedTo(msg, outStream.get());
+    
   }
+  std::cerr << "End write" << std::endl;
 
-  LastMessages.swap(newMessages);
+  LastMessages = newMessages;
+  std::cerr << "SWAP messages" << std::endl;
+  UpdateTs();
+  std::cerr << "Flush DONE!" << std::endl;
 }
 
 bool ThinkererStor::AcceptMessage(const Msg& msg, const std::string& uid, time_t startTs, time_t endTs) const {
@@ -181,7 +210,7 @@ bool ThinkererStor::AcceptMessage(const Msg& msg, const std::string& uid, time_t
 }
 
 std::vector<Msg> ThinkererStor::GetUserMessages(const std::string& uid, time_t startTs, time_t endTs) {
-  std::lock_guard<std::mutex> guard(Lock);
+  ReadLock guard(Lock_);
   if (endTs <= startTs) {
     throw std::runtime_error("Bad ts interval");
   }
@@ -195,16 +224,19 @@ std::vector<Msg> ThinkererStor::GetUserMessages(const std::string& uid, time_t s
 
   std::vector<Msg> ret;
 
-  if ((startTs >= TimestampMin && startTs <= TimestampMax) ||
+  std::cerr << "Intervals: " << startTs << " " << endTs << " "
+            << TimestampMin << " " << TimestampMax << std::endl;
+  if (true || (startTs >= TimestampMin && startTs <= TimestampMax) ||
       (endTs >= TimestampMin && endTs <= TimestampMax))
   {
+    std::cerr << "!!!! In LastMessages" << std::endl;
     for (const auto& msg : LastMessages) {
       if (AcceptMessage(msg, uid, startTs, endTs)) {
-        ret.emplace_back(msg);
+        ret.push_back(msg);
         if (msg.has_msg_forward()) {
           Msg forwardedMsg;
           if (GetMessageById(msg.msg_forward().id(), msg.msg_forward().ts(), forwardedMsg)) {
-            ret.emplace_back(forwardedMsg);
+            ret.push_back(forwardedMsg);
           }
         }
       }
@@ -213,6 +245,7 @@ std::vector<Msg> ThinkererStor::GetUserMessages(const std::string& uid, time_t s
 
   for (auto currentInterval = startInterval; currentInterval <= endInterval; currentInterval += TIME_INTERVAL) {
     const auto filename = Filename(currentInterval);
+    std::cerr << "!!!!! In " << filename << std::endl;
     std::ifstream in(filename, std::ios::binary);
     if (!in.good()) {
       continue;
@@ -223,16 +256,15 @@ std::vector<Msg> ThinkererStor::GetUserMessages(const std::string& uid, time_t s
     Msg msg;
     while (readDelimitedFrom(&inStream, &msg)) {
       if (AcceptMessage(msg, uid, startTs, endTs)) {
-        ret.emplace_back(msg);
+        ret.push_back(msg);
         if (msg.has_msg_forward()) {
           Msg forwardedMsg;
           if (GetMessageById(msg.msg_forward().id(), msg.msg_forward().ts(), forwardedMsg)) {
-            ret.emplace_back(forwardedMsg);
+            ret.push_back(forwardedMsg);
           }
         }
       }
     }
   }
   return ret;
-
 }
