@@ -4,7 +4,7 @@ CONFIG = {
     },
     'thinkerer': {
         'nonginx': True
-    }
+    },
     'nodbrary': {}
 }
 
