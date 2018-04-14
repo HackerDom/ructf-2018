@@ -61,7 +61,7 @@ namespace Hologram.Ws
 			}
 		}
 
-		public Task BroadcastAsync(NewHologram holo, string msg, CancellationToken token)
+		public Task BroadcastAsync(HologramJsonSchema holo, string msg, CancellationToken token)
 		{
 			if (msg == null)
 				msg = holo.ToJsonString();
@@ -101,7 +101,7 @@ namespace Hologram.Ws
 			}
 		}
 
-		private async Task TrySendAsync(WebSocket ws, Connection connection, NewHologram hologram, CancellationToken token, string msg = null)
+		private async Task TrySendAsync(WebSocket ws, Connection connection, HologramJsonSchema hologram, CancellationToken token, string msg = null)
 		{
 			try
 			{
@@ -127,9 +127,9 @@ namespace Hologram.Ws
 
 		private struct Connection
 		{
-			public Predicate<NewHologram> NeedSend;
+			public Predicate<HologramJsonSchema> NeedSend;
 			public AsyncLockSource Lock;
-			public Func<IEnumerable<NewHologram>> InitData;
+			public Func<IEnumerable<HologramJsonSchema>> InitData;
 		}
 
 		private static Connection? CreateConnection(WebSocket ws)
@@ -159,18 +159,18 @@ namespace Hologram.Ws
 			return null;
 		}
 
-		private static List<NewHologram> SearchHolograms(Dictionary<string, string> config)
+		private static List<HologramJsonSchema> SearchHolograms(Dictionary<string, string> config)
 		{
 			if (int.TryParse(config["rad"], out var rad) &
 				Point.TryParse(config["x"], config["y"], config["z"], out var point)
 			)
-				return Database.HologramField
+				return Database.HologramsField
 					.SearchHologramsAtPoint(point, rad)
-					.Select(NewHologram.FromHolo).ToList();
+					.Select(HologramJsonSchema.FromHolo).ToList();
 			return null;
 		}
 
-		private static bool IsHologramInRadius(NewHologram holo, Dictionary<string, string> config)
+		private static bool IsHologramInRadius(HologramJsonSchema holo, Dictionary<string, string> config)
 		{
 			int.TryParse(config["rad"], out var rad);
 			Point.TryParse(config["x"], config["y"], config["z"], out var point);

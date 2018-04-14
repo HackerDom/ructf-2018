@@ -8,7 +8,7 @@ using log4net;
 
 namespace Hologram.Database
 {
-    public static class HologramField
+    public static class HologramsField
     {
         private static ConcurrentDictionary<Guid, Holo> Holograms;
         private static Action<Holo, string> _listener;

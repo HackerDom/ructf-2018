@@ -56,11 +56,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Database\HologramField.cs" />
+    <Compile Include="Database\HologramsField.cs" />
     <Compile Include="Database\Loaders\Dumper.cs" />
     <Compile Include="Handlers\HologramsHandler.cs" />
     <Compile Include="Handlers\Helpers\BaseHandler.cs" />
-    <Compile Include="Handlers\Schemas\NewHologram.cs" />
+    <Compile Include="Handlers\Schemas\HologramJsonSchema.cs" />
     <Compile Include="Http\HttpContextHelper.cs" />
     <Compile Include="Http\HttpListenerRequestExtentions.cs" />
     <Compile Include="Http\HttpServer.cs" />

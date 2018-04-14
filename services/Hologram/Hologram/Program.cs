@@ -20,10 +20,10 @@ namespace Hologram
 				var server = PrepareHttpServer();
 				var wsServer = PrepareWsServer();
 				
-				Database.HologramField.Init(
+				Database.HologramsField.Init(
 					Settings.HologramsPath, 
 					(holo, s) => 
-						wsServer.BroadcastAsync(NewHologram.FromHolo(holo), s, CancellationToken.None));
+						wsServer.BroadcastAsync(HologramJsonSchema.FromHolo(holo), s, CancellationToken.None));
 				
 				Task.WhenAll(
 					server.AcceptLoopAsync(CancellationToken.None),

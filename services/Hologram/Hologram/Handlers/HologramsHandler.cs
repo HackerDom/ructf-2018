@@ -27,13 +27,13 @@ namespace Hologram.Handlers
 
         private async Task PostHologramAsync(HttpListenerContext context)
         {
-            var parsedHologram = await JsonHelper.TryParseJsonAsync<NewHologram>(context.Request.InputStream)
+            var parsedHologram = await JsonHelper.TryParseJsonAsync<HologramJsonSchema>(context.Request.InputStream)
                 .ConfigureAwait(false);
             
             if (parsedHologram is null)
                 throw new HttpException(400, "Request should contain json object!");
             
-            var newHologramId = HologramField.AddHologram(
+            var newHologramId = HologramsField.AddHologram(
                 new Holo(new Point((parsedHologram.X, parsedHologram.Y, parsedHologram.Z)))
                     .UpdateContent(parsedHologram.Name, parsedHologram.Body));
             await context.Response.WriteObjectAsync(new Dictionary<string, Guid> {["id"] = newHologramId});
@@ -45,11 +45,11 @@ namespace Hologram.Handlers
             if (!Guid.TryParse(query.Find(x => x.key == "id").value, out var guid))
                 throw new HttpException(400, "Incorrect id has been sent!");
 
-            if (!HologramField.TryGetHologram(guid, out var hologram))
+            if (!HologramsField.TryGetHologram(guid, out var hologram))
                 await context.Response.WriteObjectAsync(
                     new Dictionary<string, string> {["error"] = "This id doesn't exist!"});
             else
-                await context.Response.WriteObjectAsync(NewHologram.FromHolo(hologram));
+                await context.Response.WriteObjectAsync(HologramJsonSchema.FromHolo(hologram));
         }
     }
 }

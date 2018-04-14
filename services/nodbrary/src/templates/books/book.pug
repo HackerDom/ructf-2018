@@ -1,7 +1,26 @@
 extends ../main.pug
 
 block content
-    div
-        p #{card.bookName}
-        p #{card.bookDescription}
-        p #{book.content}
+    div(class="container")
+        div(class="row")
+            div(class="col-lg-11")
+                h1(class="mt-4") #{book.name}
+                p(class="lead") by #{book.author}
+                if auth
+                    div(class="tags")
+                        button(id="btnGroupDrop1", type="button", class="badge badge-pill badge-info", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") +
+                        div(class="dropdown-menu", aria-labelledby="btnGroupDrop1")
+                            a(class="badge badge-pill badge-info", href="#", id="already_read") already read
+                            a(class="badge badge-pill badge-info", href="#", id="want_to_read") want to read
+                            input(class="badge-pill", type="text", name="custom_tag", id="tag_input", maxlength="20")
+                        if tags
+                            each tag in tags
+                                span(class="badge badge-pill badge-info") #{tag}
+                hr
+                p in #{book.year} #{book.publisher}
+                hr
+                p(class="lead") #{book.description}
+                hr
+                p added by #{book.owner} on #{book.date}
+                hr
+                p(class="mt-4") #{book.content}
