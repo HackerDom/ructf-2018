@@ -1,0 +1,2 @@
+- name: enable and start xorg
+  service: name=xorg enabled=yes state=started

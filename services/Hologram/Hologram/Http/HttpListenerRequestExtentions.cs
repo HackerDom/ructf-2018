@@ -7,7 +7,7 @@ namespace Hologram.Http
 {
     public static class HttpListenerRequestExtentions
     {
-        internal static List<(string key, string value)> QueryList(this HttpListenerRequest request) 
+        internal static List<(string key, string value)> Query(this HttpListenerRequest request) 
             => request.Url.Query.Substring(1)
                 .Split(new [] {'&'}, StringSplitOptions.RemoveEmptyEntries)
                 .Select(x => x.Split(new [] {'='}, StringSplitOptions.RemoveEmptyEntries))

@@ -23,6 +23,8 @@ def user_page(user_page_name):
     username = request.get_cookie('login')
     if not sm.validate_session():
         redirect('/')
+    if not is_username_busy(user_page_name):
+        abort(400, "User doesn't exist")
     return {
         'login': username,
         'user_page_name': user_page_name,
@@ -96,7 +98,7 @@ def publish(article_id):
     username = request.get_cookie('login')
     if not publish_article(username, article_id):
         abort(400, "Bad article id or username")
-    redirect('/')
+    redirect('/my-articles')
 
 
 @post('/register')
@@ -131,6 +133,9 @@ def create_article_func():
     if not sm.validate_session():
         redirect('/')
     user_page_name = request.GET.get('user', '')
+    if user_page_name != '':
+        if not is_username_busy(user_page_name):
+            abort(400, "Suggested user doesn't exist")
     username = request.get_cookie('login')
     return {
         'user_page_name': user_page_name,
@@ -146,10 +151,13 @@ def post_article():
     content = request.forms.getunicode('content')
     username = request.get_cookie('login')
     user_suggestion = request.GET.get('user', None)
+    if user_suggestion is not None:
+        if not is_username_busy(user_suggestion):
+            abort(400, "Suggested user doesn't exist")
     if not create_article(title, content, username, user_suggestion):
         abort(400, "Incorrect article content or title")
     if user_suggestion is None:
-        redirect('/')
+        redirect('/my-articles')
     else:
         redirect('/user/' + user_suggestion)
 
@@ -185,9 +193,9 @@ def view_article(art_id):
     if not sm.validate_session():
         redirect('/')
     username = request.get_cookie('login')
-    article = get_article_by_id(art_id)
+    article = get_article_by_id(art_id, username)
     if article is None:
-        redirect(400, "Bad article id")
+        abort(400, "Bad article id")
     return {
         'login': username,
         'title': article.title,
@@ -198,3 +206,4 @@ def view_article(art_id):
 
 def start_web_server(host='0.0.0.0', port=8080):
     run(host=host, port=port, server='gunicorn', workers=10)
+

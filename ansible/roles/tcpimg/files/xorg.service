@@ -1,0 +1,11 @@
+[Unit]
+    Description=Xorg
+
+[Service]
+    ExecStart=/root/startxorg.sh
+    WorkingDirectory=/root
+    User=root
+    Group=root
+
+[Install]
+    WantedBy=multi-user.target

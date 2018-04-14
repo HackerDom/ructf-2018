@@ -20,7 +20,11 @@ namespace Hologram.Http
 		{
 			if(listener.IsListening)
 				throw new InvalidOperationException("Can't add handler after listening started");
-			handlers.Add(new Handler {Path = path.TrimEnd('/'), Method = method, Callback = callback});
+			path = path.TrimEnd('/');
+			var handler = new Handler {Path = path, Method = method, Callback = callback};
+			if (!handlers.ContainsKey(path))
+				handlers[path] = new Dictionary<string, Handler>();
+			handlers[path][method] = handler;
 			return this;
 		}
 
@@ -93,11 +97,11 @@ namespace Hologram.Http
 
 		private async Task ProcessRequestAsync(HttpListenerContext context)
 		{
-			var handler = FindHandler(context.Request.Url.LocalPath);
-			if(handler == null)
+			var possibleUrlHandlers = FindPossibleUrlHandlers(context.Request.Url.LocalPath);
+			if(ReferenceEquals(possibleUrlHandlers, null))
 				throw new HttpException(404, "Not Found");
-
-			if(context.Request.HttpMethod != handler.Method)
+			
+			if(!possibleUrlHandlers.ContainsKey(context.Request.HttpMethod))
 				throw new HttpException(405, "Method Not Allowed");
 
 			if(context.Request.HasEntityBody)
@@ -109,14 +113,14 @@ namespace Hologram.Http
 					throw new HttpException(413, "Request Entity Too Large");
 			}
 
-			await handler.Callback(context).ConfigureAwait(false);
+			await possibleUrlHandlers[context.Request.HttpMethod].Callback(context).ConfigureAwait(false);
 		}
 
-		private Handler FindHandler(string path) 
-			=> handlers.Find(
-				record => 
-					path.StartsWith(record.Path, StringComparison.Ordinal) && 
-					(path.Length == record.Path.Length || path[record.Path.Length] == '/'));
+		private Dictionary<string, Handler> FindPossibleUrlHandlers(string path)
+		{
+			path = path.TrimEnd('/');
+			return handlers.ContainsKey(path) ? handlers[path] : null;
+		}
 
 		private class Handler
 		{
@@ -125,7 +129,8 @@ namespace Hologram.Http
 			public Func<HttpListenerContext, Task> Callback;
 		}
 
-		private readonly List<Handler> handlers = new List<Handler>();
+		private readonly Dictionary<string, Dictionary<string, Handler>> handlers
+			= new Dictionary<string, Dictionary<string, Handler>>();
 		private readonly HttpListener listener;
 
 		private static readonly ILog Log = LogManager.GetLogger(typeof(HttpServer));

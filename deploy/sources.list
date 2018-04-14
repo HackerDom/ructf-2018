@@ -1,0 +1,2 @@
+deb http://mirror.yandex.ru/ubuntu/ lucid main contrib non-free universe
+deb-src http://mirror.yandex.ru/ubuntu/ lucid main contrib non-free

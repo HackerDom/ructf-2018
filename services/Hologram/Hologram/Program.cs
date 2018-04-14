@@ -2,8 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Hologram.Handlers;
+using Hologram.Handlers.Schemas;
 using Hologram.Http;
-using Hologram.Utils;
+using Hologram.Ws;
 using log4net;
 using log4net.Config;
 
@@ -16,14 +17,18 @@ namespace Hologram
 			XmlConfigurator.Configure();
 			try
 			{
-				var settings = SimpleSettings.Create("settings");
-
-
-				var sleepPeriod = int.Parse(settings.GetValue("sleep"));
-				var ttl = int.Parse(settings.GetValue("ttl"));
-
-				var server = PrepareServer(settings);
-				Task.WhenAll(server.AcceptLoopAsync(CancellationToken.None)).Wait();
+				var server = PrepareHttpServer();
+				var wsServer = PrepareWsServer();
+				
+				Database.HologramField.Init(
+					Settings.HologramsPath, 
+					(holo, s) => 
+						wsServer.BroadcastAsync(NewHologram.FromHolo(holo), s, CancellationToken.None));
+				
+				Task.WhenAll(
+					server.AcceptLoopAsync(CancellationToken.None),
+					wsServer.AcceptLoopAsync(CancellationToken.None)
+				).Wait();
 			}
 			catch (Exception ex)
 			{
@@ -33,20 +38,16 @@ namespace Hologram
 			}
 		}
 
-		private static HttpServer PrepareServer(SimpleSettings settings)
+		private static HttpServer PrepareHttpServer()
 		{
-			var port = int.Parse(settings.GetValue("port"));
-
-			var server = new HttpServer(port);
-
-			server
+			var server = new HttpServer(int.Parse(Settings.HttpPort));
+			return server
 				.AddHandler(HologramsHandler.Instance);
-//				.AddHandler(LoginHandler.Instance)
-//				.AddHandler(AddPointHandler.Instance)
-//				.AddHandler(GetAllPublicsHandler.Instance)
-//				.AddHandler(GetPointsHandler.Instance)
-//				.AddHandler(ShortestPathHandler.Instance);
+		}
 
+		private static WsServer PrepareWsServer()
+		{
+			var server = new WsServer(int.Parse(Settings.WsPort));
 			return server;
 		}
 

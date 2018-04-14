@@ -33,4 +33,3 @@ def get_contents_table(html_text):
     parser = ContentsTableParser()
     parser.feed(html_text)
     return parser.links
-

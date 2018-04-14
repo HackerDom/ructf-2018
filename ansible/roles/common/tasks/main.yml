@@ -11,6 +11,9 @@
 - name: set hostname
   hostname: name={{inventory_hostname}}
 
+- name: /etc/hosts
+  template: src=hosts.j2 dest=/etc/hosts
+  
 - name: copy hostname file
   copy: content={{inventory_hostname}} dest=/etc/hostname
 

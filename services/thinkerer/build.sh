@@ -1,1 +1,1 @@
-bazel build //thinkerer:all
+bazel build //thinkerer:all //checker:all

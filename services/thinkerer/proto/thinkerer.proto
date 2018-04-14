@@ -1,0 +1,44 @@
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.pubref.rules_protobuf.examples.thinkerer";
+option java_outer_classname = "ThinkererProto";
+
+import "proto/common.proto";
+
+package thinkerer;
+
+// The greeting service definition.
+service Thinkerer {
+  rpc SendMessage (Msg) returns (MsgReply) {}
+  rpc RecvMessages (MsgReq) returns (Msgs) {}
+}
+
+message MsgForward {
+  string id = 1;
+  uint64 ts = 2;
+}
+
+message Msg {
+  string from = 1;
+  string to = 2;
+  string message = 3;
+  uint64 ts = 4;
+  string id = 5;
+  MsgForward msg_forward = 6;
+}
+
+message MsgReq {
+  string uid = 1;
+  uint64 start_ts = 2;
+  uint64 end_ts = 3;
+}
+
+message Msgs {
+  repeated Msg messages = 1;
+}
+
+message MsgReply {
+  int32 status = 1;
+}
