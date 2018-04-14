@@ -35,8 +35,8 @@ cs_ctf_name: RuCTF 2018
 cs_flags_secret: Eiciexoo4x
 cs_round_length: 30
 cs_flag_life_time: 30
-cs_time_start: 2016-11-30 02:00:00
-cs_time_stop: 2019-12-03 14:00:00
+cs_time_start: 2018-04-14 02:00:00
+cs_time_stop: 2018-04-16 14:00:00
 cs_time_break_start: 2016-12-03 14:00:00
 cs_time_break_end: 2016-12-03 14:00:00
 
@@ -67,7 +67,7 @@ teams: |
   {name => 'PeterPen',                         network => '10.60.24.0/24', host => '10.60.24.1', token => 'ac94a858-cbd5-4a3b-9b1a-61de45e8ca1c', logo => '/data/logos/peterpen.png'},
   {name => 'Novosibirsk SU X',                 network => '10.60.25.0/24', host => '10.60.25.1', token => 'b32a790c-58fc-4155-8d0b-44717b98e416', logo => '/data/logos/dummy.png'},
   {name => 'SwissMadeSecurity',                network => '10.60.26.0/24', host => '10.60.26.1', token => 'dbff3af0-f642-40ac-af45-901b36d42c27', logo => '/data/logos/swissmadesecurity.jpg'},
-  {name => 'Invisible',                        network => '10.60.27.0/24', host => '10.60.27.1', token => '', logo => '/data/logos/dummy.png'},
+  {name => 'Invisible',                        network => '10.60.27.0/24', host => '10.60.27.1', token => '', logo => '/data/logos/dummy.png', bot => [{sla => 1, attack => 0, defense => 0}]},
 
 services: |
   {name => 'Hologram',  path => 'checkers/Hologram/checker.py', timeout => 10},
@@ -76,4 +76,4 @@ services: |
   {name => 'Nodbrary',  path => 'checkers/nodbrary/nodbrary.checker.py', timeout => 10, tcp_port => 3000},
   {name => 'LifeSim',   path => 'checkers/lifesim/lifesim.checker.py', timeout => 10, tcp_port => 8084},
   {name => 'Thinkerer', path => 'checkers/thinkerer/thinkerer_checker', timeout => 10},
-  {name => 'Notebook',  path => 't/checkers/up.pl', timeout => 10}
+  {name => 'Notebook',  path => 't/checkers/up.pl', timeout => 10},
