@@ -2,12 +2,14 @@
 #include <syscall.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "constants.h"
 
 char *generate_key() {
     char *key = malloc(KEY_SIZE);
     if (syscall(SYS_getrandom,key, KEY_SIZE, 0) != KEY_SIZE) {
         free(key);
+        perror("getrandom failed");
         return 0;
     }
     return key;

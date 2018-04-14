@@ -13,8 +13,10 @@ struct Channel *get_channel_by_id(int id) {
     struct Channel *channel = cache_find(id);
     if (!channel) {
         channel = load_channel(id);
-        if (!channel)
+        if (!channel){
+            printf("Channel %d not found\n", id);
             return 0;
+        }
         cache_add(channel);
     }
     return channel;

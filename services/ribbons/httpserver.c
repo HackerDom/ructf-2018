@@ -46,8 +46,6 @@ static int request_callback(
         // Headers received
 
         memset(&request, 0, sizeof(struct Request));
-        request.method = method;
-        request.url = url;
         postProcessor = NULL;
         *context = &request;
         return MHD_YES;
@@ -67,6 +65,9 @@ static int request_callback(
     MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, iterate_get, &request);
 
     struct MHD_Response *mhd_response = NULL;
+    
+    request.method = method;
+    request.url = url;
 
     int status_code = handle_request(&request, &mhd_response);
     printf("%s %s %s %d\n", method, url, version, status_code);

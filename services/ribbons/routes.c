@@ -2,7 +2,6 @@
 #include <string.h>
 #include <microhttpd.h>
 #include <wait.h>
-#include <errno.h>
 #include "frontend.h"
 #include "httpserver.h"
 #include "types.h"
@@ -19,12 +18,14 @@ int handle_add_channel(struct Request *request, struct Response *response, struc
 
     *channel = add_channel(request->name, request->password);
 
-    if (!*channel)
+    if (!*channel) 
         return MHD_HTTP_INTERNAL_SERVER_ERROR;
 
     response->buffer = malloc(16);
-    if (!response->buffer)
+    if (!response->buffer){
+        perror("malloc failed");
         return MHD_HTTP_INTERNAL_SERVER_ERROR;
+    }
     sprintf(response->buffer, "id:%d", (*channel)->id);
     response->buffer_size = strlen(response->buffer);
     return MHD_HTTP_CREATED;
@@ -35,8 +36,10 @@ int handle_add_post(struct Request *request, struct Response *response, struct C
         return MHD_HTTP_BAD_REQUEST;
 
     char *text = malloc(strlen(request->text) + 1);
-    if (!text)
+    if (!text){
+        perror("malloc failed");
         return MHD_HTTP_INTERNAL_SERVER_ERROR;
+    }
 
     strcpy(text, request->text);
 
@@ -63,8 +66,10 @@ int handle_change_password(struct Request *request, struct Response *response, s
 char *serialize_channel_data(struct Channel *channel, size_t *buffer_size) {
     char *buffer = NULL;
     FILE *f = open_memstream(&buffer, buffer_size);
-    if (!f)
+    if (!f){
+        perror("open_memstream failed");
         return NULL;
+    }
     // FIXME Possible key address leak
     write_str(channel->name, strlen(channel->name), f);
     write_channel_posts(channel, f);
@@ -122,8 +127,10 @@ int handle_route(struct Route *route, struct Request *request, struct Response *
 
 int handle_request(struct Request *request, struct MHD_Response **mhd_response) {
     struct Route *route = find_route(request->method, request->url);
-    if (!route)
+    if (!route){
+        printf("Route handler not found for %s %s\n", request->method, request->url);
         return MHD_HTTP_NOT_FOUND;
+    }
 
     int affected_channel_id;
     int status_code;
@@ -137,7 +144,7 @@ int handle_request(struct Request *request, struct MHD_Response **mhd_response) 
 
     if (pid == -1) {
 
-        fprintf(stderr, "Cannot do fork(). Errno: %d.", errno);
+        perror("fork failed");
         return MHD_HTTP_INTERNAL_SERVER_ERROR;
 
     } else if (pid == 0) {
@@ -171,6 +178,7 @@ int handle_request(struct Request *request, struct MHD_Response **mhd_response) 
             response.buffer = calloc(response.buffer_size, 1);
 
             if (!response.buffer) {
+                perror("calloc failed");
                 read_failed = 1;
             }
 

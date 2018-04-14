@@ -1,10 +1,15 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "constants.h"
 #include "types.h"
 
 struct Channel *create_channel(int id, const char *name, const char *password, char *key) {
     struct Channel *channel = calloc(sizeof(struct Channel), 1);
+    if (!channel) {
+        perror("calloc failed");
+        return NULL;
+    }
     channel->id = id;
     strncpy(channel->name, name, NAME_SIZE);
     strncpy(channel->password, password, PASSWORD_SIZE);
@@ -14,6 +19,10 @@ struct Channel *create_channel(int id, const char *name, const char *password, c
 
 struct Post *create_post(char *text, size_t text_length) {
     struct Post *post = calloc(sizeof(struct Post), 1);
+    if (!post) {
+        perror("calloc failed");
+        return NULL;
+    }
     post->text = text;
     post->text_length = text_length;
     return post;

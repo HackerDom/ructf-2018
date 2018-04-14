@@ -18,8 +18,10 @@ char *read_str(size_t *length, FILE *file) {
         return 0;
 
     char *result = calloc(*length+1, sizeof(char));
-    if (!result)
+    if (!result){
+        perror("calloc failed");
         return 0;
+    }
 
     fread(result, sizeof(char), *length, file);
     return result;
@@ -38,32 +40,53 @@ struct Post *read_post(FILE *file) {
 FILE *open_channel_file(int channel_id, char *mode) {
     char filename[255];
     sprintf(filename, "%s/%d", FOLDER, channel_id);
-    return fopen(filename, mode);
+    FILE *file = fopen(filename, mode);
+    if (!file)
+        printf("Can't open file for channel %d\n", channel_id);
+    return file;
 }
 
 struct Channel *read_channel(FILE *file, int channel_id) {
     char name[NAME_SIZE];
-    char password[NAME_SIZE];
+    char password[PASSWORD_SIZE];
     char *key = malloc(KEY_SIZE);
+
+    if (!key) {
+        perror("malloc failed");
+        return 0;
+    }
 
     if (fread(name, sizeof(char), NAME_SIZE, file) != NAME_SIZE ||
         fread(password, sizeof(char), PASSWORD_SIZE, file) != PASSWORD_SIZE ||
-        fread(key, sizeof(char), KEY_SIZE, file) != KEY_SIZE)
+        fread(key, sizeof(char), KEY_SIZE, file) != KEY_SIZE) {
+
+        free(key);
         return 0;
+    }
 
     struct Channel *channel = create_channel(channel_id, name, password, key);
+    if (!channel) {
+        free(key);
+        return 0;
+    }
 
     while (!feof(file)) {
-        append_post(&channel->posts, read_post(file));
+        struct Post *post = read_post(file);
+        if (!post)
+            break;
+        append_post(&channel->posts, post);
     }
     return channel;
 }
 
 struct Channel *load_channel(int channel_id) {
     FILE * f = open_channel_file(channel_id, "rb");
-    if (f == NULL)
+    if (f == NULL) 
         return 0;
     struct Channel *channel = read_channel(f, channel_id);
+    if (!channel) {
+        fprintf(stderr, "Channel %d reading failed", channel_id);
+    }
     fclose(f);
     return channel;
 }
