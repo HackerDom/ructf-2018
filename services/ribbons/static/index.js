@@ -208,29 +208,29 @@ async function load_posts(channel_id) {
 }
 
 function add_channel(name, password) {
-    return fetch("/add_channel", postOptions({name, password}))
+    return fetch("/api/add_channel", postOptions({name, password}))
         .then(response => response.status === 201 ? response.text() : null)
         .then(text => text.split(':')[1]);
 }
 
 function add_post(channel_id, password, text) {
-    return fetch(`/add_post?channel_id=${channel_id}`, postOptions({password, text}))
+    return fetch(`/api/add_post?channel_id=${channel_id}`, postOptions({password, text}))
         .then(response => response.status === 201);
 }
 
 function get_key(channel_id, password) {
-    return fetch(`/key?channel_id=${channel_id}`, postOptions({password}))
+    return fetch(`/api/key?channel_id=${channel_id}`, postOptions({password}))
         .then(response => response.status === 200 ? response.arrayBuffer() : null)
         .then(buffer => new Uint8Array(buffer));
 }
 
 function change_password(channel_id, password, new_password) {
-    return fetch(`/change_password?channel_id=${channel_id}`, postOptions({password, new_password}))
+    return fetch(`/api/change_password?channel_id=${channel_id}`, postOptions({password, new_password}))
         .then(response => response.status === 200);
 }
 
 function view(channel_id) {
-    return fetch(`/view?channel_id=${channel_id}`)
+    return fetch(`/api/view?channel_id=${channel_id}`)
         .then(response => response.status === 200 ? response.arrayBuffer() : null)
         .then(buffer => new Channel(buffer));
 }
