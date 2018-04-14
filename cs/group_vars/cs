@@ -33,7 +33,7 @@ cs_base_url: https://ructf.org/
 cs_admin_auth: root:Joh4either
 cs_ctf_name: RuCTF 2018
 cs_flags_secret: Eiciexoo4x
-cs_round_length: 30
+cs_round_length: 20
 cs_flag_life_time: 30
 cs_time_start: 2018-04-14 02:00:00
 cs_time_stop: 2018-04-16 14:00:00
@@ -70,10 +70,10 @@ teams: |
   {name => 'Invisible',                        network => '10.60.27.0/24', host => '10.60.27.1', token => '', logo => '/data/logos/dummy.png', bot => [{sla => 1, attack => 0, defense => 0}]},
 
 services: |
+  {name => 'Notebook',  path => 't/checkers/up.pl', timeout => 10},
   {name => 'Hologram',  path => 'checkers/Hologram/checker.py', timeout => 10},
   {name => 'Eloquent',  path => 'checkers/eloquent/main.py', timeout => 10, tcp_port => 8080},
   {name => 'Ribbons',   path => 'checkers/ribbons/ribbons.checker.py', timeout => 10, tcp_port => 4243},
   {name => 'Nodbrary',  path => 'checkers/nodbrary/nodbrary.checker.py', timeout => 10, tcp_port => 3000},
   {name => 'LifeSim',   path => 'checkers/lifesim/lifesim.checker.py', timeout => 10, tcp_port => 8084},
   {name => 'Thinkerer', path => 'checkers/thinkerer/thinkerer_checker', timeout => 10},
-  {name => 'Notebook',  path => 't/checkers/up.pl', timeout => 10},
