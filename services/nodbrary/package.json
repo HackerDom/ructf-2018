@@ -28,7 +28,7 @@
   "scripts": {
     "get-mongo": "sudo apt-get install -y mongodb",
     "clean": "rimraf node_modules/",
-    "initialize": "npm i && npm run get-mongo  $$ cross-env NODE_ENV=production node src/server/index.js",
+    "initialize": "npm i && npm run get-mongo && cross-env NODE_ENV=production node src/server/index.js",
     "start": "ross-env NODE_ENV=production node src/server/index.js",
     "DROP": "mongo test --eval \"db.dropDatabase()\""
   }
