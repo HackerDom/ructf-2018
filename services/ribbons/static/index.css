@@ -1,0 +1,62 @@
+.menu.fixed
+{
+    background-color: rgba(251,189,8,0.6);
+}
+
+.main.container {
+    height: 100%;
+    padding: 90px 0;
+}
+
+.vertical.menu {
+    height: 45%;
+}
+
+.channels
+{
+    height: 100%;
+}
+
+.ui.grid
+{
+    height: 100%;
+}
+
+.action-header,
+.ui.vertical.menu .item
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.btn-remove:not(:hover)
+{
+    color: rgba(117, 117, 117, 0.6)
+}
+
+.item:not(:hover) .btn-remove
+{
+    visibility: hidden;
+}
+
+.owner-block-header
+{
+    display: flex;
+    justify-content: space-between;
+}
+
+.owner-block
+{
+    display: none;
+}
+
+.ui.vertical.menu .item>i.icon
+{
+    margin-right: 8px;
+}
+
+.invite-text
+{
+    word-break: break-all;
+}
