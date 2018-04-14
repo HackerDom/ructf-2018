@@ -101,6 +101,7 @@ bool ThinkererStor::GetMessageById(const std::string& id, time_t ts, Msg& msg) {
     for (const auto& m : LastMessages) {
       if (m.id() == id) {
         msg = m;
+        std::cerr << "msg by id:" << id << " : " << msg.message() << std::endl;
         return true;
       }
     }
@@ -118,6 +119,7 @@ bool ThinkererStor::GetMessageById(const std::string& id, time_t ts, Msg& msg) {
   while (readDelimitedFrom(&inStream, &m)) {
     if (m.id() == id) {
       msg = m;
+      std::cerr << "msg by id:" << id << " : " << msg.message() << std::endl;
       return true;
     }
   }

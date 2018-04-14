@@ -52,12 +52,17 @@ void check(ThinkererClient& client) {
   const auto& message = randomString(10);
   const auto& from = randomString(5);
   const auto& to = randomString(5);
+  const auto& forwardTo = randomString(5);
+
+  std::cerr << "message:" << message << " from:" << from << " to:" << to << " forwardTo:" << forwardTo << std::endl;
 
   client.SendMessage(from, to, message);
   auto msgs = client.RecvMessages(from);
   std::string msgId;
   time_t msgTs;
+  std::cerr << "[getID]" << std::endl;
   for (const auto& m : msgs) {
+    std::cerr << m.id() << "\t" << m.from() << "\t" << m.to() << "\t" << m.message() << std::endl;
     if (m.message() == message) {
       msgId = m.id();
       msgTs = m.ts();
@@ -68,11 +73,12 @@ void check(ThinkererClient& client) {
     exit(ESTATUS::CORRUPT);
   }
 
-  const auto& forwardTo = randomString(5);
-  client.SendMessage(to, forwardTo, "", msgId, msgTs);
+  client.SendMessage(to, forwardTo, randomString(12), msgId, msgTs);
 
+  std::cerr << "[get forwarded message]" << std::endl;
   msgs = client.RecvMessages(forwardTo);
   for (const auto& m : msgs) {
+    std::cerr << m.id() << "\t" << m.from() << "\t" << m.to() << "\t" << m.message() << std::endl;
     if (m.message() == message) {
       exit(ESTATUS::OK);
     }
@@ -81,6 +87,7 @@ void check(ThinkererClient& client) {
 }
 
 int main(int argc, char** argv) {
+  srand(time(NULL));
   if (argc < 2) {
     std::cerr << "Should be at least 2 parametes" << std::endl;
     exit(1);
@@ -101,16 +108,21 @@ int main(int argc, char** argv) {
   ThinkererClient client(
       grpc::CreateChannel(host + ':' + PORT, grpc::InsecureChannelCredentials()));
 
-  if (command == "check") {
-    check(client);
-  }
+  try {
+    if (command == "check") {
+      check(client);
+    }
 
-  if (command == "put") {
-    put(client, id, flag);
-  }
+    if (command == "put") {
+      put(client, id, flag);
+    }
 
-  if (command == "get") {
-    get(client, id, flag);
+    if (command == "get") {
+      get(client, id, flag);
+    }
+  } catch (std::exception& e) {
+    std::cerr << "Host:" << host << " exception: " << e.what() << std::endl;
+    exit(ESTATUS::MUMBLE);
   }
 
   exit(ESTATUS::CHECKER_ERROR);

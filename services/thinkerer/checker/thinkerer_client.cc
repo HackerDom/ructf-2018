@@ -26,6 +26,9 @@ void ThinkererClient::SendMessage(const std::string& from,
   MsgReply reply;
   ClientContext context;
   Status status = stub_->SendMessage(&context, msg, &reply);
+  if (!status.ok()) {
+    throw std::runtime_error("Bad wire status");
+  }
 }
 
 std::vector<Msg> ThinkererClient::RecvMessages(const std::string& uid) {
@@ -36,6 +39,10 @@ std::vector<Msg> ThinkererClient::RecvMessages(const std::string& uid) {
   Msgs reply;
   ClientContext context;
   Status status = stub_->RecvMessages(&context, req, &reply);
+  if (!status.ok()) {
+    throw std::runtime_error("Bad wire status");
+  }
+
 
   if (!status.ok()) {
     return ret;
