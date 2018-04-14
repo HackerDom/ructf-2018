@@ -1,0 +1,10 @@
+version: '2.2'
+services:
+  lifesim:
+    build: .
+    ports:
+      - "8085:8084"
+    restart: on-failure
+    mem_limit: 512m
+    mem_reservation: 128m
+
