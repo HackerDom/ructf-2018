@@ -85,11 +85,11 @@ void fill_route(struct Route *route, char *method, char *url, RouteHandler handl
 }
 
 void register_routes() {
-    fill_route(&routes[0], "POST", "/add_channel", handle_add_channel, 0);
-    fill_route(&routes[1], "POST", "/add_post", handle_add_post, ROUTE_CHANNEL_NEEDED | ROUTE_AUTH_NEEDED);
-    fill_route(&routes[2], "GET", "/key", handle_get_key, ROUTE_CHANNEL_NEEDED | ROUTE_AUTH_NEEDED);
-    fill_route(&routes[3], "POST", "/change_password", handle_change_password, ROUTE_CHANNEL_NEEDED | ROUTE_AUTH_NEEDED);
-    fill_route(&routes[4], "GET", "/view", handle_view_channel, ROUTE_CHANNEL_NEEDED);
+    fill_route(&routes[0], "POST", "/api/add_channel", handle_add_channel, 0);
+    fill_route(&routes[1], "POST", "/api/add_post", handle_add_post, ROUTE_CHANNEL_NEEDED | ROUTE_AUTH_NEEDED);
+    fill_route(&routes[2], "POST", "/api/key", handle_get_key, ROUTE_CHANNEL_NEEDED | ROUTE_AUTH_NEEDED);
+    fill_route(&routes[3], "POST", "/api/change_password", handle_change_password, ROUTE_CHANNEL_NEEDED | ROUTE_AUTH_NEEDED);
+    fill_route(&routes[4], "GET", "/api/view", handle_view_channel, ROUTE_CHANNEL_NEEDED);
 }
 
 struct Route *find_route(const char *method, const char *url) {
