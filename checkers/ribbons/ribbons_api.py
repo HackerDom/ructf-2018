@@ -59,15 +59,19 @@ class Ribbons:
 
 	@property
 	def session(self):
-		if not self._session or random.randint(1, 3) == 1:
+		if not self._session:
 			self._session = requests.session()
 			self._session.headers = {"User-Agent": user_agents.get()}
 		return self._session
 
 	def _call(self, http_method, api_method, channel_id=None, data=None):
 		params = { "channel_id": channel_id } if channel_id else {}
-		sleep(random.randint(0,3) + random.random())
-		return self.session.request(http_method, "http://{}/{}".format(self.hostname, api_method), params=params, data=data)
+		sleep(random.randint(0, 1) + random.random())
+		result = self.session.request(http_method, "http://{}:4243/api/{}".format(self.hostname, api_method), params=params, data=data)
+		if random.randint(1, 3) == 1:
+			self._session.close()
+			self._session = None
+		return result
 
 	def _assert_status(self, response, status):
 		if response.status_code != status:
@@ -87,7 +91,7 @@ class Ribbons:
 		return True
 
 	def get_key(self, channel_id, password):
-		response = self._call("GET", "key", channel_id, data={ "password": password })
+		response = self._call("POST", "key", channel_id, data={ "password": password })
 		self._assert_status(response, 200)
 		if len(response.content) != KEY_SIZE:
 			raise BadResponseError("Key size do not match expected size.")

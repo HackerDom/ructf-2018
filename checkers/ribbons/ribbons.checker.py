@@ -6,44 +6,47 @@ import random
 import json
 import requests
 import base64
+import string
 from ribbons_api import Ribbons, UnexpectedStatusError, BadResponseError
 
 MAX_POSTS = 3
 
+def get_rand_string(l):
+	return ''.join(random.choice(string.ascii_lowercase) for _ in range(l))
+
 def get_channel_name():
-	return checker_api.get_rand_string(random.randint(10, 15))
+	return get_rand_string(random.randint(10, 15))
 
 def get_password():
-	return checker_api.get_rand_string(random.randint(10, 14))
+	return get_rand_string(random.randint(10, 14))
 
 def get_post():
-	return checker_api.get_rand_string(random.randint(30, 120)).encode()
+	return get_rand_string(random.randint(30, 120)).encode()
 
 def handle_check(hostname):
 	ribbons = Ribbons(hostname)
 
-	for i in range(2):
-		name = get_channel_name()
-		password = get_password()
+	name = get_channel_name()
+	password = get_password()
 
-		cid = ribbons.add_channel(name, password)
+	cid = ribbons.add_channel(name, password)
 
-		posts = [get_post() for _ in range(random.randint(0, MAX_POSTS))]
+	posts = [get_post() for _ in range(random.randint(0, MAX_POSTS))]
 
-		for post in posts:
-			ribbons.add_post(cid, password, post)
+	for post in posts:
+		ribbons.add_post(cid, password, post)
 
-		new_password = get_password()
-		ribbons.change_password(cid, password, new_password)
-		password = new_password
+	new_password = get_password()
+	ribbons.change_password(cid, password, new_password)
+	password = new_password
 
-		key = ribbons.get_key(cid, password)
+	key = ribbons.get_key(cid, password)
 
-		channel = ribbons.view(cid)
-
-		channel.decrypt(key)
-		if channel.posts != posts:
-			raise BadResponseError("Posts don't match: expected {}, actual {}".format(posts, channel.posts))
+	channel = ribbons.view(cid)
+	received_posts = channel.posts.copy()
+	channel.decrypt(key)
+	if channel.posts != posts:
+		raise BadResponseError("Posts don't match: expected {}, actual {}. Received key: {}, received posts: {}".format(posts, channel.posts, key, received_posts))
 
 	checker_api.ok()
 
