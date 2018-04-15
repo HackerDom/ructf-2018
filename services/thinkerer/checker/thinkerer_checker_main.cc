@@ -23,7 +23,7 @@ std::string randomString(size_t length) {
   {
       const char charset[] =
       "0123456789"
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      //"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
       "abcdefghijklmnopqrstuvwxyz";
       const size_t max_index = (sizeof(charset) - 1);
       return charset[ rand() % max_index ];
@@ -34,7 +34,7 @@ std::string randomString(size_t length) {
 }
 
 void put(ThinkererClient& client, const std::string& id, const std::string& flag, const size_t vuln) {
-  const auto usernameFrom = randomString(15);
+  const auto usernameFrom = randomString(4);
   const auto passFrom = getPassword(usernameFrom);
   std::string msgId;
   if (vuln == 2) {
@@ -64,7 +64,7 @@ void get(ThinkererClient& client, const std::string& id, const std::string& flag
 }
 
 void check(ThinkererClient& client) {
-  const auto& message = randomString(10);
+  auto message = randomString(10);
   const auto& from = randomString(5);
   const auto& to = randomString(5);
   const auto& forwardTo = randomString(5);
@@ -94,7 +94,7 @@ void check(ThinkererClient& client) {
     exit(ESTATUS::CORRUPT);
   }
 
-  client.SendMessage(to, getPassword(to), forwardTo, randomString(12), "", msgId, msgTs);
+  client.SendMessage(to, getPassword(to), forwardTo, "", "", msgId, msgTs);
 
   std::cerr << "[get forwarded message]" << std::endl;
   msgs = client.RecvMessages(forwardTo, getPassword(forwardTo));

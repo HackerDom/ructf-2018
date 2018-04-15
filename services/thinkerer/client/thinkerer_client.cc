@@ -16,7 +16,10 @@ void ThinkererClient::SendMessage(const std::string& from,
   Msg msg;
   msg.set_from(from);
   msg.set_to(to);
-  msg.set_message(message);
+
+  if (!message.empty()) {
+    msg.set_message(message);
+  }
   msg.set_password(password);
 
   if (!id.empty()) {

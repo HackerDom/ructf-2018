@@ -138,7 +138,10 @@ int handle_request(struct Request *request, struct MHD_Response **mhd_response) 
     memset(&response, 0, sizeof(struct Response));
 
     int pipefd[2];
-    pipe(pipefd);
+    if (pipe(pipefd) == -1) {
+        perror("pipe failed");
+        return MHD_HTTP_INTERNAL_SERVER_ERROR;
+    }
 
     pid_t pid = fork();
 

@@ -31,12 +31,9 @@ bool ThinkererAuth::Register(const std::string username, const std::string& pass
   WriteLock guard(Lock_);
 
   auto users = Auth.mutable_user_password();
-  if (users->find(username) == users->end()) {
-    (*users)[username] = password;
-    FlushData();
-    return true;
-  }
-  return false;
+  (*users)[username] = password;
+  FlushData();
+  return true;
 }
 
 bool ThinkererAuth::Check(const std::string username, const std::string& password) {

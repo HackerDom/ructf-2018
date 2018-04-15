@@ -7,9 +7,9 @@ cc_library(
     deps = ["//proto:cpp"],
 )
 
-cc_binary(
-    name = "checker",
-    linkstatic = 1,
-    srcs = ["thinkerer_checker_main.cc"],
-    deps = ["//client:clientlib"],
-)
+#cc_binary(
+#    name = "client",
+#    linkstatic = 1,
+#    srcs = ["thinkerer_client_main.cc"],
+#    deps = ["//client:clientlib", "@boost//:program_options"],
+#)
