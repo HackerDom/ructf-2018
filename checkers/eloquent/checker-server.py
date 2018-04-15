@@ -54,7 +54,11 @@ def check_article_js(driver, host, article_id, table_of_contents):
     get_page_of_article(driver, host, article_id)
     for header in table_of_contents:
         click_link(driver, "#" + header)
-        if get_element_text_by_id(driver, 'mid-text') != 'Current subtitle: {}'.format(header):
+        print_to_stderr(str(driver.find_element_by_id('mid-text')))
+        text = get_element_text_by_id(driver, 'mid-text')
+        exp_text = 'Current subtitle: {}'.format(header)
+        if text != exp_text:
+            print_to_stderr('Title "{}" doesn\'t changed. text={}, expected={}'.format(header, text, exp_text))
             exit(MUMBLE)
 
 
@@ -72,7 +76,10 @@ def check(host):
         check_article_js(driver, host, article_id, table_of_contents)
         driver.quit()
     finally:
-        driver.service.process.send_signal(signal.SIGTERM)
+        try:
+            driver.service.process.send_signal(signal.SIGTERM)
+        except AttributeError:
+            pass
     exit(OK)
 
 
@@ -119,7 +126,10 @@ def get(host, flag_id, flag, vuln):
         emulate_articles_view(driver, host, username, password)
         driver.quit()
     finally:
-        driver.service.process.send_signal(signal.SIGTERM)
+        try:
+            driver.service.process.send_signal(signal.SIGTERM)
+        except AttributeError:
+            pass
     exit(OK)
 
 
