@@ -8,7 +8,7 @@
 #include <vector>
 #include <time.h>
 
-const int TIME_INTERVAL = 17 * 60; // 5 min
+const int TIME_INTERVAL = 5 * 60; // 5 min
 const int MAX_MESSAGES_IN_MEMORY = 1000;
 
 
@@ -100,9 +100,7 @@ void ThinkererStor::FlushData(bool force) {
     force = true;
   }
 
-  auto nowIntervalStartTime = IntervalStartTime(now);
-  auto currentIntervalStartTime = IntervalStartTime(TimestampMin);
-  if (!force && (currentIntervalStartTime == nowIntervalStartTime)) {
+  if (!force) {
     return;
   }
 
@@ -111,16 +109,9 @@ void ThinkererStor::FlushData(bool force) {
   std::unique_ptr<google::protobuf::io::OstreamOutputStream> outStream;
   time_t fileIntervalStartTime = 0;
 
-  std::vector<Msg> newMessages;
-  newMessages.reserve(LastMessages.size());
   for (const auto& msg : LastMessages) {
     const auto& ts = msg.ts();
     const auto& myInterval = IntervalStartTime(ts);
-
-    if (!force && ts >= currentIntervalStartTime) {
-      newMessages.push_back(msg);
-      continue;
-    }
 
     if (!fileIntervalStartTime || (fileIntervalStartTime != myInterval)) {
       fileIntervalStartTime = myInterval;
@@ -131,12 +122,16 @@ void ThinkererStor::FlushData(bool force) {
 
       out.reset(new std::ofstream(filename, std::ios::binary | std::ios_base::app));
       outStream.reset(new google::protobuf::io::OstreamOutputStream(out.get()));
+
+      if (!out->good()) {
+        std::cerr << filename << "bad FD!" << std::endl;
+      }
     }
 
     WriteDelimitedTo(msg, outStream.get());
   }
 
-  LastMessages = newMessages;
+  LastMessages.clear();
   UpdateTs();
 }
 
@@ -159,7 +154,7 @@ std::vector<Msg> ThinkererStor::GetUserMessages(const std::string& uid, time_t s
     throw std::runtime_error("Bad ts interval");
   }
 
-  if (endTs - startTs > 2 * TIME_INTERVAL) {
+  if (endTs - startTs > 5 * TIME_INTERVAL) {
     throw std::runtime_error("Interval is too large");
   }
 
