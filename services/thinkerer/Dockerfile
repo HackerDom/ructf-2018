@@ -14,6 +14,7 @@ WORKDIR /thinkerer
 RUN ls -lh
 RUN bazel build //thinkerer:all
 RUN mkdir -p /thinkerer/data
+RUN cp /thinkerer/bazel-bin/thinkerer/server /thinkerer/server
 
-ENTRYPOINT /thinkerer/bazel-bin/thinkerer/server
+ENTRYPOINT /thinkerer/server
 EXPOSE 50051
