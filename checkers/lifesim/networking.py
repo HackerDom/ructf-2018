@@ -76,7 +76,7 @@ class State:
 			status, text = await self.get(url, need_check_status=False)
 		if status == 200:
 			return text
-		checker.corrupt(message="unexpected status {}".format(status));
+		checker.mumble(message="unexpected status {}".format(status));
 
 	async def post(self, url, data=None, need_check_status=True):
 		url = self.get_url(url)
@@ -100,7 +100,7 @@ class State:
 			status, text = await self.post(url, data, need_check_status=False)
 		if status == 200:
 			return text
-		checker.corrupt(message="unexpected status {}".format(status));
+		checker.mumble(message="unexpected status {}".format(status));
 
 	async def register(self, username=None, password=None):
 		can_retry = username is None
