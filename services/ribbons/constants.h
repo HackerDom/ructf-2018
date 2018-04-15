@@ -8,6 +8,6 @@
 #define FOLDER "data"
 
 #define CONNECTION_TIMEOUT 60
-#define PORT 80
+#define PORT 4242
 
 #endif //RIBBONS_CONSTANTS_H
