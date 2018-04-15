@@ -1,0 +1,13 @@
+server {
+	listen 80 default_server;
+
+	upstream backend_hosts {
+		server livesim:8085;
+		server livesim:8086;
+		server livesim:8087;
+	}
+
+	location / {
+		proxy_pass http://backend_hosts/;
+	}
+}

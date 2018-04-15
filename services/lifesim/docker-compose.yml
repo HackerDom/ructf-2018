@@ -1,10 +1,21 @@
-version: '2.2'
+version: '2.0'
 services:
   lifesim:
     build: .
-    ports:
-      - "8085:8084"
+    volumes:
+      - .:/home/livesim
     restart: on-failure
     mem_limit: 512m
-    mem_reservation: 128m
+  nginx:
+    image: nginx:1.13.7-alpine
+    ports:
+      - "8084:80"
+    volumes:
+      - ./nginx/nginx.config:/etc/nginx/nginx.config
+      - ./nginx/default:/etc/nginx/sites-enabled/default
+      - .:/home/livesim
+    depends_on:
+      - livesim
+    restart: on-failure
+    mem_limit: 256m
 
