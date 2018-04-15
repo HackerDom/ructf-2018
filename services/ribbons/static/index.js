@@ -23,6 +23,7 @@ $(document).ready(function () {
                 let channel = await view(id);
                 if (!channel) {
                     alert('Channel not found');
+                    $('.subscribe.modal').modal('hide');
                     return;
                 }
                 localStorageUpdate('subscribed', [], subscribed => {
@@ -39,8 +40,7 @@ $(document).ready(function () {
     $('.subscribe.modal')
         .modal({
             onApprove: function () {
-                $('.subscribe.form').form('validate form');
-                return false;
+                return $('.subscribe.form').form('validate form');
             }
         });
 
@@ -55,11 +55,13 @@ $(document).ready(function () {
                 let id = await add_channel(params.name, params.password);
                 if (!id) {
                     alert('Cannot create channel');
+                    $('.create.modal').modal('hide');
                     return;
                 }
                 let key = await get_key(id, params.password);
                 if (!key) {
                     alert('Cannot receive channel key');
+                    $('.create.modal').modal('hide');
                     return;
                 }
                 localStorageUpdate('maintained', [], maintained => {
@@ -74,8 +76,7 @@ $(document).ready(function () {
     $('.create.modal')
         .modal({
             onApprove: function () {
-                $('.create.form').form('validate form');
-                return false;
+                return $('.create.form').form('validate form');
             }
         });
 
@@ -141,11 +142,19 @@ $(document).ready(function () {
             inline: true,
             onSuccess: async function (e, values) {
                 let id = $(this).data('id');
-                if (await change_password(id, values.password, values.new_password)) {
-                    alert('Password successfully changed');
-                    location.reload();
-                } else {
-                    alert('Password changing failed');
+                let status = await change_password(id, values.password, values.new_password);
+                switch (status) {
+                    case 200:
+                        alert('Password successfully changed');
+                        location.reload();
+                        break;
+                    case 403:
+                        alert('Invalid password');
+                        break;
+                    default:
+                        alert('Password changing failed');
+                }
+                if (status !== 200) {
                     $('.modal.change-password').modal('hide');
                 }
             }
@@ -155,8 +164,7 @@ $(document).ready(function () {
     $('.change-password.modal')
         .modal({
             onApprove: function () {
-                $('.change-password.form').form('validate form');
-                return false;
+                return $('.change-password.form').form('validate form');
             }
         });
 
@@ -239,7 +247,7 @@ function get_key(channel_id, password) {
 
 function change_password(channel_id, password, new_password) {
     return fetch(`/api/change_password?channel_id=${channel_id}`, postOptions({password, new_password}))
-        .then(response => response.status === 200)
+        .then(response => response.status)
         .catch(e => {
             console.error(e);
             return false;
