@@ -54,24 +54,20 @@ def store_user_data(flag_id, data):
         with open(os.path.join(DIR, flag_id), 'w') as f:
             f.write(dumps(data))
     except Exception as ex:
-        close(CHECKER_ERROR, "Checker can't write files", "Can't write {}".format(flag_id))
+        close(CHECKER_ERROR, private="Can't write {}".format(flag_id))
 
 def read_user_data(flag_id):
     path = os.path.join(DIR, flag_id)
     
     if not os.path.exists(path):
-        close(CHECKER_ERROR, "Checker can't see file", "{} isn't exist".format(flag_id))
+        close(CHECKER_ERROR, private="{} isn't exist".format(flag_id))
     
     try:
         with open(path, 'r') as f:
             data = loads(f.read())
     except Exception:
-        close(CHECKER_ERROR, "Checker can't read file", "Can't read {}".format(flag_id))
+        close(CHECKER_ERROR, private="Can't read {}".format(flag_id))
     
-    try:
-        os.remove(path)
-    except Exception:
-        close(CHECKER_ERROR, "Checker can't delete file", "Can't delete {}".format(flag_id))
     return data['login'], data['password'], data['book_id']
         
 
@@ -80,7 +76,7 @@ def close(code, public="", private=""):
 		print(public)
 	if private:
 		print(private, file=sys.stderr)
-	print('Exit with code {}'.format(code, file=sys.stderr))
+	print('Exit with code {}'.format(code), file=sys.stderr)
 	exit(code)
 
 def info(*args):
@@ -143,7 +139,7 @@ def get(*args):
 
 
 def error_arg(*args):
-    close(CHECKER_ERROR, "Wrong command {}".format(sys.argv[1]))
+    close(CHECKER_ERROR, private="Wrong command {}".format(sys.argv[1]))
 
 COMMANDS = {
     'check': check, 
@@ -156,4 +152,4 @@ if __name__ == '__main__':
     try:
         COMMANDS.get(sys.argv[1], error_arg)(*sys.argv[2:])
     except Exception as ex:
-        close(CHECKER_ERROR, "Checker error", "INTERNAL ERROR: {}".format(ex))
+        close(CHECKER_ERROR, private="INTERNAL ERROR: {}".format(ex))
