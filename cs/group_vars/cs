@@ -33,7 +33,7 @@ cs_base_url: https://ructf.org/
 cs_admin_auth: root:Joh4either
 cs_ctf_name: RuCTF 2018
 cs_flags_secret: Eiciexoo4x
-cs_round_length: 20
+cs_round_length: 30
 cs_flag_life_time: 30
 cs_time_start: 2018-04-14 02:00:00
 cs_time_stop: 2018-04-16 14:00:00

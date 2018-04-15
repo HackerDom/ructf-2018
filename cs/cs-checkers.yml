@@ -27,3 +27,4 @@
         - Faker
         - beautifulsoup4
         - pycryptodome
+        - aiohttp
