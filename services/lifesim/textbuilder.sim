@@ -35,6 +35,9 @@ begin
 		addText :- this textbuilder; 
 	end;
 
+	boolean procedure more;
+		more := size < maxLength;
+
 	text procedure toText;
 		toText :- buffer.sub(1, size);
 
