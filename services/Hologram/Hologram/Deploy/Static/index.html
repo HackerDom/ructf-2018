@@ -1,3 +1,77 @@
-<html>
-<b>Q</b>
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Holograms</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/holos.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+    <div class="main-wrapper">
+  	  	<main>
+		    <nav class="navbar navbar-expand-lg navbar-custom bg-dark fixed-top">
+		      <div class="container">
+		        <a class="navbar-brand" href="#">Hologram</a>
+		      </div>
+		    </nav>
+			
+		    <div class="container">
+				
+		      <h1 class="my-4">Holograms
+		        <small>Lookuper</small>
+		      </h1>
+
+		      <div class="input-group" id="input-halogram-parameters">
+			    <div class="input-group-prepend">
+			      <span class="input-group-text">(x, y, z)</span>
+			    </div>
+			    <input type="text" class="form-control" id="x">
+			    <input type="text" class="form-control" id="y">
+			    <input type="text" class="form-control" id="z">
+			    <div class="input-group-prepend">
+			      <span class="input-group-text">rad</span>
+			    </div>
+			    <input type="text" class="form-control" id="rad">
+			    <div class="input-group-append">
+			      <button class="btn btn-outline-secondary" type="button" id="add-halogram-btn">Lookup</button>
+			    </div>
+			  </div>
+
+		      <div class="row">
+		        <div class="col-lg-4 col-sm-6 mb-4 template" hidden>
+		          <div class="card h-100">
+		            <div class="card-body">
+		              <h4 class="card-title">
+		                <p class="card-title-text"></p>
+		              </h4>
+		              <p class="card-text"></p>
+		            </div>
+		            <div class="card-footer"></div>
+		          </div>
+		        </div>
+		      </div>
+
+		    </div>
+	    </main>
+	    <footer class="py-2 navbar-custom">
+	      <div class="container">
+	        <p class="m-0 text-center">Copyright © tentacle monsters web studio</p>
+	      </div>
+	    </footer>
+	</div>
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <script src="js/websocket.js"></script>
+
+  </body>
+
 </html>
