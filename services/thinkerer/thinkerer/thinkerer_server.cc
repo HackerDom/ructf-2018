@@ -60,7 +60,7 @@ public:
     time_t now;
     time(&now);
 
-    time_t startTs = now - 5 * 60;
+    time_t startTs = now - 20 * 60;
     time_t endTs = now;
 
     if (request->start_ts()) {
