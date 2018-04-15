@@ -12,8 +12,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/semantic.min.js"></script>
 
-    <script src="./simple-scrollbar.min.js"></script>
-    <link rel="stylesheet" href="./simple-scrollbar.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.css">
+    <script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.js"></script>
 
     <link rel="stylesheet" href="./index.css"/>
     <script src="./index.js"></script>
@@ -35,7 +35,7 @@
                         <i class="icon plus"></i>
                     </button>
                 </div>
-                <div class="channels channels-subscribed" ss-container>
+                <div class="channels channels-subscribed" data-simplebar>
                     <div class="channels-list">
                     </div>
                 </div>
@@ -47,13 +47,13 @@
                         <i class="icon plus"></i>
                     </button>
                 </div>
-                <div class="channels channels-maintained" ss-container>
+                <div class="channels channels-maintained" data-simplebar>
                     <div class="channels-list">
                     </div>
                 </div>
             </div>
         </div>
-        <div class="eleven wide column">
+        <div class="eleven wide column column2">
             <div class="owner-block">
                 <div class="owner-block-header">
                     <div>
@@ -68,18 +68,18 @@
                     </div>
                 </div>
             </div>
-            <div class="posts" ss-container>
+            <div class="posts" data-simplebar>
                 <div class="posts-list"></div>
             </div>
+            <div class="ui divider"></div>
             <div class="ui form add-post owner-block">
-                <div class="ui divider"></div>
                 <div class="field">
                     <textarea name="text" placeholder="Your post content"></textarea>
                 </div>
                 <div class="field">
                     <input type="password" name="password" placeholder="Channel password">
                 </div>
-                <button class="ui button btn-addPost" type="submit">Add post</button>
+                <button class="ui button submit btn-addPost">Add post</button>
             </div>
         </div>
     </div>
