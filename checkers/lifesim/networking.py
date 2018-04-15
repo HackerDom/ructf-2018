@@ -37,8 +37,8 @@ class State:
 		self.session = None
 		if user is not None and password is not None:
 			self.create_session(user, password)
-	def __del__(self):
-		self.close()
+#	def __del__(self):
+#		self.close()
 	def close(self):
 		if self.session is not None:
 			self.session.close();
