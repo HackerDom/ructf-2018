@@ -7,6 +7,7 @@ services:
     volumes:
       - ./data:/home/thinkerer/data
     restart: on-failure
+    working_dir: /thinkerer
     mem_limit: 512m
     mem_reservation: 128m
 
