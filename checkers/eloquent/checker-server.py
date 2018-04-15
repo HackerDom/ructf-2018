@@ -9,6 +9,7 @@ import sys
 
 import markdown
 from markdown.extensions.toc import TocExtension
+from selenium.common.exceptions import WebDriverException
 
 from generators import gen_login, gen_password, gen_article_title, gen_article_content
 from service_api import signin, signup, post_article, get_article_content, get_driver, \
@@ -106,6 +107,7 @@ def put(host, flag_id, flag, vuln):
     article_id = get_article_id_by_cookies(host, cookies)
     table_of_contents = get_article_table_of_contents(html_content, pregen=True)
     print(','.join([username, password, article_id, get_article_hash(table_of_contents)]))
+    print_to_stderr(','.join([username, password, article_id, get_article_hash(table_of_contents)]))
     exit(OK)
 
 
@@ -142,6 +144,9 @@ def main():
     except ApiException as e:
         print_to_stderr(e.exc_message)
         exit(int(e.exc_type.value))
+    except WebDriverException as e:
+        print_to_stderr('undefined is not an object: {}'.format(e))
+        exit(MUMBLE)
     except Exception:
         traceback.print_exc()
         exit(CHECKER_ERROR)
