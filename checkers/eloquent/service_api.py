@@ -4,7 +4,10 @@ import re
 import requests
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver import DesiredCapabilities
 from selenium.webdriver.common.keys import Keys
+
+from generators import gen_user_agent
 
 PORT = 8080
 
@@ -53,7 +56,18 @@ def api_method(func):
 def get_driver():
     driver = webdriver.PhantomJS(service_log_path='/dev/null')
     driver.set_window_size(1600, 900)
-    driver.set_page_load_timeout(5)
+    driver.set_page_load_timeout(10)
+    dcap = dict(DesiredCapabilities.PHANTOMJS)
+    dcap["phantomjs.page.settings.userAgent"] = gen_user_agent()
+    driver = webdriver.PhantomJS(
+        desired_capabilities=dcap,
+        service_log_path='/dev/null',
+        service_args=[
+                '--debug=true',
+                '--webdriver-loglevel=DEBUG',
+                '--local-url-access=false'
+            ]
+    )
     return driver
 
 
@@ -177,4 +191,3 @@ def emulate_articles_view(driver: webdriver.Chrome, host, username, password):
                 driver.find_element_by_link_text(href).click()
     except NoSuchElementException as e:
         raise ApiException(ExceptionType.MUMBLE, e)
-
