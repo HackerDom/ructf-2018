@@ -28,7 +28,7 @@ simulation begin
 	credentialsDbName :- getArgv(2, dbnameMaxLen);
 	dataDbName :- getArgv(3, dbnameMaxLen);
 
-	if cInitDB(copy(credentialsDbName), 128 * 1024 * 1024, copy(dataDbName), 512 * 1024 * 1024) < 0 then
+	if cInitDB(copy(credentialsDbName), 10 * 1024 * 1024, copy(dataDbName), 10 * 1024 * 1024) < 0 then
 		error("can't init db");
 
 %	method of fast and painfull death
