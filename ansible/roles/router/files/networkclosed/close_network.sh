@@ -14,8 +14,8 @@ fi
 for num in {1..32}; do
     ip="10.60.$num.254"
 
-    if ! iptables -t nat -C PREROUTING -i eth0.$((num+100)) -d 10.0.0.0/8 -p tcp -m tcp -m comment --comment closednetwork -j DNAT --to-destination ${ip}:40002 &> /dev/null; then
-        iptables -t nat -A PREROUTING -i eth0.$((num+100)) -d 10.0.0.0/8 -p tcp -m tcp -m comment --comment closednetwork -j DNAT --to-destination ${ip}:40002 &> /dev/null
+    if ! iptables -t nat -C PREROUTING -i eth0.$((num+100)) -d 10.60.0.0/17 -p tcp -m tcp -m comment --comment closednetwork -j DNAT --to-destination ${ip}:40002 &> /dev/null; then
+        iptables -t nat -A PREROUTING -i eth0.$((num+100)) -d 10.60.0.0/17 -p tcp -m tcp -m comment --comment closednetwork -j DNAT --to-destination ${ip}:40002 &> /dev/null
         #echo "Added DNAT rule for team ${num}"
     fi
 done
