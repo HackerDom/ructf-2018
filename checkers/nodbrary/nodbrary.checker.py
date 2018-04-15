@@ -68,10 +68,6 @@ def read_user_data(flag_id):
     except Exception:
         close(CHECKER_ERROR, private="Can't read {}".format(flag_id))
     
-    try:
-        os.remove(path)
-    except Exception:
-        close(CHECKER_ERROR, private="Can't delete {}".format(flag_id))
     return data['login'], data['password'], data['book_id']
         
 
