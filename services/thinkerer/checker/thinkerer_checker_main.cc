@@ -91,7 +91,7 @@ void check(ThinkererClient& client) {
   }
 
   if (msgId.empty()) {
-    exit(ESTATUS::CORRUPT);
+    exit(ESTATUS::MUMBLE);
   }
 
   client.SendMessage(to, getPassword(to), forwardTo, "", "", msgId, msgTs);
@@ -104,7 +104,7 @@ void check(ThinkererClient& client) {
       exit(ESTATUS::OK);
     }
   }
-  exit(ESTATUS::DOWN);
+  exit(ESTATUS::CORRUPT);
 }
 
 int main(int argc, char** argv) {
@@ -164,6 +164,10 @@ int main(int argc, char** argv) {
     }
   } catch (std::exception& e) {
     std::cerr << "Host:" << host << " exception: " << e.what() << std::endl;
+    std::string exc = e.what();
+    if (exc.find("Bad username or password") != std::string::npos) {
+      exit(ESTATUS::MUMBLE);
+    }
     exit(ESTATUS::DOWN);
   }
 

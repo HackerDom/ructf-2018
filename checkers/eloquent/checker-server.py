@@ -9,6 +9,7 @@ import sys
 
 import markdown
 from markdown.extensions.toc import TocExtension
+from selenium.common.exceptions import WebDriverException
 
 from generators import gen_login, gen_password, gen_article_title, gen_article_content
 from service_api import signin, signup, post_article, get_article_content, get_driver, \
@@ -54,7 +55,11 @@ def check_article_js(driver, host, article_id, table_of_contents):
     get_page_of_article(driver, host, article_id)
     for header in table_of_contents:
         click_link(driver, "#" + header)
-        if get_element_text_by_id(driver, 'mid-text') != 'Current subtitle: {}'.format(header):
+        print_to_stderr(str(driver.find_element_by_id('mid-text')))
+        text = get_element_text_by_id(driver, 'mid-text')
+        exp_text = 'Current subtitle: {}'.format(header)
+        if text != exp_text:
+            print_to_stderr('Title "{}" doesn\'t changed. text={}, expected={}'.format(header, text, exp_text))
             exit(MUMBLE)
 
 
@@ -72,7 +77,10 @@ def check(host):
         check_article_js(driver, host, article_id, table_of_contents)
         driver.quit()
     finally:
-        driver.service.process.send_signal(signal.SIGTERM)
+        try:
+            driver.service.process.send_signal(signal.SIGTERM)
+        except AttributeError:
+            pass
     exit(OK)
 
 
@@ -99,6 +107,7 @@ def put(host, flag_id, flag, vuln):
     article_id = get_article_id_by_cookies(host, cookies)
     table_of_contents = get_article_table_of_contents(html_content, pregen=True)
     print(','.join([username, password, article_id, get_article_hash(table_of_contents)]))
+    print_to_stderr(','.join([username, password, article_id, get_article_hash(table_of_contents)]))
     exit(OK)
 
 
@@ -119,7 +128,10 @@ def get(host, flag_id, flag, vuln):
         emulate_articles_view(driver, host, username, password)
         driver.quit()
     finally:
-        driver.service.process.send_signal(signal.SIGTERM)
+        try:
+            driver.service.process.send_signal(signal.SIGTERM)
+        except AttributeError:
+            pass
     exit(OK)
 
 
@@ -132,6 +144,9 @@ def main():
     except ApiException as e:
         print_to_stderr(e.exc_message)
         exit(int(e.exc_type.value))
+    except WebDriverException as e:
+        print_to_stderr('undefined is not an object: {}'.format(e))
+        exit(MUMBLE)
     except Exception:
         traceback.print_exc()
         exit(CHECKER_ERROR)
