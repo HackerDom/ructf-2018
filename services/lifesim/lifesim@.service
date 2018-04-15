@@ -1,0 +1,14 @@
+[Unit]
+	Description=lifesim
+	Before=network.target
+	Wants=network.target
+
+[Service]
+	ExecStart=/home/lifesim/lifesim %i 1234 4321
+	WorkingDirectory=/home/lifesim
+	User=root
+	Group=root
+	Restart=always
+
+[Install]
+	WantedBy=multi-user.target

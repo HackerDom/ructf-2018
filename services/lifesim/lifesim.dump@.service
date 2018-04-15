@@ -1,0 +1,12 @@
+[Unit]
+	Description=lifesim db dumper
+
+[Service]
+	ExecStart=/home/lifesim/dump.sh %i
+	WorkingDirectory=/home/lifesim
+	User=root
+	Group=root
+	Restart=always
+
+[Install]
+	WantedBy=multi-user.target
