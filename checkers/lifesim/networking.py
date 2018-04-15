@@ -25,6 +25,9 @@ def decode(s):
 	except Exception as ex:
 		checker.mumble(error="bad data '{}'".format(s), exception=ex)
 
+def get_filtered(s):
+	return filter(None, s.split('\r\n'))
+
 class State:
 	def __init__(self, hostname, port=None, name='', user=None, password=None):
 		self.hostname = hostname
@@ -121,10 +124,19 @@ class State:
 		return await self.post_with_retries('/create', data.encode())
 
 	async def get_my(self):
-		return (await self.get_with_retries('/my')).split('\r\n')
+		return list(get_filtered(await self.get_with_retries('/my')))
 
 	async def get_data(self, user):
-		return [decode(line) for line in (await self.post_with_retries('/data', user.encode())).split('\r\n')]
+		return [decode(line) for line in get_filtered(await self.post_with_retries('/data', user.encode()))]
 
 	async def get_users(self):
-		return (await self.get_with_retries('/users')).split('\r\n')
+		l = []
+		data = await self.post_with_retries('/users', '0')
+		n = list(get_filtered(data))
+		while len(n) > 0:
+			l += n[:-1]
+			if data.endswith('\r\n'):
+				l.append(n[:-1])
+			data = await self.post_with_retries('/users', str(len(l)))
+			n = list(get_filtered(data))
+		return l
