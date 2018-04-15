@@ -8,7 +8,7 @@
 #include <vector>
 #include <time.h>
 
-const int TIME_INTERVAL = 5 * 60; // 5 min
+const int TIME_INTERVAL = 17 * 60; // 5 min
 const int MAX_MESSAGES_IN_MEMORY = 1000;
 
 
@@ -82,10 +82,10 @@ bool ThinkererStor::GetMessageById(const std::string& id, time_t ts, Msg& msg) {
 
   google::protobuf::io::IstreamInputStream inStream(&in);
 
-  //Msg m;
-  while (ReadDelimitedFrom(&inStream, &msg)) {
+  Msg m;
+  while (ReadDelimitedFrom(&inStream, &m)) {
     if (msg.id() == id) {
-      //msg.MergeFrom(m);
+      msg.MergeFrom(m);
       return true;
     }
   }

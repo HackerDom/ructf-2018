@@ -4,8 +4,6 @@ services:
     build: .
     ports:
       - "50051:50051"
-    volumes:
-      - /home/thinkerer/data:/thinkerer/data
     restart: on-failure
     working_dir: /thinkerer
     mem_limit: 512m
