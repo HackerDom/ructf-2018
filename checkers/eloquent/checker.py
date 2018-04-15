@@ -9,11 +9,11 @@ PORT = 22
 
 
 def main():
-    root_dir = '/root/ructf-2018/checkers/eloquent'
-    checker_name = 'eloquent.checker.py'
+    root_dir = '/home/ructf-2018/checkers/eloquent'
+    checker_name = 'checker-server.py'
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(hostname=HOST, username=USER, password=PASSWORD, port=PORT)
+    client.connect(hostname=HOST, username=USER, password=PASSWORD, port=PORT, timeout=10)
     c = client.get_transport().open_session()
     c.exec_command("cd {}; ./{} {}".format(root_dir, checker_name, ' '.join(sys.argv[1:])))
     stderr_data = c.recv_stderr(10240).decode()
@@ -25,3 +25,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

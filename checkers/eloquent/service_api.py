@@ -62,11 +62,6 @@ def get_driver():
     driver = webdriver.PhantomJS(
         desired_capabilities=dcap,
         service_log_path='/dev/null',
-        service_args=[
-                '--debug=true',
-                '--webdriver-loglevel=DEBUG',
-                '--local-url-access=false'
-            ]
     )
     return driver
 
