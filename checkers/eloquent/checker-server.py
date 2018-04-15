@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import re
+import signal
 import traceback
 from hashlib import sha256
 from base64 import b64encode
@@ -59,16 +60,19 @@ def check_article_js(driver, host, article_id, table_of_contents):
 
 def check(host):
     driver = get_driver()
-    username = gen_login()
-    password = gen_password()
-    cookies = signup(host, username, password)
-    post_article(host, cookies, gen_article_title(), gen_article_content())
-    article_id = get_article_id_by_cookies(host, cookies, from_suggestions=False)
-    article_content = get_article_content(host, cookies, article_id)
-    table_of_contents = get_article_table_of_contents(article_content)
-    sign_in_with_driver(driver, host, username, password)
-    check_article_js(driver, host, article_id, table_of_contents)
-    driver.close()
+    try:
+        username = gen_login()
+        password = gen_password()
+        cookies = signup(host, username, password)
+        post_article(host, cookies, gen_article_title(), gen_article_content())
+        article_id = get_article_id_by_cookies(host, cookies, from_suggestions=False)
+        article_content = get_article_content(host, cookies, article_id)
+        table_of_contents = get_article_table_of_contents(article_content)
+        sign_in_with_driver(driver, host, username, password)
+        check_article_js(driver, host, article_id, table_of_contents)
+        driver.quit()
+    finally:
+        driver.service.process.send_signal(signal.SIGTERM)
     exit(OK)
 
 
@@ -111,7 +115,11 @@ def get(host, flag_id, flag, vuln):
         print_to_stderr('expected flag={}\nreal flag={}'.format(flag, real_flag))
         exit(CORRUPT)
     driver = get_driver()
-    emulate_articles_view(driver, host, username, password)
+    try:
+        emulate_articles_view(driver, host, username, password)
+        driver.quit()
+    finally:
+        driver.service.process.send_signal(signal.SIGTERM)
     exit(OK)
 
 
@@ -130,5 +138,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-

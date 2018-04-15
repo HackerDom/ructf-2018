@@ -68,7 +68,7 @@ bool ThinkererStor::GetMessageById(const std::string& id, time_t ts, Msg& msg) {
   if ((ts >= TimestampMin && ts <= TimestampMax)) {
     for (const auto& m : LastMessages) {
       if (m.id() == id) {
-        msg = m;
+        msg.MergeFrom(m);
         return true;
       }
     }
@@ -82,10 +82,10 @@ bool ThinkererStor::GetMessageById(const std::string& id, time_t ts, Msg& msg) {
 
   google::protobuf::io::IstreamInputStream inStream(&in);
 
-  Msg m;
-  while (ReadDelimitedFrom(&inStream, &m)) {
-    if (m.id() == id) {
-      msg = m;
+  //Msg m;
+  while (ReadDelimitedFrom(&inStream, &msg)) {
+    if (msg.id() == id) {
+      //msg.MergeFrom(m);
       return true;
     }
   }
