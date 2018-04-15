@@ -164,6 +164,10 @@ int main(int argc, char** argv) {
     }
   } catch (std::exception& e) {
     std::cerr << "Host:" << host << " exception: " << e.what() << std::endl;
+    std::string exc = e.what();
+    if (exc.find("Bad username or password") != std::string::npos) {
+      exit(ESTATUS::MUMBLE);
+    }
     exit(ESTATUS::DOWN);
   }
 
