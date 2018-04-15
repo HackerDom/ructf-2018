@@ -143,7 +143,7 @@ simulation begin
 
 		procedure sendData(data);
 			text data;
-			send("HTTP/1.1 200 ok" & CRLF & "Connection: close" & "Content-length: " & toText(data.length) & CRLF & "Content-encoding: text/plain" & CRLF & CRLF & data);
+			send("HTTP/1.1 200 ok" & CRLF & "Connection: close" & CRLF & "Content-length: " & toText(data.length) & CRLF & "Content-encoding: text/plain" & CRLF & CRLF & data);
 
 
 		inner;
@@ -422,7 +422,7 @@ simulation begin
 		if startswith(path, "/my") then
 			nextHandler :- new getMyHandler(socket, method, user, password);
 		if startswith(path, "/users") then
-			nextHandler :- new getUsersHandler(socket, method, user, password);
+			nextHandler :- new getUsersHandler(socket, method, user, password, buff, pret, readed, contentLen);
 		if startswith(path, "/data") then
 			nextHandler :- new getUsersDataHandler(socket, method, user, password, buff, pret, readed, contentLen);
 		if nextHandler =/= none then
@@ -632,14 +632,17 @@ simulation begin
 	exit:
 	end;
 
-	getListHandler class getUsersHandler;
+	postHandler class getUsersHandler;
 	begin
 		integer dataMaxLength = 64;
-		integer current, dataLength, getResult;
+		ref(textbuilder) builder;
+		integer current, dataLength, getResult, usersSkip;
 		text data;
 
 		data :- blanks(dataMaxLength);
 		current := 0;
+		usersSkip := parseInt(buffer.sub(skip + 1, contentLen));
+		builder :- new textbuilder;
 
 		getResult := 0;
 		while getResult <> -2 do
@@ -657,8 +660,15 @@ simulation begin
 				goto exit;
 			end;
 			if getResult = 0 then
-				builder :- builder.addText(data.sub(1, dataLength)).addText(CRLF);
+				if usersSkip <= 0 then
+					builder :- builder.addText(data.sub(1, dataLength)).addText(CRLF)
+				else
+					usersSkip := usersSkip - 1;
+			if not builder.more then
+				goto send;
 		end;
+	send:
+		sendData(builder.toText);
 	exit:
 	end;
 
