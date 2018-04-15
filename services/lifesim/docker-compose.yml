@@ -3,7 +3,7 @@ services:
   lifesim:
     build: .
     volumes:
-      - .:/home/livesim
+      - .:/home/lifesim
     restart: on-failure
     mem_limit: 512m
   nginx:
@@ -13,9 +13,9 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/default:/etc/nginx/sites-enabled/default
-      - .:/home/livesim
+      - .:/home/lifesim
     depends_on:
-      - livesim
+      - lifesim
     restart: on-failure
     mem_limit: 256m
 
