@@ -1,4 +1,5 @@
-mport paramiko
+#!/usr/bin/python3
+import paramiko
 import sys
 
 from paramiko import SSHException
