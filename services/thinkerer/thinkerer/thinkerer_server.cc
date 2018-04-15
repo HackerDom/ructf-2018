@@ -108,14 +108,17 @@ void RunServer() {
   std::unique_ptr<Server> server(builder.BuildAndStart());
   std::cout << "Server listening on " << server_address << std::endl;
 
-  std::signal(SIGINT, [](int signal) {
+  CurrentServer = server.get();
+  auto f = [](int signal) {
     std::cerr << "Server shutdown now!" << std::endl;
     if (CurrentServer) {
       CurrentServer->Shutdown();
     }
     std::cerr << "Server shutdown done!" << std::endl;
-  });
-  CurrentServer = server.get();
+  };
+  std::signal(SIGINT, f);
+  std::signal(SIGTERM, f);
+  
 
   server->Wait();
   CurrentServer = nullptr;
