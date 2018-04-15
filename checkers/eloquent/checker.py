@@ -21,12 +21,12 @@ def main():
         c.exec_command("cd {}; ./{} {}".format(root_dir, checker_name, ' '.join(sys.argv[1:])))
         stderr_data = c.recv_stderr(10240).decode()
         stdout_data = c.recv(10240).decode()
-        print(stdout_data)
-        print('stdout: ' + str(stdout_data), file=sys.stderr)
-        print('stderr: ' + str(stderr_data), file=sys.stderr)
+        print(stdout_data.strip())
+        print('stdout: ' + repr(stdout_data), file=sys.stderr)
+        print('stderr: ' + repr(stderr_data), file=sys.stderr)
         exit(int(c.recv_exit_status()))
     except SSHException as e:
-        exit()
+        exit(104)
     finally:
         client.close()
 
