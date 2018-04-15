@@ -91,7 +91,7 @@ void check(ThinkererClient& client) {
   }
 
   if (msgId.empty()) {
-    exit(ESTATUS::CORRUPT);
+    exit(ESTATUS::MUMBLE);
   }
 
   client.SendMessage(to, getPassword(to), forwardTo, "", "", msgId, msgTs);
@@ -104,7 +104,7 @@ void check(ThinkererClient& client) {
       exit(ESTATUS::OK);
     }
   }
-  exit(ESTATUS::DOWN);
+  exit(ESTATUS::CORRUPT);
 }
 
 int main(int argc, char** argv) {
