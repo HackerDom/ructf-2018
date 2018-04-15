@@ -22,7 +22,7 @@ def check_curve(cookie):
     return ec.order(g, curve['n'])
 
 def check_journal(bs, cookie):
-    pattern = re.compile("\d+\) ([a-zA-Z0-9]+).+\.\( ([a-f0-9]{4,}), ([a-f0-9]{4,}) \) Librarian's note: [a-zA-Z0-9]+ [a-z]{12} \w+ \S+ \S+ \( ([a-f0-9]{4,}),? ?([a-f0-9]{4,})? \)")
+    pattern = re.compile("\d+\) ([a-zA-Z0-9]+).+\.\( ([a-f0-9]{4,}), ([a-f0-9]{4,}) \) Librarian's note: [a-zA-Z0-9]+ [a-z]{12} [^\(]+ \( ([a-f0-9]{4,}),? ?([a-f0-9]{4,})? \)")
     curve = decode_cookie(cookie)
     ec = EC(*tuple(map(curve.get, 'abp')))
 
