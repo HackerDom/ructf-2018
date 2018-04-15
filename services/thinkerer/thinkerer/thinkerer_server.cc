@@ -34,12 +34,10 @@ public:
   Status SendMessage(ServerContext* context, const Msg* request,
                      MsgReply* reply) override 
   {
-    // messages_[request->to()].push_back(*request);
     Msg msg(*request);
 
     time_t now;
     time(&now);
-    // messages_[request->to()].back().set_ts(now);
     msg.set_ts(now);
 
     if (!Auth.Check(request->from(), request->password())) {

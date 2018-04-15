@@ -22,6 +22,8 @@ int main(int argc, char** argv) {
             ("uid", po::value<std::string>(), "my uid")
             ("to", po::value<std::string>(), "send message to uid")
             ("message", po::value<std::string>(), "send message body")
+            ("password"), po::value<std::string>(), "password")
+            ("frwrd_id"), po::value<std::string>(), "forward message id")
         ;
 
   po::variables_map vm;
