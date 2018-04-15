@@ -8,7 +8,7 @@ if [[ $NETOPENED == 1 ]]; then
   
   for num in {1..32}; do
     ip="10.60.$num.254"
-    iptables -t nat -w -C PREROUTING -i eth0.$((num+100)) -d 10.0.0.0/8 -p tcp -m tcp -m comment --comment closednetwork -j DNAT --to-destination ${ip}:40002 &> /dev/null
+    iptables -t nat -w -C PREROUTING -i eth0.$((num+100)) -d 10.60.0.0/17 -p tcp -m tcp -m comment --comment closednetwork -j DNAT --to-destination ${ip}:40002 &> /dev/null
     if [[ $? == 0 ]]; then
       echo "Warning: DNAT record still exists for team ${num}"
     fi
@@ -19,7 +19,7 @@ else
 
   for num in {1..32}; do
     ip="10.60.$num.254"
-    iptables -t nat -w -C PREROUTING -i eth0.$((num+100)) -d 10.0.0.0/8 -p tcp -m tcp -m comment --comment closednetwork -j DNAT --to-destination ${ip}:40002 &> /dev/null
+    iptables -t nat -w -C PREROUTING -i eth0.$((num+100)) -d 10.60.0.0/17 -p tcp -m tcp -m comment --comment closednetwork -j DNAT --to-destination ${ip}:40002 &> /dev/null
     if [[ $? != 0 ]]; then
       echo "Warning: no DNAT record for team ${num}"
     fi

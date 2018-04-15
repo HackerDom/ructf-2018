@@ -1,4 +1,6 @@
 $(document).ready(function () {
+    reload_channels();
+
     $('.btn-subscribe').click(function () {
         $('.modal.subscribe .form').form('clear');
         $('.modal.subscribe').modal('show');
@@ -15,30 +17,30 @@ $(document).ready(function () {
                 invite: 'regExp[/^\\d+:(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/]'
             },
             inline: true,
-            on: 'blur'
-        });
+            onSuccess: async function(e, params) {
+                let [id, encodedKey] = params.invite.split(':');
+                let key = base64decode(encodedKey);
+                let channel = await view(id);
+                if (!channel) {
+                    alert('Channel not found');
+                    return;
+                }
+                localStorageUpdate('subscribed', [], subscribed => {
+                    if (!subscribed.find(info => info.id === id))
+                        subscribed.push({id, key, name: channel.name});
+                    return subscribed;
+                });
+                location.reload();
+            }
+        })
+        .submit(e => e.preventDefault());
 
 
     $('.subscribe.modal')
         .modal({
-            onApprove: async function () {
-                let form = $('.subscribe.form');
-                if (form.form('is valid')) {
-                    let invite = form.form('get value', 'invite');
-                    let [id, encodedKey] = invite.split(':');
-                    let key = base64decode(encodedKey);
-                    let channel = await view(id);
-                    if (!channel) {
-                        alert('Channel not found');
-                        return;
-                    }
-                    localStorageUpdate('subscribed', [], subscribed => {
-                        if (!subscribed.find(info => info.id === id))
-                            subscribed.push({id, key, name: channel.name});
-                        return subscribed;
-                    });
-                    location.reload();
-                }
+            onApprove: function () {
+                $('.subscribe.form').form('validate form');
+                return false;
             }
         });
 
@@ -49,35 +51,33 @@ $(document).ready(function () {
                 password: ['minLength[8]', 'maxLength[16]']
             },
             inline: true,
-            on: 'blur'
-        });
+            onSuccess: async function (e, params) {
+                let id = await add_channel(params.name, params.password);
+                if (!id) {
+                    alert('Cannot create channel');
+                    return;
+                }
+                let key = await get_key(id, params.password);
+                if (!key) {
+                    alert('Cannot receive channel key');
+                    return;
+                }
+                localStorageUpdate('maintained', [], maintained => {
+                    maintained.push({id, key, name: params.name});
+                    return maintained;
+                });
+                location.reload();
+            }
+        })
+        .submit(e => e.preventDefault());
 
     $('.create.modal')
         .modal({
-            onApprove: async function () {
-                let form = $('.create.form');
-                if (form.form('is valid')) {
-                    let params = form.form('get values');
-                    let id = await add_channel(params.name, params.password);
-                    if (!id) {
-                        alert('Cannot create channel');
-                        return;
-                    }
-                    let key = await get_key(id, params.password);
-                    if (!key) {
-                        alert('Cannot receive channel key');
-                        return;
-                    }
-                    localStorageUpdate('maintained', [], maintained => {
-                        maintained.push({id, key, name: params.name});
-                        return maintained;
-                    });
-                    location.reload();
-                }
+            onApprove: function () {
+                $('.create.form').form('validate form');
+                return false;
             }
         });
-
-    reload_channels();
 
     $('.channels .item').click(function () {
         let id = $(this).data('id');
@@ -107,23 +107,22 @@ $(document).ready(function () {
                 password: ['minLength[8]', 'maxLength[16]']
             },
             inline: true,
-            on: 'blur'
+            onSuccess: async function (e, values) {
+                let id = $(this).data('id');
+                let status = await add_post(id, values.password, values.text);
+                switch (status) {
+                    case 201:
+                        location.reload();
+                        break;
+                    case 403:
+                        alert('Invalid password');
+                        break;
+                    default:
+                        alert('Cannot add post');
+                }
+            }
         })
-        .submit(async function (e) {
-            e.preventDefault();
-            if (!$(this).form('is valid'))
-                return;
-            let id = $(this).data('id');
-            let params = $(this).form('get values');
-            if (await add_post(id, params.password, params.text))
-                location.reload();
-            else
-                alert('Cannot add post');
-        });
-
-    $('.btn-addPost').click(function () {
-        $('.add-post.form').submit();
-    });
+        .submit(e => e.preventDefault());
 
     $('.btn-invite').click(function () {
         let id = $(this).closest('.owner-block').data('id');
@@ -140,23 +139,24 @@ $(document).ready(function () {
                 new_password: ['minLength[8]', 'maxLength[16]']
             },
             inline: true,
-            on: 'blur'
-        });
+            onSuccess: async function (e, values) {
+                let id = $(this).data('id');
+                if (await change_password(id, values.password, values.new_password)) {
+                    alert('Password successfully changed');
+                    location.reload();
+                } else {
+                    alert('Password changing failed');
+                    $('.modal.change-password').modal('hide');
+                }
+            }
+        })
+        .submit(e => e.preventDefault());
 
     $('.change-password.modal')
         .modal({
-            onApprove: async function () {
-                let form = $('.change-password.form');
-                if (form.form('is valid')) {
-                    let id = form.data('id');
-                    let params = form.form('get values');
-                    if (await change_password(id, params.password, params.new_password)) {
-                        alert('Password successfully changed');
-                        location.reload();
-                    } else {
-                        alert('Password changing failed');
-                    }
-                }
+            onApprove: function () {
+                $('.change-password.form').form('validate form');
+                return false;
             }
         });
 
@@ -205,34 +205,55 @@ async function load_posts(channel_id) {
         container.append(item);
         $(item).children('pre').text(post);
     }
+    $('.divider').css('visibility', channel.posts.length ? 'visible' : 'hidden');
 }
 
 function add_channel(name, password) {
     return fetch("/api/add_channel", postOptions({name, password}))
         .then(response => response.status === 201 ? response.text() : null)
-        .then(text => text.split(':')[1]);
+        .then(text => text.split(':')[1])
+        .catch(e => {
+            console.error(e);
+            return false;
+        });
 }
 
 function add_post(channel_id, password, text) {
     return fetch(`/api/add_post?channel_id=${channel_id}`, postOptions({password, text}))
-        .then(response => response.status === 201);
+        .then(response => response.status)
+        .catch(e => {
+            console.error(e);
+            return false;
+        });
 }
 
 function get_key(channel_id, password) {
     return fetch(`/api/key?channel_id=${channel_id}`, postOptions({password}))
         .then(response => response.status === 200 ? response.arrayBuffer() : null)
-        .then(buffer => new Uint8Array(buffer));
+        .then(buffer => new Uint8Array(buffer))
+        .catch(e => {
+            console.error(e);
+            return false;
+        });
 }
 
 function change_password(channel_id, password, new_password) {
     return fetch(`/api/change_password?channel_id=${channel_id}`, postOptions({password, new_password}))
-        .then(response => response.status === 200);
+        .then(response => response.status === 200)
+        .catch(e => {
+            console.error(e);
+            return false;
+        });
 }
 
 function view(channel_id) {
     return fetch(`/api/view?channel_id=${channel_id}`)
         .then(response => response.status === 200 ? response.arrayBuffer() : null)
-        .then(buffer => new Channel(buffer));
+        .then(buffer => new Channel(buffer))
+        .catch(e => {
+            console.error(e);
+            return false;
+        });
 }
 
 class Channel {
@@ -277,7 +298,7 @@ class Channel {
     }
 
     _buf_to_str(buf) {
-        return new TextDecoder("ascii").decode(buf);
+        return new TextDecoder("utf-8").decode(buf);
     }
 }
 
