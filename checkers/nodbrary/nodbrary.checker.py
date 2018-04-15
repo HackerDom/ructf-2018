@@ -24,7 +24,6 @@ READ_BOOK = "http://{}:{}/book/"
 JOURNAL   = "http://{}:{}/journal"
 
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
-DIR = os.path.join(CUR_DIR, 'flags')
 
 def generate_login():
     return ''.join(Faker().name().split())
@@ -46,30 +45,6 @@ def make_request(method, addr, team_addr, data=None):
         close(DOWN, "Service is down")
     return r
 
-def store_user_data(flag_id, data):
-    if not os.path.exists(DIR):
-        os.makedirs(DIR)
-    
-    try:
-        with open(os.path.join(DIR, flag_id), 'w') as f:
-            f.write(dumps(data))
-    except Exception as ex:
-        close(CHECKER_ERROR, private="Can't write {}".format(flag_id))
-
-def read_user_data(flag_id):
-    path = os.path.join(DIR, flag_id)
-    
-    if not os.path.exists(path):
-        close(CHECKER_ERROR, private="{} isn't exist".format(flag_id))
-    
-    try:
-        with open(path, 'r') as f:
-            data = loads(f.read())
-    except Exception:
-        close(CHECKER_ERROR, private="Can't read {}".format(flag_id))
-    
-    return data['login'], data['password'], data['book_id']
-        
 
 def close(code, public="", private=""):
 	if public:
@@ -121,12 +96,11 @@ def put(*args):
     book_id = r.url.split('/')[-1]
     make_request(s.post, ADD_TAG, team_addr, {"bookId":book_id,"tag":flag})
 
-    store_user_data(flag_id, {"login": login, "password": password, "book_id": book_id})
-    close(OK)
+    close(OK, ":".join((login, password, book_id)))
 
 def get(*args):
-    team_addr, flag_id, flag = args[:3]
-    login, password, book_id = read_user_data(flag_id)
+    team_addr, lpb, flag = args[:3]
+    login, password, book_id = lpb.split(":")
     s = Session()
 
     make_request(s.post, SIGN_IN, team_addr, {"login":login,"key":password})

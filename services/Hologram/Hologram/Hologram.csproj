@@ -84,6 +84,30 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
+    <Content Include="Deploy\nginx\default" />
+    <Content Include="Deploy\nginx\nginx.conf" />
+    <Content Include="Deploy\Static\css\holos.css" />
+    <Content Include="Deploy\Static\index.html" />
+    <Content Include="Deploy\Static\js\form.js" />
+    <Content Include="Deploy\Static\js\websocket.js" />
+    <Content Include="Deploy\Static\vendor\bootstrap\css\bootstrap.css" />
+    <Content Include="Deploy\Static\vendor\bootstrap\css\bootstrap.css.map" />
+    <Content Include="Deploy\Static\vendor\bootstrap\css\bootstrap.min.css" />
+    <Content Include="Deploy\Static\vendor\bootstrap\css\bootstrap.min.css.map" />
+    <Content Include="Deploy\Static\vendor\bootstrap\js\bootstrap.bundle.js" />
+    <Content Include="Deploy\Static\vendor\bootstrap\js\bootstrap.bundle.js.map" />
+    <Content Include="Deploy\Static\vendor\bootstrap\js\bootstrap.bundle.min.js" />
+    <Content Include="Deploy\Static\vendor\bootstrap\js\bootstrap.bundle.min.js.map" />
+    <Content Include="Deploy\Static\vendor\bootstrap\js\bootstrap.js" />
+    <Content Include="Deploy\Static\vendor\bootstrap\js\bootstrap.js.map" />
+    <Content Include="Deploy\Static\vendor\bootstrap\js\bootstrap.min.js" />
+    <Content Include="Deploy\Static\vendor\bootstrap\js\bootstrap.min.js.map" />
+    <Content Include="Deploy\Static\vendor\jquery\jquery.js" />
+    <Content Include="Deploy\Static\vendor\jquery\jquery.min.js" />
+    <Content Include="Deploy\Static\vendor\jquery\jquery.min.map" />
+    <Content Include="Deploy\Static\vendor\jquery\jquery.slim.js" />
+    <Content Include="Deploy\Static\vendor\jquery\jquery.slim.min.js" />
+    <Content Include="Deploy\Static\vendor\jquery\jquery.slim.min.map" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
