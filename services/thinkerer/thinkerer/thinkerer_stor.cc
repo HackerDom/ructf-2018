@@ -84,7 +84,7 @@ bool ThinkererStor::GetMessageById(const std::string& id, time_t ts, Msg& msg) {
 
   Msg m;
   while (ReadDelimitedFrom(&inStream, &m)) {
-    if (msg.id() == id) {
+    if (m.id() == id) {
       msg.MergeFrom(m);
       return true;
     }
