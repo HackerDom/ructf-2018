@@ -9,6 +9,7 @@ import json
 import time
 import asyncio
 import string
+import time
 
 PORT = 8084
 
@@ -93,6 +94,7 @@ async def handler_check(hostname):
 	fusername, fdata = fregister_and_put_result
 
 	while True:
+		time.sleep(1)
 		fcheckTask = check_in_self_list(first, fdata)
 		scheckTask = check_in_anothers_list(second, fusername, fdata)
 		suser_check_task = check_in_user_list(second, fusername)
