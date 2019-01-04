@@ -1,12 +1,9 @@
-FROM ubuntu:latest
+FROM ubuntu:16.04
 
-RUN sed -i 's|http://archive|http://ru.archive|g' /etc/apt/sources.list
 RUN apt-get update
-RUN apt-get install -y openjdk-8-jdk curl
-RUN echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" | tee /etc/apt/sources.list.d/bazel.list
-RUN curl https://bazel.build/bazel-release.pub.gpg | apt-key add -
-RUN apt-get update
-RUN apt-get install -y bazel git build-essential clang
+RUN apt-get install -y git build-essential clang unzip wget
+RUN wget -c https://github.com/bazelbuild/bazel/releases/download/0.17.1/bazel-0.17.1-installer-linux-x86_64.sh
+RUN bash bazel-0.17.1-installer-linux-x86_64.sh
 COPY thinkerer /thinkerer/thinkerer
 COPY proto /thinkerer/proto
 COPY WORKSPACE /thinkerer/
